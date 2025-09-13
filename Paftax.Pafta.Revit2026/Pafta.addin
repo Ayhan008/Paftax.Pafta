@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>Pafta</Name>
+		<Assembly>C:\Program Files\Paftax\Revit Addins\Revit 2026\Pafta\PaftaxPaftaRevit2026.dll</Assembly>
+		<AddInId>B29956E2-AED2-4F95-8180-53E7E211E41A</AddInId>
+		<FullClassName>Paftax.Pafta.Revit2026.App</FullClassName>
+		<VendorId>PFTX</VendorId>
+		<VendorDescription>Paftax Yazılım, www.paftax.com</VendorDescription>
+	</AddIn>
+</RevitAddIns>
