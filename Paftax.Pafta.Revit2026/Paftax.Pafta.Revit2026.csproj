@@ -81,7 +81,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir &quot;C:\Program Files\Paftax\Revit Addins\Revit 2026\Pafta\Resources&quot;&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(TargetDir)PaftaxPaftaRevit2026.dll&quot; &quot;C:\Program Files\Paftax\Revit Addins\Revit 2026\Pafta\&quot; /Y /I&#xD;&#xA;xcopy &quot;$(TargetDir)\Resources\*.tiff&quot; &quot;C:\Program Files\Paftax\Revit Addins\Revit 2026\Pafta\Resources\&quot; /Y /I&#xD;&#xA;xcopy &quot;$(TargetDir)Pafta.addin&quot; &quot;%25AppData%25\Autodesk\Revit\Addins\2026\&quot; /Y /I" />
+    <Exec Command="mkdir &quot;C:\Program Files\Paftax\Revit Addins\Revit 2026\Pafta\Resources&quot;&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(TargetDir)PaftaxPaftaRevit2026.dll&quot; &quot;C:\Program Files\Paftax\Revit Addins\Revit 2026\Pafta\&quot; /Y /I&#xD;&#xA;xcopy &quot;$(TargetDir)\Resources\*.tiff&quot; &quot;C:\Program Files\Paftax\Revit Addins\Revit 2026\Pafta\Resources\&quot; /Y /I&#xD;&#xA;xcopy &quot;$(TargetDir)Pafta.addin&quot; &quot;%25AppData%25\Autodesk\Revit\Addins\2026\&quot; /Y /I&#xD;&#xA;xcopy &quot;$(TargetDir)PaftaxPaftaUI.dll&quot; &quot;C:\Program Files\Paftax\Revit Addins\Revit 2026\Pafta\&quot; /Y /I " />
   </Target>
 
 </Project>

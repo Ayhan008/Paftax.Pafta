@@ -1,0 +1,83 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--Color Dictionary-->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
+        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/FontStyles.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+
+    <!-- ScrollBar Styles-->
+    <Style TargetType="ScrollBar">
+        <Setter Property="Background" Value="{DynamicResource ScrollBarBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ScrollBarBackgroundBrush}"/>
+        <Setter Property="Width" Value="6"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="MinWidth" Value="6"/>
+        <Setter Property="MinHeight" Value="100"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Border x:Name="ScrollBar" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            HorizontalAlignment="Stretch" 
+                            Background="{TemplateBinding Background}" 
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="2"/>
+                            </Grid.RowDefinitions>
+
+                            <Track x:Name="PART_Track" 
+                                   Grid.Row="1" 
+                                   IsDirectionReversed="True"
+                                   Orientation="Vertical"
+                                   VerticalAlignment="Stretch"
+                                   HorizontalAlignment="Stretch"
+                                   MinHeight="80">
+                                <Track.Thumb>
+                                    <Thumb x:Name="PART_Thumb">
+                                        <Thumb.Style>
+                                            <Style TargetType="Thumb">
+                                                <Setter Property="Background" Value="{DynamicResource ScrollBarThumbBackgroundBrush}"/>
+                                                <Setter Property="BorderBrush" Value="{DynamicResource ScrollBarThumbBorderBrush}"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                                <Setter Property="Focusable" Value="False"/>
+                                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Thumb">
+                                                            <Border x:Name="ThumbBorder" 
+                                                                    Background="{TemplateBinding Background}"
+                                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                                    Width="6"
+                                                                    CornerRadius="3"/>
+                                                            <ControlTemplate.Triggers>
+                                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ScrollBar}}" Value="True">
+                                                                    <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource ScrollBarThumbHoverBackgroundBrush}"/>
+                                                                    <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="{DynamicResource ScrollBarThumbHoverBorderBrush}"/>
+                                                                </DataTrigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </Thumb.Style>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

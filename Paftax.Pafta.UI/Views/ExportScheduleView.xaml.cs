@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Paftax.Pafta.UI.Models;
+using Paftax.Pafta.UI.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +21,13 @@ namespace Paftax.Pafta.UI.Views
     /// </summary>
     public partial class ExportScheduleView : Window
     {
-        public ExportScheduleView()
+        public ExportScheduleView(List<ScheduleModel> scheduleModels)
         {
             InitializeComponent();
+            ExportScheduleViewModel exportScheduleViewModel = new();
+            exportScheduleViewModel.LoadSchedules(scheduleModels);
+
+            DataContext = exportScheduleViewModel;
         }
     }
 }

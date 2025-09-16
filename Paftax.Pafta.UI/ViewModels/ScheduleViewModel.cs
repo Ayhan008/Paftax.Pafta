@@ -4,17 +4,22 @@ using Paftax.Pafta.UI.Models;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    internal class ScheduleViewModel : INotifyPropertyChanged
+    internal class ScheduleViewModel(ScheduleModel scheduleModel) : INotifyPropertyChanged
     {
-        public ObservableCollection<ScheduleModel> Schedules { get; set; } = [];
+        public long Id
+        {
+            get { return scheduleModel.Id; }
+        }
+        public string Name
+        {
+            get { return scheduleModel.Name; }
+        }
 
-        private bool _isChecked;
+        private bool _isChecked = scheduleModel.IsChecked;
         public bool IsChecked
         {
-            get 
-            { 
-                return _isChecked; 
-            }
+            get { return _isChecked; }
+
             set
             {
                 if (_isChecked != value)

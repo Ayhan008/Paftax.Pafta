@@ -4,50 +4,118 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
-        xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels" d:DataContext="{d:DesignInstance Type=vm:ExportScheduleViewModel}"
+        xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels"
+        xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls" d:DataContext="{d:DesignInstance vm:ExportScheduleViewModel}"
         mc:Ignorable="d"
         Title="ExportScheduleView" Height="700" Width="500"
-        ResizeMode="NoResize">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="90"/>
-            <RowDefinition Height="50"/>
-        </Grid.RowDefinitions>
+        ResizeMode="NoResize" 
+        FontFamily="Segoe UI"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None">
 
-        <TextBox x:Name="SearchTextBox" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10" Height="25"/>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
+                <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
 
-        <DataGrid x:Name="SchedulesDataGrid" Grid.Row="1" AutoGenerateColumns="False" Margin="10" ItemsSource="{Binding ScheduleViewModels}">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Schedule Name" Binding="{Binding Name}" Width="*"/>
-                <DataGridCheckBoxColumn Header="Select" Binding="{Binding IsSelected}" Width="Auto"/>
-            </DataGrid.Columns>
-        </DataGrid>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"
+                      ResizeBorderThickness="5"
+                      GlassFrameThickness="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
 
-        <Grid Grid.Row="2">
+    <Border BorderBrush="{DynamicResource WindowBorderBrush}" 
+            Background="{DynamicResource WindowBackgroundBrush}" 
+            BorderThickness="1"
+            CornerRadius="10">
+        <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="50"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Export Options:" FontWeight="Bold" Grid.Row="0" VerticalAlignment="Center" Margin="10,0,0,0" IsHitTestVisible="False"/>
+            <controls:TitleBar HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Title="Export Schedule" 
+                               Foreground="{DynamicResource TextColor}"/>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Center" Margin="10,0,0,0">
-                <TextBlock Text="Folder:" VerticalAlignment="Center" IsHitTestVisible="False"/>
-                <TextBox x:Name="FolderTextBox" VerticalAlignment="Center" Margin="10,0,10,0" Height="25" Width="400"/>
-            </StackPanel>
+            <controls:SearchBox Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,10,0" Height="30"
+                                PlaceholderText="Search for schedule..."/>
+            
+            <Border Grid.Row="1"  HorizontalAlignment="Stretch" Height="1" VerticalAlignment="Top"/>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Center" Margin="10,0,0,0">
-                <RadioButton x:Name="MergedButton" Content="Merged" Margin="0,0,10,0"/>
-                <RadioButton x:Name="SeperatedButton" Content="Seperated"/>
+            <DataGrid x:Name="SchedulesDataGrid" 
+                      Grid.Row="2" 
+                      AutoGenerateColumns="False" 
+                      Margin="10,0,10,10" 
+                      ItemsSource="{Binding ScheduleViewModels}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="30">
+                        <DataGridTemplateColumn.Header>
+                            <CheckBox x:Name="SelectAllCheckBox" 
+                                      IsChecked="{Binding DataContext.IsAllChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Schedule Name" 
+                                        Binding="{Binding Name}" 
+                                        Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Export Options" FontWeight="Bold" Grid.Row="0" VerticalAlignment="Center" Margin="10,0,0,0" IsHitTestVisible="False" FontSize="{StaticResource FontSizeSmall}"/>
+
+                <Border Grid.Row="1"  HorizontalAlignment="Stretch" Height="1" VerticalAlignment="Top" Margin="10,0,10,0"/>
+
+                <Grid Grid.Row="1" VerticalAlignment="Center" Margin="10,5,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="Folder:" VerticalAlignment="Center" IsHitTestVisible="False" Grid.Column="0" FontSize="{StaticResource FontSizeSmall}"/>
+                    <TextBox x:Name="FolderTextBox" VerticalAlignment="Center" Margin="10,0,0,0" Height="25" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                </Grid>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Center" Margin="10,0,10,5">
+                    <RadioButton x:Name="MergedButton" Content="Merged" Margin="0,0,10,0"/>
+                    <RadioButton x:Name="SeperatedButton" Content="Seperated"/>
+                </StackPanel>
+            </Grid>
+
+            <Border Grid.Row="3"  HorizontalAlignment="Stretch" Height="1" VerticalAlignment="Bottom"/>
+        
+            <StackPanel Orientation="Horizontal" Grid.Row="4" 
+                        HorizontalAlignment="Right" 
+                        Margin="0,0,10,0" 
+                        Height="25">
+                <Button x:Name="ExportButton" 
+                        Content="Export" 
+                        Width="80" 
+                        Margin="0,0,10,0"/>
+                <Button x:Name="CancelButton" 
+                        Content="Cancel"
+                        Width="80"/>
             </StackPanel>
         </Grid>
-
-        <StackPanel Orientation="Horizontal" Grid.Row="4" HorizontalAlignment="Right" Margin="10" Height="25">
-            <Button x:Name="ExportButton" Content="Export" Width="80" Margin="0,0,10,0"/>
-            <Button x:Name="CancelButton" Content="Cancel" Width="80"/>
-        </StackPanel>
-    </Grid>
+    </Border>
 </Window>

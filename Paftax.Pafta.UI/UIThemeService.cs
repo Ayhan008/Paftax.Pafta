@@ -10,8 +10,8 @@ namespace Paftax.Pafta.UI
         public static void ApplyTheme(string theme)
         {
             string dictionaryPath = theme.Equals("Dark", StringComparison.OrdinalIgnoreCase)
-                ? "pack://application:,,,/Paftax.Pafta.UI;component/Resources/ThemeDark.xaml"
-                : "pack://application:,,,/Paftax.Pafta.UI;component/Resources/ThemeLight.xaml";
+                ? "pack://application:,,,/Paftax.Pafta.UI;component/Resources/Theme/Dark.xaml"
+                : "pack://application:,,,/Paftax.Pafta.UI;component/Resources/Theme/Light.xaml";
 
             ResourceDictionary dict = new()
             {

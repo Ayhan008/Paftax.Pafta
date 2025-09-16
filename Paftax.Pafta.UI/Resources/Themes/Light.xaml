@@ -1,0 +1,43 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <!-- Window -->
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F0F0F0"/>
+    <SolidColorBrush x:Key="WindowBorderBrush" Color="#838383"/>
+
+    <!-- TitleBar -->
+    <SolidColorBrush x:Key="TitleBarBackgroundBrush" Color="#454f61"/>
+    <SolidColorBrush x:Key="TitleBarBorderBrush" Color="#404348"/>
+
+    <!-- DataGrid -->
+    <SolidColorBrush x:Key="DataGridBackgroundBrush" Color="#454f61"/>
+    <SolidColorBrush x:Key="DataGridBorderBrush" Color="#3C3C3C"/>
+    <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundBrush" Color="#29313c"/>
+    <SolidColorBrush x:Key="DataGridColumnHeaderBorderBrush" Color="#454f61"/>
+
+    <!-- Button -->
+    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#454f61"/>
+    <SolidColorBrush x:Key="ButtonBorderBrush" Color="#7b8ba1"/>
+
+    <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="#454f61"/>
+    <SolidColorBrush x:Key="ButtonHoverBorderBrush" Color="#0696d7"/>
+    <SolidColorBrush x:Key="ButtonPressedBackgroundBrush" Color="#0696d7"/>
+    <SolidColorBrush x:Key="ButtonPressedBorderBrush" Color="#7b8ba1"/>
+    <SolidColorBrush x:Key="ButtonDisabledBackgroundBrush" Color="#2b6b90"/>
+    <SolidColorBrush x:Key="ButtonDisabledBorderBrush" Color="#2b6b90"/>
+
+    <!-- TextBox -->
+    <SolidColorBrush x:Key="TextBoxBackgroundBrush" Color="#2f3845"/>
+    <SolidColorBrush x:Key="TextBoxBorderBrush" Color="#37404e"/>
+    <SolidColorBrush x:Key="TextBoxClickedBackgroundBrush" Color="#2f3845"/>
+    <SolidColorBrush x:Key="TextBoxClickedBorderBrush" Color="#b9d0eb"/>
+
+    <!-- RadioButton -->
+    <SolidColorBrush x:Key="RadioButtonCheckedBorderBrush" Color="#ffffff"/>
+    <SolidColorBrush x:Key="RadioButtonCheckedBackgroundBrush" Color="#ffffff"/>
+
+    <!-- Font Color-->
+    <SolidColorBrush x:Key="TextColor" Color="#000000"/>
+    <SolidColorBrush x:Key="PlaceholderTextColor" Color="#7c828a"/>
+    <SolidColorBrush x:Key="DisabledTextColor" Color="#8b939f"/>
+</ResourceDictionary>

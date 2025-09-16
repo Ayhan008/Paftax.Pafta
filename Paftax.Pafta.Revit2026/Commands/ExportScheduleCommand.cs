@@ -6,6 +6,10 @@ using Paftax.Pafta.Revit2026.Models;
 using Paftax.Pafta.Revit2026.Services.OpenXml;
 using Paftax.Pafta.Revit2026.Services.OpenXml.Stylesheets;
 using Paftax.Pafta.Revit2026.Services.Revit;
+using Paftax.Pafta.UI.Views;
+using Paftax.Pafta.Revit2026.Utilities;
+using System.Windows;
+using Paftax.Pafta.UI.Models;
 
 namespace Paftax.Pafta.Revit2026.Commands
 {
@@ -18,24 +22,23 @@ namespace Paftax.Pafta.Revit2026.Commands
             UIDocument uiDocument = uiApplication.ActiveUIDocument;
             Document document = uiDocument.Document;
 
-            ViewSchedule viewSchedule = GetViewSchedule(document);
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            List<ViewSchedule> viewSchedules = GetViewSchedules(document);
+            List<ScheduleModel> scheduleModels = Converters.ViewSchedulesToScheduleModels(viewSchedules);
 
+            ExportScheduleView exportScheduleView = new(scheduleModels);
+            exportScheduleView.ShowDialog();
             return Result.Succeeded;
         }
 
-        private static ViewSchedule GetViewSchedule(Document document)
+        private static List<ViewSchedule> GetViewSchedules(Document document)
         {
             FilteredElementCollector collector = new(document);
             collector.OfClass(typeof(ViewSchedule));
-            List<ViewSchedule> schedules = [.. collector.Cast<ViewSchedule>()];
-            if (schedules.Count == 0)
-            {
-                throw new InvalidOperationException("No schedules found in the document.");
-            }
-            return schedules[19];
-        }
 
+            List<ViewSchedule> schedules = [.. collector.Cast<ViewSchedule>()];
+
+            return schedules; 
+        }
         private static void ExportSchedulesSeperate(List<ViewSchedule> viewSchedules, string folderPath)
         {
             List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataService.CreateScheduleTableData(viewSchedules);
