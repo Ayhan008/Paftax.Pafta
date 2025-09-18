@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
         xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels"
-        xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls" d:DataContext="{d:DesignInstance vm:ExportScheduleViewModel}"
+        xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls"
+        xmlns:behaviors="clr-namespace:Paftax.Pafta.UI.Behaviors"
         mc:Ignorable="d"
-        Title="ExportScheduleView" Height="700" Width="500"
+        Title="Export Schedule" Height="700" Width="500"
         ResizeMode="NoResize" 
         FontFamily="Segoe UI"
         Background="Transparent"
@@ -15,6 +16,10 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None">
 
+    <Window.DataContext>
+        <vm:ExportScheduleViewModel/>
+    </Window.DataContext>
+    
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -44,11 +49,12 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
 
-            <controls:TitleBar HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Title="Export Schedule" 
+            <controls:TitleBar HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
                                Foreground="{DynamicResource TextColor}"/>
 
             <controls:SearchBox Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,10,0" Height="30"
-                                PlaceholderText="Search for schedule..."/>
+                                PlaceholderText="Search for schedule..." SearchText="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             
             <Border Grid.Row="1"  HorizontalAlignment="Stretch" Height="1" VerticalAlignment="Top"/>
 
@@ -56,6 +62,7 @@
                       Grid.Row="2" 
                       AutoGenerateColumns="False" 
                       Margin="10,0,10,10" 
+                      behaviors:DataGridCheckBoxSelectionBehavior.IsEnabled="True"
                       ItemsSource="{Binding ScheduleViewModels}">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Width="30">

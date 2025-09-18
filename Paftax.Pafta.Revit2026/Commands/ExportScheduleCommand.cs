@@ -10,6 +10,7 @@ using Paftax.Pafta.UI.Views;
 using Paftax.Pafta.Revit2026.Utilities;
 using System.Windows;
 using Paftax.Pafta.UI.Models;
+using Paftax.Pafta.UI;
 
 namespace Paftax.Pafta.Revit2026.Commands
 {
@@ -25,7 +26,8 @@ namespace Paftax.Pafta.Revit2026.Commands
             List<ViewSchedule> viewSchedules = GetViewSchedules(document);
             List<ScheduleModel> scheduleModels = Converters.ViewSchedulesToScheduleModels(viewSchedules);
 
-            ExportScheduleView exportScheduleView = new(scheduleModels);
+            ExportScheduleView exportScheduleView = new(scheduleModels);      
+            WindowThemeService.ApplyTheme(exportScheduleView, ApplicationThemeService.GetThemeString());
             exportScheduleView.ShowDialog();
             return Result.Succeeded;
         }

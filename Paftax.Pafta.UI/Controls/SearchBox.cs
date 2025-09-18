@@ -29,6 +29,15 @@ namespace Paftax.Pafta.UI.Controls
             remove { RemoveHandler(SearchTextChangedEvent, value); }
         }
 
+        public static readonly DependencyProperty SearchTextProperty =
+             DependencyProperty.Register(nameof(SearchText), typeof(string), typeof(SearchBox), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public string SearchText
+        {
+            get { return (string)GetValue(SearchTextProperty); }
+            set { SetValue(SearchTextProperty, value); }
+        }
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -77,6 +86,9 @@ namespace Paftax.Pafta.UI.Controls
 
             if (GetTemplateChild("PART_SearchTextBox") is TextBox searchTextBox)
             {
+                if (SearchText != searchTextBox.Text)
+                    SearchText = searchTextBox.Text;
+
                 if (!string.IsNullOrEmpty(searchTextBox.Text))
                 {
                     if (GetTemplateChild("PART_ClearButton") is Button clearButton)

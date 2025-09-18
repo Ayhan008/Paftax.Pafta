@@ -170,8 +170,9 @@ namespace Paftax.Pafta.Revit2026
             #endregion
 
             #region Update Image by Theme
-            ThemeService themeService = new(application, tabName);
+            ApplicationThemeService themeService = new(application, tabName);
             themeService.Initialize();
+            application.ThemeChanged += themeService.OnThemeChanged;
             #endregion
 
             return Result.Succeeded;

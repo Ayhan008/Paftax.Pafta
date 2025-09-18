@@ -2,11 +2,12 @@
 using Autodesk.Revit.UI.Events;
 using Paftax.Pafta.UI;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace Paftax.Pafta.Revit2026.Services.Revit
 {
-    internal class ThemeService(UIControlledApplication application, string tabName)
+    internal class ApplicationThemeService(UIControlledApplication application, string tabName)
     {
         private readonly List<RibbonItem> _ribbonItems = [];
         private const string ResourcesFolder = @"C:\Program Files\Paftax\Revit Addins\Revit 2026\Pafta\Resources";
@@ -17,31 +18,15 @@ namespace Paftax.Pafta.Revit2026.Services.Revit
         public void Initialize()
         {
             CollectAllRibbonItems();
-            Debug.WriteLine(_ribbonItems.Count);
-            foreach (var item in _ribbonItems)
-            {
-                Debug.WriteLine(item.Name);
-            }
             UpdateRibbonItemImages();
-
-            application.ThemeChanged += OnThemeChanged;
-        }
-
-        /// <summary>
-        /// Unsubscribes from events (call on shutdown).
-        /// </summary>
-        public void Shutdown()
-        {
-            application.ThemeChanged -= OnThemeChanged;
         }
 
         /// <summary>
         /// Event handler called when the UI theme changes.
         /// </summary>
-        private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
+        public void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
         {
             UpdateRibbonItemImages();
-            UpdateUITheme();
         }
 
         #region Ribbon Item Management
@@ -61,6 +46,13 @@ namespace Paftax.Pafta.Revit2026.Services.Revit
                 }
             }
 
+        }
+
+        public static string GetThemeString()
+        {
+            UITheme theme = UIThemeManager.CurrentTheme;
+            string themeString = theme == UITheme.Dark ? "Dark" : "Light";
+            return themeString;
         }
 
         /// <summary>
@@ -99,19 +91,6 @@ namespace Paftax.Pafta.Revit2026.Services.Revit
                     }
                 }
             }
-        }
-        #endregion
-
-        #region UI Theme Management
-        /// <summary>
-        /// Configures the overall UI theme of the application.
-        /// </summary>
-        private static void UpdateUITheme()
-        {
-            UITheme theme = UIThemeManager.CurrentTheme;
-            string themeString = theme == UITheme.Dark ? "Dark" : "Light";
-
-            UIThemeService.ApplyTheme(themeString);
         }
         #endregion
     }

@@ -13,6 +13,7 @@
     <Style TargetType="DataGrid">
         <Setter Property="Background" Value="{DynamicResource DataGridBackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource DataGridBorderBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="AllowDrop" Value="False"/>
         <Setter Property="AutoGenerateColumns" Value="False"/>

@@ -10,15 +10,6 @@ namespace Paftax.Pafta.UI.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TitleBar), new FrameworkPropertyMetadata(typeof(TitleBar)));
         }
 
-        public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(nameof(Title), typeof(string), typeof(TitleBar), new PropertyMetadata(string.Empty));
-
-        public string Title
-        {
-            get { return (string)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
-        }
-
         public static readonly DependencyProperty IconSizeProperty =
             DependencyProperty.Register(nameof(IconSize), typeof(double), typeof(TitleBar), new PropertyMetadata(15.0));
 
@@ -68,7 +59,7 @@ namespace Paftax.Pafta.UI.Controls
         {
             base.OnApplyTemplate();
 
-            if (GetTemplateChild("CloseButton") is Button closeButton)
+            if (GetTemplateChild("PART_CloseButton") is Button closeButton)
             {
                 closeButton.Click += (s, e) =>
                 {
@@ -76,7 +67,7 @@ namespace Paftax.Pafta.UI.Controls
                 };
             }
 
-            if (GetTemplateChild("TitleBarBorder") is Border titleBarBorder)
+            if (GetTemplateChild("PART_TitleBarBorder") is Border titleBarBorder)
             {
                 titleBarBorder.MouseDown += (s, e) =>
                 {
@@ -85,7 +76,12 @@ namespace Paftax.Pafta.UI.Controls
                         Window.GetWindow(this)?.DragMove();
                     }
                 };
-            }            
+            }   
+            
+            if (GetTemplateChild("PART_TitleTextBox") is TextBox titleTextBox)
+            {
+                titleTextBox.Text = Window.GetWindow(this)?.Title;
+            }
         }
     }
 }

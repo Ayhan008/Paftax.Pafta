@@ -1,34 +1,16 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Paftax.Pafta.UI.Models;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    internal class ScheduleViewModel(ScheduleModel scheduleModel) : INotifyPropertyChanged
+    internal partial class ScheduleViewModel(ScheduleModel model) : ObservableObject
     {
-        public long Id
-        {
-            get { return scheduleModel.Id; }
-        }
-        public string Name
-        {
-            get { return scheduleModel.Name; }
-        }
+        public ScheduleModel Model { get; } = model;
 
-        private bool _isChecked = scheduleModel.IsChecked;
-        public bool IsChecked
-        {
-            get { return _isChecked; }
+        public long Id => Model.Id;
+        public string Name => Model.Name;
 
-            set
-            {
-                if (_isChecked != value)
-                {
-                    _isChecked = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChecked)));
-                }
-            }
-        }
-        public event PropertyChangedEventHandler? PropertyChanged;
+        [ObservableProperty]
+        private bool isChecked = model.IsChecked;
     }
 }
