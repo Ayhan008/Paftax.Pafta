@@ -19,6 +19,7 @@ namespace Paftax.Pafta.Revit2026.Services.Revit
         {
             CollectAllRibbonItems();
             UpdateRibbonItemImages();
+            UIThemeService.ApplyThemeToApplication(GetThemeString());
         }
 
         /// <summary>
@@ -27,6 +28,7 @@ namespace Paftax.Pafta.Revit2026.Services.Revit
         public void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
         {
             UpdateRibbonItemImages();
+            UIThemeService.ApplyThemeToApplication(GetThemeString());
         }
 
         #region Ribbon Item Management

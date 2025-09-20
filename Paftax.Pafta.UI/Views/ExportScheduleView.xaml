@@ -23,7 +23,6 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
                 <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -53,13 +52,21 @@
                                VerticalAlignment="Stretch"
                                Foreground="{DynamicResource TextColor}"/>
 
-            <controls:SearchBox Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,10,0" Height="30"
-                                PlaceholderText="Search for schedule..." SearchText="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <controls:SearchBox Grid.Row="1" 
+                                VerticalAlignment="Stretch" 
+                                HorizontalAlignment="Stretch" 
+                                Margin="10,0,10,0" Height="30"
+                                PlaceholderText="Search for schedule..."
+                                SearchText="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             
-            <Border Grid.Row="1"  HorizontalAlignment="Stretch" Height="1" VerticalAlignment="Top"/>
+            <Border Grid.Row="1" 
+                    HorizontalAlignment="Stretch" 
+                    Height="1"
+                    VerticalAlignment="Top"/>
 
             <DataGrid x:Name="SchedulesDataGrid" 
                       Grid.Row="2" 
+                      Foreground="{DynamicResource TextColor}"
                       AutoGenerateColumns="False" 
                       Margin="10,0,10,10" 
                       behaviors:DataGridCheckBoxSelectionBehavior.IsEnabled="True"
@@ -72,11 +79,13 @@
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"/>
+                                <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                          Foreground="{DynamicResource TextColor}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Schedule Name" 
+                                        Foreground="{DynamicResource TextColor}"
                                         Binding="{Binding Name}" 
                                         Width="*"/>
                 </DataGrid.Columns>
@@ -89,9 +98,19 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Export Options" FontWeight="Bold" Grid.Row="0" VerticalAlignment="Center" Margin="10,0,0,0" IsHitTestVisible="False" FontSize="{StaticResource FontSizeSmall}"/>
+                <TextBlock Text="Export Options" 
+                           FontWeight="Bold" 
+                           Grid.Row="0"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0" 
+                           IsHitTestVisible="False" 
+                           FontSize="{StaticResource FontSizeSmall}"/>
 
-                <Border Grid.Row="1"  HorizontalAlignment="Stretch" Height="1" VerticalAlignment="Top" Margin="10,0,10,0"/>
+                <Border Grid.Row="1"  
+                        HorizontalAlignment="Stretch" 
+                        Height="1"
+                        VerticalAlignment="Top" 
+                        Margin="10,0,10,0"/>
 
                 <Grid Grid.Row="1" VerticalAlignment="Center" Margin="10,5,10,0">
                     <Grid.ColumnDefinitions>
@@ -99,13 +118,33 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock Text="Folder:" VerticalAlignment="Center" IsHitTestVisible="False" Grid.Column="0" FontSize="{StaticResource FontSizeSmall}"/>
-                    <TextBox x:Name="FolderTextBox" VerticalAlignment="Center" Margin="10,0,0,0" Height="25" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <TextBlock Text="Folder:" 
+                               VerticalAlignment="Center"
+                               IsHitTestVisible="False" 
+                               Grid.Column="0" 
+                               FontSize="{StaticResource FontSizeSmall}"/>
+                    
+                    <TextBox x:Name="FolderTextBox" 
+                             Text="{Binding ExportFolderPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center" 
+                             Margin="10,0,0,0" 
+                             Height="25"
+                             Grid.Column="1"
+                             HorizontalAlignment="Stretch"/>
                 </Grid>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Center" Margin="10,0,10,5">
-                    <RadioButton x:Name="MergedButton" Content="Merged" Margin="0,0,10,0"/>
-                    <RadioButton x:Name="SeperatedButton" Content="Seperated"/>
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Grid.Row="2" 
+                            VerticalAlignment="Center" 
+                            Margin="10,0,10,5">
+                    <RadioButton x:Name="MergedButton" 
+                                 Content="Merged"
+                                 Margin="0,0,10,0" 
+                                 IsChecked="{Binding IsMerged, Mode=TwoWay}"/>
+                    <RadioButton x:Name="SeperatedButton" 
+                                 Content="Seperated" 
+                                 IsChecked="{Binding IsSeperated, Mode=TwoWay}"/>
                 </StackPanel>
             </Grid>
 
@@ -116,12 +155,15 @@
                         Margin="0,0,10,0" 
                         Height="25">
                 <Button x:Name="ExportButton" 
+                        Style="{StaticResource ResultButtonStyle}"
                         Content="Export" 
                         Width="80" 
-                        Margin="0,0,10,0"/>
+                        Margin="0,0,10,0"
+                        Command="{Binding ExportCommand}"/>
                 <Button x:Name="CancelButton" 
                         Content="Cancel"
-                        Width="80"/>
+                        Width="80"
+                        Command="{Binding CancelCommand}"/>
             </StackPanel>
         </Grid>
     </Border>

@@ -8,39 +8,57 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="CheckBox">
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="BorderBrush" Value="White"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Width" Value="15"/>
-        <Setter Property="Height" Value="15"/>
+        <Setter Property="Background" Value="{DynamicResource CheckBoxBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CheckBoxBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Width" Value="13"/>
+        <Setter Property="Height" Value="13"/>
         <Setter Property="SnapsToDevicePixels" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
-                    <Border x:Name="Border"
-                            Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
-                            CornerRadius="0"
-                            Width="{TemplateBinding Width}"
-                            Height="{TemplateBinding Height}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                        <Grid>
-                            <Viewbox x:Name="CheckMark" Visibility="Collapsed" Stretch="Uniform" Margin="2">
-                                <Path Data="M0,14 L11,26 L26,7"
-                                      Stroke="Black"
-                                      StrokeThickness="7"/>
-                            </Viewbox>
-                        </Grid>
-                    </Border>
+                    <Grid>
+                        <Border x:Name="PART_EffectBorder"
+                                Panel.ZIndex="0"
+                                Background="Transparent"
+                                BorderBrush="Transparent" 
+                                Visibility="Collapsed"
+                                BorderThickness="0" 
+                                Margin="0"/>
+
+                        <Border x:Name="PART_CheckBoxBorder"
+                                Panel.ZIndex="1"
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="0">
+                            <Grid>
+                                <Viewbox x:Name="CheckMark" Visibility="Collapsed" Stretch="Uniform" Margin="0">
+                                    <Path Data="M0,14 L11,26 L26,7"
+                                          Margin="4"
+                                          Stroke="{DynamicResource CheckBoxCheckMarkBackgroundBrush}"
+                                          StrokeThickness="7"/>
+                                </Viewbox>
+                            </Grid>
+                        </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_EffectBorder" Property="Background" Value="{DynamicResource CheckBoxHoverEffectBorderBackgroundBrush}"/>
+                            <Setter TargetName="PART_EffectBorder" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="PART_EffectBorder" Property="Margin" Value="-2"/>
+                            <Setter TargetName="PART_EffectBorder" Property="CornerRadius" Value="0"/>
+                        </Trigger>
+
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="PART_CheckBoxBorder" Property="Background" Value="{DynamicResource CheckBoxCheckedBackgroundBrush}"/>
+                            <Setter TargetName="PART_CheckBoxBorder" Property="BorderBrush" Value="{DynamicResource CheckBoxCheckedBorderBrush}"/>
+                            <Setter TargetName="PART_CheckBoxBorder" Property="BorderThickness" Value="0"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-
 </ResourceDictionary>

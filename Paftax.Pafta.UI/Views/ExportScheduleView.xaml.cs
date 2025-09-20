@@ -1,5 +1,4 @@
-﻿using Paftax.Pafta.UI.Models;
-using Paftax.Pafta.UI.ViewModels;
+﻿using Paftax.Pafta.UI.ViewModels;
 using System.Windows;
 
 namespace Paftax.Pafta.UI.Views
@@ -9,18 +8,22 @@ namespace Paftax.Pafta.UI.Views
     /// </summary>
     public partial class ExportScheduleView : Window
     {
-        public ExportScheduleView(List<ScheduleModel> scheduleModels)
+        public ExportScheduleView(string theme = "Light")
         {
             InitializeComponent();
-            ExportScheduleViewModel exportScheduleViewModel = new();
-            exportScheduleViewModel.LoadSchedules(scheduleModels);
+            UIThemeService.ApplyThemeToWindow(this, theme);
 
-            DataContext = exportScheduleViewModel;
-        }
-
-        private void SearchBox_SearchTextChanged(object sender, RoutedEventArgs e)
-        {
-
+            Loaded += (s, e) =>
+            {
+                if (DataContext is BaseViewModel vm)
+                {
+                    vm.CancelRequest += () =>
+                    {
+                        DialogResult = true;
+                        Close();
+                    };
+                }
+            };
         }
     }
 }

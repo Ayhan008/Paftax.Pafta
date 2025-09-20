@@ -152,6 +152,7 @@
                     <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackgroundBrush}"/>
                     <Setter Property="BorderBrush" Value="{DynamicResource DataGridColumnHeaderBorderBrush}"/>
                     <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
+                    <Setter Property="SnapsToDevicePixels" Value="True"/>
                     <Setter Property="FontWeight" Value="{StaticResource FontWeightNormal}"/>
                     <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
                     <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>

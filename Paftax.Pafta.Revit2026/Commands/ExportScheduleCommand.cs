@@ -8,9 +8,8 @@ using Paftax.Pafta.Revit2026.Services.OpenXml.Stylesheets;
 using Paftax.Pafta.Revit2026.Services.Revit;
 using Paftax.Pafta.UI.Views;
 using Paftax.Pafta.Revit2026.Utilities;
-using System.Windows;
 using Paftax.Pafta.UI.Models;
-using Paftax.Pafta.UI;
+using Paftax.Pafta.UI.ViewModels;
 
 namespace Paftax.Pafta.Revit2026.Commands
 {
@@ -22,14 +21,37 @@ namespace Paftax.Pafta.Revit2026.Commands
             UIApplication uiApplication = commandData.Application;
             UIDocument uiDocument = uiApplication.ActiveUIDocument;
             Document document = uiDocument.Document;
-
+            
             List<ViewSchedule> viewSchedules = GetViewSchedules(document);
             List<ScheduleModel> scheduleModels = Converters.ViewSchedulesToScheduleModels(viewSchedules);
 
-            ExportScheduleView exportScheduleView = new(scheduleModels);      
-            WindowThemeService.ApplyTheme(exportScheduleView, ApplicationThemeService.GetThemeString());
+            ExportScheduleViewModel exportScheduleViewModel = new();
+            exportScheduleViewModel.LoadSchedules(scheduleModels);
+
+            string theme = ApplicationThemeService.GetThemeString();
+            ExportScheduleView exportScheduleView = new(theme)
+            {
+                DataContext = exportScheduleViewModel
+            };
             exportScheduleView.ShowDialog();
-            return Result.Succeeded;
+
+            if (exportScheduleView.DialogResult == true)
+            {
+                List<ScheduleModel> selectedSchedules = exportScheduleViewModel.GetSelectedSchedules();
+                List<ViewSchedule> selectedViewSchedules = Converters.ToViewSchedules(selectedSchedules, document);
+
+                if (exportScheduleViewModel.IsMerged == true)
+                {
+                    ExportSchedulesMerged(selectedViewSchedules, exportScheduleViewModel.ExportFolderPath);
+                }
+
+                if (exportScheduleViewModel.IsSeperated == true)
+                {
+                    ExportSchedulesSeperate(selectedViewSchedules, exportScheduleViewModel.ExportFolderPath);
+                }
+                return Result.Succeeded;
+            }   
+            return Result.Cancelled;
         }
 
         private static List<ViewSchedule> GetViewSchedules(Document document)
@@ -43,11 +65,19 @@ namespace Paftax.Pafta.Revit2026.Commands
         }
         private static void ExportSchedulesSeperate(List<ViewSchedule> viewSchedules, string folderPath)
         {
-            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataService.CreateScheduleTableData(viewSchedules);
-
+            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataService.CreateScheduleTableData(viewSchedules);    
+       
             foreach (ScheduleTableDataModel scheduleTableData in scheduleTableDatas)
             {
-                string filePath = Path.Combine(folderPath, $"{scheduleTableData.Name}.xlsx");
+                string safeFileName = FileUtilities.MakeValidFileName(scheduleTableData.Name);
+                string filePath = Path.Combine(folderPath, $"{safeFileName}.xlsx");
+
+                if (FileUtilities.IsFileOpen(filePath))
+                {
+                    TaskDialog.Show("Export", $"One or more files are open\nPlease close the files and try again.");
+                    break;
+                }
+
                 SpreadsheetDocument spreadsheetDocument = WorkbookService.CreateSpreadsheetWorkbook(filePath, scheduleTableData.Name)
                     ?? throw new InvalidOperationException("Failed to create spreadsheet document.");
 
@@ -71,12 +101,19 @@ namespace Paftax.Pafta.Revit2026.Commands
             List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataService.CreateScheduleTableData(viewSchedules);
             List<string> sheetNames = [.. scheduleTableDatas.Select(s => s.Name)];
 
+            if (FileUtilities.IsFileOpen(filePath))
+            {
+                TaskDialog.Show("Export", $"The file is open\nPlease close the file and try again.");
+                return;
+            }
+
             SpreadsheetDocument spreadsheetDocument = WorkbookService.CreateSpreadsheetWorkbook(filePath, sheetNames)
                 ?? throw new InvalidOperationException("Failed to create spreadsheet document.");
 
+            StyleService.AddStylesPart(spreadsheetDocument, ScheduleStylesheets.GenericStylesheet());
+
             foreach (ScheduleTableDataModel scheduleTableData in scheduleTableDatas)
             {
-                StyleService.AddStylesPart(spreadsheetDocument, ScheduleStylesheets.GenericStylesheet());
                 SheetService.FillSheet(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TitlePart, 0, 1);
                 SheetService.SetCustomRowHeight(spreadsheetDocument, scheduleTableData.Name, 1, 24);
 
@@ -85,9 +122,9 @@ namespace Paftax.Pafta.Revit2026.Commands
 
                 SheetService.MergeCells(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.MergedCells);
 
-                SheetService.SetColumnWidthsFromData(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TableData);
-                spreadsheetDocument.Dispose();
+                SheetService.SetColumnWidthsFromData(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TableData);    
             }
+            spreadsheetDocument.Dispose();
         }
     }
 }

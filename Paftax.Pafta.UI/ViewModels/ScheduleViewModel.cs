@@ -3,7 +3,7 @@ using Paftax.Pafta.UI.Models;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    internal partial class ScheduleViewModel(ScheduleModel model) : ObservableObject
+    public partial class ScheduleViewModel(ScheduleModel model) : ObservableObject
     {
         public ScheduleModel Model { get; } = model;
 

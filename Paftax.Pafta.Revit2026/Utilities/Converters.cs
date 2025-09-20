@@ -5,12 +5,12 @@ namespace Paftax.Pafta.Revit2026.Utilities
 {
     internal class Converters
     {
-        public static long ElementIdToLong(ElementId elementId)
+        public static long ToLong(ElementId elementId)
         {
             return elementId.Value;
         }
 
-        public static ElementId LongToElementId(long id)
+        public static ElementId ToElementId(long id)
         {
             return new ElementId(id);
         }
@@ -19,7 +19,7 @@ namespace Paftax.Pafta.Revit2026.Utilities
         {
             return new ScheduleModel
             {
-                Id = ElementIdToLong(viewSchedule.Id),
+                Id = ToLong(viewSchedule.Id),
                 IsChecked = false,
                 Name = viewSchedule.Name,
             };
@@ -28,6 +28,21 @@ namespace Paftax.Pafta.Revit2026.Utilities
         public static List<ScheduleModel> ViewSchedulesToScheduleModels(IEnumerable<ViewSchedule> viewSchedules)
         {
             return [.. viewSchedules.Select(ViewScheduleToScheduleModel)];
+        }
+
+        public static List<ViewSchedule> ToViewSchedules(IEnumerable<ScheduleModel> scheduleModels, Document document)
+        {
+            List<ViewSchedule> viewSchedules = [];
+
+            foreach (ScheduleModel scheduleModel in scheduleModels)
+            {
+                ElementId elementId = ToElementId(scheduleModel.Id);
+
+                Element element = document.GetElement(elementId);
+                if (element is ViewSchedule viewSchedule)
+                    viewSchedules.Add(viewSchedule);              
+            }
+            return viewSchedules;
         }
     }
 }

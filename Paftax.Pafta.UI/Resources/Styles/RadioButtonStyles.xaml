@@ -10,7 +10,7 @@
     <!--Radio Button Style-->
     <Style TargetType="RadioButton">
         <Setter Property="Background" Value="{DynamicResource RadioButtonBackgroundBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource RadioButtonBorderBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonBorderBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
         <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
         <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>

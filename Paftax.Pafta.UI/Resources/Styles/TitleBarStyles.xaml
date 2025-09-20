@@ -29,7 +29,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TitleBar}">
-                    <Border x:Name="PART_TitleBarBorder"
+                    <Border x:Name="PART_Border"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
@@ -43,22 +43,19 @@
                                 <ColumnDefinition Width="30" x:Name="CloseButtonColumn"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBox x:Name="PART_TitleTextBox"
-                                     Grid.Column="0"
-                                     Style="{x:Null}"
-                                     Text="Title"
-                                     CaretBrush="{TemplateBinding Foreground}"
-                                     IsHitTestVisible="False"
-                                     Background="Transparent"
-                                     BorderBrush="Transparent"
-                                     FontFamily="{TemplateBinding FontFamily}"
-                                     FontSize="{TemplateBinding FontSize}"
-                                     FontWeight="{TemplateBinding FontWeight}"
-                                     BorderThickness="0"
-                                     Foreground="{TemplateBinding Foreground}"
-                                     Margin="10,0,0,0" 
-                                     HorizontalAlignment="Left" 
-                                     VerticalAlignment="Center"/>
+                            <TextBlock x:Name="PART_Title"
+                                       Grid.Column="0"
+                                       Background="Transparent"
+                                       Foreground="{TemplateBinding Foreground}"
+                                       Text="Title"
+                                       FontFamily="{TemplateBinding FontFamily}"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       FontWeight="{TemplateBinding FontWeight}"
+                                       Margin="10,0,0,0" 
+                                       Padding="0"
+                                       IsHitTestVisible="False"
+                                       HorizontalAlignment="Left" 
+                                       VerticalAlignment="Center"/>
 
                             <Button x:Name="PART_CloseButton" Grid.Column="4" Style="{StaticResource TitleBarCloseButton}" FontSize="{TemplateBinding IconSize}" FontWeight="{TemplateBinding FontWeight}"/>
                             <Button x:Name="PART_MaximizeButton" Grid.Column="3" Style="{StaticResource TitleBarMaximizeButton}" FontSize="{TemplateBinding IconSize}" FontWeight="{TemplateBinding FontWeight}"/>

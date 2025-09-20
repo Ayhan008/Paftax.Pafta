@@ -8,7 +8,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="Border">
-        <Setter Property="Background" Value="{DynamicResource BorderBackgroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource BorderBackground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBorderBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>

@@ -48,7 +48,7 @@
                                                    BorderThickness="0"
                                                    FontSize="20"
                                                    VerticalAlignment="Center"
-                                                   Foreground="{DynamicResource PlaceholderTextColor}"/>
+                                                   Foreground="{DynamicResource SearchBoxIconBackgroundBrush}"/>
 
                                 <!--TextBox-->
                                 <TextBox x:Name="PART_SearchTextBox"
@@ -57,9 +57,9 @@
                                          BorderThickness="0" 
                                          Style="{x:Null}"
                                          BorderBrush="Transparent" 
-                                         CaretBrush="{TemplateBinding Foreground}"
+                                         CaretBrush="{DynamicResource TextColor}"
                                          Padding="0" 
-                                         Foreground="{TemplateBinding Foreground}" 
+                                         Foreground="{DynamicResource TextColor}" 
                                          Cursor="IBeam" 
                                          FontFamily="{TemplateBinding FontFamily}"
                                          FontSize="{TemplateBinding FontSize}"
@@ -102,6 +102,7 @@
                                         Panel.ZIndex="1"
                                         BorderThickness="0"
                                         Style="{x:Null}"
+                                        Foreground="{DynamicResource SearchBoxIconBackgroundBrush}"
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="Transparent"
                                         Visibility="Collapsed"
@@ -117,7 +118,7 @@
                                                                    BorderThickness="0"
                                                                    FontSize="20"
                                                                    VerticalAlignment="Center"
-                                                                   Foreground="{DynamicResource PlaceholderTextColor}"/>
+                                                                   Foreground="{DynamicResource SearchBoxIconBackgroundBrush}"/>
                                             </Grid>
                                         </ControlTemplate>
                                     </Button.Template>

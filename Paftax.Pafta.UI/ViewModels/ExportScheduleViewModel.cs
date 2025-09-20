@@ -2,16 +2,26 @@
 using CommunityToolkit.Mvvm.Input;
 using Paftax.Pafta.UI.Models;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    internal partial class ExportScheduleViewModel : ObservableObject
+    public partial class ExportScheduleViewModel : BaseViewModel
     {
-        private readonly List<ScheduleViewModel> allSchedules = [];
-
+        private readonly List<ScheduleViewModel> _loadedSchedules = [];
+        private List<ScheduleModel> _selectedSchedules = [];
         public ObservableCollection<ScheduleViewModel> ScheduleViewModels { get; } = [];
 
-        #region Observable Properties
+        public bool CanExport
+        {
+            get
+            {
+                return (ScheduleViewModels.Any(vm => vm.IsChecked) &&
+                        !string.IsNullOrWhiteSpace(ExportFolderPath) &&
+                        (IsMerged || IsSeperated));
+            }
+        }
+
         [ObservableProperty]
         private bool isAllChecked = false;
 
@@ -29,50 +39,104 @@ namespace Paftax.Pafta.UI.ViewModels
 
         partial void OnSearchTextChanged(string value)
         {
-            ApplyFilter();
-        }
-        #endregion
-
-        public event Action? RequestClose;
-
-        [RelayCommand]
-        private void Cancel() => RequestClose?.Invoke();
-
-        [RelayCommand]
-        private void Export() => RequestClose?.Invoke();
-
-        public void LoadSchedules(IEnumerable<ScheduleModel>? models)
-        {
-            allSchedules.Clear();
             ScheduleViewModels.Clear();
-            if (models == null) return;
+
+            var filtered = string.IsNullOrWhiteSpace(SearchText)
+                ? _loadedSchedules
+                : _loadedSchedules.Where(x =>
+                      x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+
+            foreach (var vm in filtered)
+                ScheduleViewModels.Add(vm);
+        }
+
+        [ObservableProperty]
+        private bool isMerged = false;
+        partial void OnIsMergedChanged(bool value)
+        {
+            if (value)
+                IsSeperated = false;
+            ExportCommand.NotifyCanExecuteChanged();
+        }
+
+
+        [ObservableProperty]
+        private bool isSeperated = true;
+        partial void OnIsSeperatedChanged(bool value)
+        {
+            if (value)
+                IsMerged = false;
+            ExportCommand.NotifyCanExecuteChanged();
+        }
+
+
+        [ObservableProperty]
+        private string exportFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+        partial void OnExportFolderPathChanged(string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                string trimmedString = value.Trim('"');
+
+                if (trimmedString != value)
+                    ExportFolderPath = trimmedString;
+            }
+            ExportCommand.NotifyCanExecuteChanged();
+        }
+
+        public event Action? RequestCancel;
+
+        [RelayCommand]
+        private void Cancel()
+        {
+            OnCancelRequest();
+        }
+
+        public event Action? RequestExport;
+
+        [RelayCommand(CanExecute = nameof(CanExport))]
+        private void Export()
+        {
+            GetSelectedSchedules();
+
+            if (!string.IsNullOrWhiteSpace(ExportFolderPath) && !Directory.Exists(ExportFolderPath))
+                Directory.CreateDirectory(ExportFolderPath);
+
+            var selectedSchedules = GetSelectedSchedules();
+
+            if (selectedSchedules.Count > 0)
+                RequestExport?.Invoke();
+        }
+
+        public void LoadSchedules(List<ScheduleModel> models)
+        {
+            _loadedSchedules.Clear();
+            ScheduleViewModels.Clear();
+
+            if (models == null)
+                return;
 
             foreach (var model in models)
             {
-                var vm = new ScheduleViewModel(model);
-                allSchedules.Add(vm);
+                ScheduleViewModel vm = new(model);
+                vm.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName == nameof(ScheduleViewModel.IsChecked))
+                        ExportCommand.NotifyCanExecuteChanged();
+                };
+                _loadedSchedules.Add(vm);
                 ScheduleViewModels.Add(vm);
             }
         }
 
         public List<ScheduleModel> GetSelectedSchedules()
         {
-            return [.. ScheduleViewModels
+            _selectedSchedules = [.. ScheduleViewModels
                 .Where(vm => vm.IsChecked)
                 .Select(vm => vm.Model)];
-        }
 
-        private void ApplyFilter()
-        {
-            ScheduleViewModels.Clear();
-
-            var filtered = string.IsNullOrWhiteSpace(SearchText)
-                ? allSchedules
-                : allSchedules.Where(x =>
-                      x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-
-            foreach (var vm in filtered)
-                ScheduleViewModels.Add(vm);
+            return _selectedSchedules;
         }
     }
 }
