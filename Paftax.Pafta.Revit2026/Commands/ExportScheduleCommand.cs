@@ -6,8 +6,8 @@ using Paftax.Pafta.Revit2026.Models;
 using Paftax.Pafta.Revit2026.Services.OpenXml;
 using Paftax.Pafta.Revit2026.Services.OpenXml.Stylesheets;
 using Paftax.Pafta.Revit2026.Services.Revit;
-using Paftax.Pafta.UI.Views;
 using Paftax.Pafta.Revit2026.Utilities;
+using Paftax.Pafta.UI;
 using Paftax.Pafta.UI.Models;
 using Paftax.Pafta.UI.ViewModels;
 
@@ -21,24 +21,26 @@ namespace Paftax.Pafta.Revit2026.Commands
             UIApplication uiApplication = commandData.Application;
             UIDocument uiDocument = uiApplication.ActiveUIDocument;
             Document document = uiDocument.Document;
-            
+
             List<ViewSchedule> viewSchedules = GetViewSchedules(document);
-            List<ScheduleModel> scheduleModels = Converters.ViewSchedulesToScheduleModels(viewSchedules);
+            List<ScheduleModel> scheduleModels = [.. Mappers.MapToScheduleModels(viewSchedules)];
 
             ExportScheduleViewModel exportScheduleViewModel = new();
             exportScheduleViewModel.LoadSchedules(scheduleModels);
 
-            string theme = ApplicationThemeService.GetThemeString();
-            ExportScheduleView exportScheduleView = new(theme)
+            MainWindow mainWindow = new(exportScheduleViewModel)
             {
-                DataContext = exportScheduleViewModel
+                Title = "Export Schedules",
+                Width = 400,
+                Height = 700,       
             };
-            exportScheduleView.ShowDialog();
 
-            if (exportScheduleView.DialogResult == true)
+            mainWindow.ShowDialog();
+
+            if (exportScheduleViewModel.CanExport == true)
             {
                 List<ScheduleModel> selectedSchedules = exportScheduleViewModel.GetSelectedSchedules();
-                List<ViewSchedule> selectedViewSchedules = Converters.ToViewSchedules(selectedSchedules, document);
+                List<ViewSchedule> selectedViewSchedules = [.. Mappers.MapToViewSchedules(selectedSchedules, document)];
 
                 if (exportScheduleViewModel.IsMerged == true)
                 {
@@ -50,7 +52,7 @@ namespace Paftax.Pafta.Revit2026.Commands
                     ExportSchedulesSeperate(selectedViewSchedules, exportScheduleViewModel.ExportFolderPath);
                 }
                 return Result.Succeeded;
-            }   
+            }
             return Result.Cancelled;
         }
 
@@ -61,12 +63,12 @@ namespace Paftax.Pafta.Revit2026.Commands
 
             List<ViewSchedule> schedules = [.. collector.Cast<ViewSchedule>()];
 
-            return schedules; 
+            return schedules;
         }
         private static void ExportSchedulesSeperate(List<ViewSchedule> viewSchedules, string folderPath)
         {
-            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataService.CreateScheduleTableData(viewSchedules);    
-       
+            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataService.CreateScheduleTableData(viewSchedules);
+
             foreach (ScheduleTableDataModel scheduleTableData in scheduleTableDatas)
             {
                 string safeFileName = FileUtilities.MakeValidFileName(scheduleTableData.Name);
@@ -122,7 +124,7 @@ namespace Paftax.Pafta.Revit2026.Commands
 
                 SheetService.MergeCells(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.MergedCells);
 
-                SheetService.SetColumnWidthsFromData(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TableData);    
+                SheetService.SetColumnWidthsFromData(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TableData);
             }
             spreadsheetDocument.Dispose();
         }

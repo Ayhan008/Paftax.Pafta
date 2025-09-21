@@ -9,9 +9,9 @@
 
     <!--Radio Button Style-->
     <Style TargetType="RadioButton">
-        <Setter Property="Background" Value="{DynamicResource RadioButtonBackgroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource RadioButtonBackground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonBorderBrush}"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+        <Setter Property="Foreground" Value="{DynamicResource RadioButtonForeground}"/>
         <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
         <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -38,9 +38,7 @@
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="CheckMark" 
-                                    Property="Fill" 
-                                    Value="{DynamicResource RadioButtonCheckmarkBackgroundBrush}"/>
+                            <Setter TargetName="CheckMark" Property="Fill" Value="{DynamicResource RadioButtonCheckedForeground}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

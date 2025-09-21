@@ -9,14 +9,14 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type controls:SearchBox}">
-        <Setter Property="Background" Value="{DynamicResource SearchBoxBackgroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource SearchBoxBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource SearchBoxForeground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource SearchBoxBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
         <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
         <Setter Property="FontWeight" Value="{StaticResource FontWeightBold}"/>
-        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Height" Value="30"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
         <Setter Property="PlaceholderText" Value="Search..."/>
         <Setter Property="Template">
             <Setter.Value>
@@ -48,7 +48,7 @@
                                                    BorderThickness="0"
                                                    FontSize="20"
                                                    VerticalAlignment="Center"
-                                                   Foreground="{DynamicResource SearchBoxIconBackgroundBrush}"/>
+                                                   Foreground="{DynamicResource SearchBoxIconForeground}"/>
 
                                 <!--TextBox-->
                                 <TextBox x:Name="PART_SearchTextBox"
@@ -57,9 +57,9 @@
                                          BorderThickness="0" 
                                          Style="{x:Null}"
                                          BorderBrush="Transparent" 
-                                         CaretBrush="{DynamicResource TextColor}"
+                                         CaretBrush="{TemplateBinding Foreground}"
                                          Padding="0" 
-                                         Foreground="{DynamicResource TextColor}" 
+                                         Foreground="{TemplateBinding Foreground}"
                                          Cursor="IBeam" 
                                          FontFamily="{TemplateBinding FontFamily}"
                                          FontSize="{TemplateBinding FontSize}"
@@ -87,7 +87,7 @@
                                            x:Name="PART_PlaceholderText"
                                            Text="{TemplateBinding PlaceholderText}"
                                            Style="{x:Null}"
-                                           Foreground="{DynamicResource PlaceholderTextColor}"
+                                           Foreground="{DynamicResource SearchBoxPlaceholderForeground}"
                                            Margin="5,0,0,0"
                                            VerticalAlignment="Center"
                                            IsHitTestVisible="False"
@@ -102,7 +102,7 @@
                                         Panel.ZIndex="1"
                                         BorderThickness="0"
                                         Style="{x:Null}"
-                                        Foreground="{DynamicResource SearchBoxIconBackgroundBrush}"
+                                        Foreground="{DynamicResource SearchBoxIconBackground}"
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="Transparent"
                                         Visibility="Collapsed"
@@ -116,9 +116,9 @@
                                                                    Background="Transparent"
                                                                    BorderBrush="Transparent"
                                                                    BorderThickness="0"
-                                                                   FontSize="20"
+                                                                   FontSize="16"
                                                                    VerticalAlignment="Center"
-                                                                   Foreground="{DynamicResource SearchBoxIconBackgroundBrush}"/>
+                                                                   Foreground="{DynamicResource SearchBoxIconForeground}"/>
                                             </Grid>
                                         </ControlTemplate>
                                     </Button.Template>

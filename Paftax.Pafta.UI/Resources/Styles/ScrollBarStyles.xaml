@@ -10,8 +10,8 @@
 
     <!-- ScrollBar Styles-->
     <Style TargetType="ScrollBar">
-        <Setter Property="Background" Value="{DynamicResource ScrollBarBackgroundBrush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ScrollBarBackgroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ScrollBarBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ScrollBarBorderBrush}"/>
         <Setter Property="Width" Value="6"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -45,7 +45,7 @@
                                     <Thumb x:Name="PART_Thumb">
                                         <Thumb.Style>
                                             <Style TargetType="Thumb">
-                                                <Setter Property="Background" Value="{DynamicResource ScrollBarThumbBackgroundBrush}"/>
+                                                <Setter Property="Background" Value="{DynamicResource ScrollBarThumbBackground}"/>
                                                 <Setter Property="BorderBrush" Value="{DynamicResource ScrollBarThumbBorderBrush}"/>
                                                 <Setter Property="BorderThickness" Value="0"/>
                                                 <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -62,7 +62,7 @@
                                                                     CornerRadius="3"/>
                                                             <ControlTemplate.Triggers>
                                                                 <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ScrollBar}}" Value="True">
-                                                                    <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource ScrollBarThumbHoverBackgroundBrush}"/>
+                                                                    <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource ScrollBarThumbHoverBackground}"/>
                                                                     <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="{DynamicResource ScrollBarThumbHoverBorderBrush}"/>
                                                                 </DataTrigger>
                                                             </ControlTemplate.Triggers>

@@ -1,4 +1,6 @@
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Paftax.Pafta.UI
 {
@@ -9,11 +11,9 @@ namespace Paftax.Pafta.UI
         private static readonly string _lightThemePath = $"pack://application:,,,/{_assemblyName};component/Resources/Themes/Light.xaml";
 
         /// <summary>
-        /// Apply Theme.
+        /// Apply theme to Application and optionally a specific FrameworkElement (Window, UserControl, etc.)
         /// </summary>
-        /// <param name="window"></param>
-        /// <param name="theme"></param>
-        public static void ApplyThemeToWindow(Window window, string theme)
+        public static void ApplyTheme(string theme, FrameworkElement? element = null)
         {
             string dictionaryPath = theme.Equals("Dark", StringComparison.OrdinalIgnoreCase)
                 ? _darkThemePath
@@ -21,33 +21,40 @@ namespace Paftax.Pafta.UI
 
             var dict = new ResourceDictionary { Source = new Uri(dictionaryPath, UriKind.Absolute) };
 
-            var existingTheme = window.Resources.MergedDictionaries
+            // Application resources
+            var existingAppTheme = Application.Current.Resources.MergedDictionaries
                 .FirstOrDefault(d => d.Source != null &&
                                      (d.Source.ToString().EndsWith("Dark.xaml", StringComparison.OrdinalIgnoreCase) ||
                                       d.Source.ToString().EndsWith("Light.xaml", StringComparison.OrdinalIgnoreCase)));
+            if (existingAppTheme != null)
+                Application.Current.Resources.MergedDictionaries.Remove(existingAppTheme);
+            Application.Current.Resources.MergedDictionaries.Add(dict);
 
-            if (existingTheme != null)
-                window.Resources.MergedDictionaries.Remove(existingTheme);
-
-            window.Resources.MergedDictionaries.Add(dict);
+            if (element != null)
+            {
+                ApplyThemeToElement(element, dict);
+            }
+            else
+            {
+                foreach (Window window in Application.Current.Windows)
+                {
+                    ApplyThemeToElement(window, dict);
+                }
+            }
         }
 
-        public static void ApplyThemeToApplication(string theme)
+        private static void ApplyThemeToElement(FrameworkElement element, ResourceDictionary dict)
         {
-            string dictionaryPath = theme.Equals("Dark", StringComparison.OrdinalIgnoreCase)
-                ? _darkThemePath
-                : _lightThemePath;
+            if (element == null) return;
 
-            var dict = new ResourceDictionary { Source = new Uri(dictionaryPath, UriKind.Absolute) };
-            var existingTheme = Application.Current.Resources.MergedDictionaries
+            var existingTheme = element.Resources.MergedDictionaries
                 .FirstOrDefault(d => d.Source != null &&
                                      (d.Source.ToString().EndsWith("Dark.xaml", StringComparison.OrdinalIgnoreCase) ||
                                       d.Source.ToString().EndsWith("Light.xaml", StringComparison.OrdinalIgnoreCase)));
-
             if (existingTheme != null)
-                Application.Current.Resources.MergedDictionaries.Remove(existingTheme);
+                element.Resources.MergedDictionaries.Remove(existingTheme);
 
-            Application.Current.Resources.MergedDictionaries.Add(dict);
+            element.Resources.MergedDictionaries.Add(dict);
         }
     }
 }

@@ -2,14 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls">
 
-    <!--Color Dictionary-->
+    <!--#region Color Dictionary-->
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
         <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/FontStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
+    <!--#endregion-->
 
-    <!--Button Styles-->
-    <!--#region Generic Button Style-->
+    <!--#region Button Styles-->
     <Style TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}"/>
@@ -87,11 +87,9 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <!--#endregion-->
 
-    <!--#region Result Button Style-->
     <Style x:Key="ResultButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource ResultButtonBackgroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ResultButtonBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource ResultButtonForeground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ResultButtonBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -158,206 +156,6 @@
                             <Setter TargetName="PART_Border" Property="Background" Value="{DynamicResource ResultButtonDisabledBackground}" />
                             <Setter TargetName="PART_Border" Property="BorderBrush" Value="{DynamicResource ResultButtonDisabledBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource ResultButtonDisabledForeground}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <!--#endregion-->
-
-    <!--#region Close Button Style-->
-    <Style TargetType="Button" x:Key="CloseButtonStyle">
-        <Setter Property="Background" Value="{DynamicResource TitleBarCloseButtonBackground}"/>
-        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="Width" Value="25"/>
-        <Setter Property="Height" Value="25"/>
-        <Setter Property="MinWidth" Value="20"/>
-        <Setter Property="MinHeight" Value="20"/>
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
-        <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
-        <Setter Property="FontWeight" Value="{StaticResource FontWeightNormal}"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalAlignment" Value="Stretch"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="IsEnabled" Value="True"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="0,9.6,0,0">
-                        <controls:FontIcon Glyph="&#xE10A;"
-                                           FontSize="{TemplateBinding FontSize}"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           Background="Transparent"
-                                           BorderBrush="Transparent"
-                                           BorderThickness="0"
-                                           HorizontalAlignment="Stretch" 
-                                           VerticalAlignment="Stretch"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <!-- Hover -->
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource TitleBarCloseButtonHoverBackground}"/>
-                        </Trigger>
-                        <!-- Pressed -->
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource TitleBarCloseButtonPressedBackground}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <!--#endregion-->
-
-    <!--#region Maximize Button Style-->
-    <Style TargetType="Button" x:Key="MaximizeButtonStyle">
-        <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
-        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="Width" Value="25"/>
-        <Setter Property="Height" Value="25"/>
-        <Setter Property="MinWidth" Value="20"/>
-        <Setter Property="MinHeight" Value="20"/>
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
-        <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
-        <Setter Property="FontWeight" Value="{StaticResource FontWeightNormal}"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalAlignment" Value="Stretch"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="IsEnabled" Value="True"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <controls:FontIcon Glyph="&#xE922;"
-                                           FontSize="{TemplateBinding FontSize}"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           Background="Transparent"
-                                           BorderBrush="Transparent"
-                                           BorderThickness="0"
-                                           HorizontalAlignment="Stretch" 
-                                           VerticalAlignment="Stretch"/>
-                    </Border>
-                    
-                    <ControlTemplate.Triggers>
-                        <!-- Hover -->
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource TitleBarButtonHoverBackground}"/>
-                        </Trigger>
-                        <!-- Pressed -->
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource TitleBarButtonPressedBackground}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <!--#endregion-->
-
-    <!--#region Minimize Button Style-->
-    <Style TargetType="Button" x:Key="MinimizeButtonStyle">
-        <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
-        <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
-        <Setter Property="FontWeight" Value="{StaticResource FontWeightNormal}"/>
-        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="IsEnabled" Value="True"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="VerticalAlignment" Value="Stretch"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <controls:FontIcon Glyph="&#xE921;"
-                                           FontSize="{TemplateBinding FontSize}"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           Background="Transparent"
-                                           BorderBrush="Transparent"
-                                           BorderThickness="0"
-                                           HorizontalAlignment="Stretch" 
-                                           VerticalAlignment="Stretch"/>
-                    </Border>
-
-                    <ControlTemplate.Triggers>
-                        <!-- Hover -->
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource TitleBarButtonHoverBackground}"/>
-                        </Trigger>
-                        <!-- Pressed -->
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource TitleBarButtonPressedBackground}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <!--#endregion-->
-    
-    <!--#region Help Button Style-->
-    <Style TargetType="Button" x:Key="HelpButton">
-        <Setter Property="Background" Value="{DynamicResource TitleBarBackgroundBrush}"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
-        <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
-        <Setter Property="FontWeight" Value="{StaticResource FontWeightNormal}"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="IsEnabled" Value="True"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="VerticalAlignment" Value="Stretch"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <controls:FontIcon Glyph="&#xE897;"
-                                           FontSize="{TemplateBinding FontSize}"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           Background="Transparent"
-                                           BorderBrush="Transparent"
-                                           BorderThickness="0"
-                                           HorizontalAlignment="Stretch" 
-                                           VerticalAlignment="Stretch"/>
-                    </Border>
-
-                    <ControlTemplate.Triggers>
-                        <!-- Hover -->
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource TitleBarButtonHoverBackgroundBrush}"/>
-                        </Trigger>
-                        <!-- Pressed -->
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource TitleBarButtonPressedBackgroundBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

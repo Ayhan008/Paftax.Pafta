@@ -22,6 +22,16 @@ namespace Paftax.Pafta.UI.ViewModels
             }
         }
 
+        public string? HelpText =
+            "Select at least one schedule from the list," +
+            "then choose your export options." +
+            "Specify the folder path and select" +
+            " the spreadsheet export method." +
+            "'Merged' generates a single Excel file" +
+            "containing all selected schedules." +
+            "'Separated' creates one Excel file" +
+            "per selected schedule.";
+
         [ObservableProperty]
         private bool isAllChecked = false;
 
@@ -85,12 +95,10 @@ namespace Paftax.Pafta.UI.ViewModels
             ExportCommand.NotifyCanExecuteChanged();
         }
 
-        public event Action? RequestCancel;
-
         [RelayCommand]
         private void Cancel()
         {
-            OnCancelRequest();
+            OnCloseRequest();
         }
 
         public event Action? RequestExport;
@@ -106,7 +114,10 @@ namespace Paftax.Pafta.UI.ViewModels
             var selectedSchedules = GetSelectedSchedules();
 
             if (selectedSchedules.Count > 0)
+            {
                 RequestExport?.Invoke();
+                OnCloseRequest();
+            }         
         }
 
         public void LoadSchedules(List<ScheduleModel> models)

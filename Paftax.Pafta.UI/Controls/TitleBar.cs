@@ -49,6 +49,8 @@ namespace Paftax.Pafta.UI.Controls
         public static readonly DependencyProperty MinimizeButtonProperty =
             DependencyProperty.Register(nameof(MinimizeButton), typeof(bool), typeof(TitleBar), new PropertyMetadata(true));
 
+        public event EventHandler? HelpButtonClick;
+
         public bool MinimizeButton
         {
             get { return (bool)GetValue(MinimizeButtonProperty); }
@@ -59,6 +61,14 @@ namespace Paftax.Pafta.UI.Controls
         {
             base.OnApplyTemplate();
 
+            if (GetTemplateChild("PART_HelpButton") is Button helpButton)
+            {
+                helpButton.Click += (s, e) =>
+                {
+                    HelpButtonClick?.Invoke(this, EventArgs.Empty);
+                };
+            }
+
             if (GetTemplateChild("PART_CloseButton") is Button closeButton)
             {
                 closeButton.Click += (s, e) =>
@@ -67,9 +77,9 @@ namespace Paftax.Pafta.UI.Controls
                 };
             }
 
-            if (GetTemplateChild("PART_TitleBarBorder") is Border titleBarBorder)
+            if (GetTemplateChild("PART_Border") is Border border)
             {
-                titleBarBorder.MouseDown += (s, e) =>
+                border.MouseDown += (s, e) =>
                 {
                     if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
                     {
@@ -78,9 +88,9 @@ namespace Paftax.Pafta.UI.Controls
                 };
             }   
             
-            if (GetTemplateChild("PART_TitleTextBox") is TextBox titleTextBox)
+            if (GetTemplateChild("PART_Title") is TextBlock titleTextBlock)
             {
-                titleTextBox.Text = Window.GetWindow(this)?.Title;
+                titleTextBlock.Text = Window.GetWindow(this)?.Title;
             }
         }
     }

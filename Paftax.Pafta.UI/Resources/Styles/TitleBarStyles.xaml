@@ -6,12 +6,109 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
         <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/FontStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/ButtonStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    
+
+    <Style x:Key="TitleBarButtonBaseStyle" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource TitleBarBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TitleBarForeground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMedium}"/>
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightBold}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Hover -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" 
+                                    Value="{DynamicResource TitleBarButtonHoverBackground}"/>
+                        </Trigger>
+                        <!-- Pressed -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Border" Property="Background" 
+                                    Value="{DynamicResource TitleBarButtonPressedBackground}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TitleBarCloseButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonBaseStyle}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="0,9.5,0,0">
+                        <controls:FontIcon Glyph="&#xE10A;"
+                                           FontSize="20"
+                                           Background="Transparent"
+                                           BorderThickness="0"
+                                           Foreground="{DynamicResource TitleBarForeground}"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Stretch"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" 
+                                    Value="{DynamicResource TitleBarCloseButtonHoverBackground}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Border" Property="Background" 
+                                    Value="{DynamicResource TitleBarCloseButtonPressedBackground}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Maximize button -->
+    <Style x:Key="TitleBarMaximizeButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonBaseStyle}">
+        <Setter Property="Content">
+            <Setter.Value>
+                <controls:FontIcon Glyph="&#xE922;" FontSize="20"
+                                   Background="Transparent"
+                                   BorderThickness="0"
+                                   Foreground="{DynamicResource TitleBarForeground}"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Minimize button -->
+    <Style x:Key="TitleBarMinimizeButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonBaseStyle}">
+        <Setter Property="Content">
+            <Setter.Value>
+                <controls:FontIcon Glyph="&#xE921;" FontSize="20"
+                                   Background="Transparent"
+                                   BorderThickness="0"
+                                   Foreground="{DynamicResource TitleBarForeground}"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Help button -->
+    <Style x:Key="TitleBarHelpButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonBaseStyle}">
+        <Setter Property="Content">
+            <Setter.Value>
+                <controls:FontIcon Glyph="&#xE897;" FontSize="20"
+                                   Background="Transparent"
+                                   BorderThickness="0"
+                                   Foreground="{DynamicResource TitleBarForeground}"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type controls:TitleBar}">
-        <Setter Property="Background" Value="{DynamicResource TitleBarBackgroundBrush}"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+        <Setter Property="Background" Value="{DynamicResource TitleBarBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TitleBarForeground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource TitleBarBorderBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
@@ -30,8 +127,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TitleBar}">
                     <Border x:Name="PART_Border"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
                             Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderBrush="{TemplateBinding BorderBrush}"              
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="10,10,0,0">
                         <Grid>
@@ -44,6 +143,8 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock x:Name="PART_Title"
+                                       Panel.ZIndex="1"
+                                       Style="{x:Null}"
                                        Grid.Column="0"
                                        Background="Transparent"
                                        Foreground="{TemplateBinding Foreground}"
@@ -57,10 +158,13 @@
                                        HorizontalAlignment="Left" 
                                        VerticalAlignment="Center"/>
 
-                            <Button x:Name="PART_CloseButton" Grid.Column="4" Style="{StaticResource TitleBarCloseButton}" FontSize="{TemplateBinding IconSize}" FontWeight="{TemplateBinding FontWeight}"/>
-                            <Button x:Name="PART_MaximizeButton" Grid.Column="3" Style="{StaticResource TitleBarMaximizeButton}" FontSize="{TemplateBinding IconSize}" FontWeight="{TemplateBinding FontWeight}"/>
-                            <Button x:Name="PART_MinimizeButton" Grid.Column="2" Style="{StaticResource TitleBarMinimizeButton}" FontSize="{TemplateBinding IconSize}" FontWeight="{TemplateBinding FontWeight}"/>
-                            <Button x:Name="PART_HelpButton" Grid.Column="1" Style="{StaticResource TitleBarHelpButton}" FontSize="{TemplateBinding IconSize}" FontWeight="{TemplateBinding FontWeight}"/>
+                            <Button x:Name="PART_CloseButton" Grid.Column="4" Style="{StaticResource TitleBarCloseButtonStyle}"/>
+
+                            <Button x:Name="PART_MaximizeButton" Grid.Column="3" Style="{StaticResource TitleBarMaximizeButtonStyle}"/>
+
+                            <Button x:Name="PART_MinimizeButton" Grid.Column="2" Style="{StaticResource TitleBarMinimizeButtonStyle}"/>
+
+                            <Button x:Name="PART_HelpButton" Grid.Column="1" Style="{StaticResource TitleBarHelpButtonStyle}"/>
                         </Grid>
                     </Border>
 

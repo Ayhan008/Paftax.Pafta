@@ -11,9 +11,9 @@
         <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
         <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
         <Setter Property="FontWeight" Value="{StaticResource FontWeightNormal}"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
-        <Setter Property="CaretBrush" Value="{DynamicResource TextColor}"/>
-        <Setter Property="Background" Value="{DynamicResource TextBoxBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBoxForeground}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource TextBoxForeground}"/>
+        <Setter Property="Background" Value="{DynamicResource TextBoxBackground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource TextBoxBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -36,10 +36,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource SearchBoxHoverBottomBorderBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource SearchBoxHoverHighlightBorderBrush}"/>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource SearchBoxClickedBottomBorderBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource SearchBoxClickedHighlightBorderBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

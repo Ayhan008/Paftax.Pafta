@@ -135,7 +135,7 @@
     <!--#region  RadioButton Colors-->
     <!--Generic RadioButton-->
     <SolidColorBrush x:Key="RadioButtonBackground" Color="#ffffff"/>
-    <SolidColorBrush x:Key="RadioButtonForeground" Color="Transparent"/>
+    <SolidColorBrush x:Key="RadioButtonForeground" Color="#ffffff"/>
     <SolidColorBrush x:Key="RadioButtonBorderBrush" Color="#ffffff"/>
 
     <SolidColorBrush x:Key="RadioButtonCheckedBackground" Color="#ffffff"/>
@@ -186,5 +186,9 @@
     <!--Border-->
     <SolidColorBrush x:Key="BorderBackground" Color="#7b8ba1"/>
     <SolidColorBrush x:Key="BorderBorderBrush" Color="#7b8ba1"/>
+    <!--#endregion-->
+
+    <!--#region  FontIcon Colors-->
+    <SolidColorBrush x:Key="FontIconForeground" Color="#f5f5f5"/>
     <!--#endregion-->
 </ResourceDictionary>

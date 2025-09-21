@@ -60,14 +60,14 @@ namespace Paftax.Pafta.UI.Controls
                 {
                     if (searchTextBox.IsFocused)
                     {
-                        bottomBorder.Background = TryFindResource("SearchBoxClickedBottomBackgroundBrush") as Brush;
-                        bottomBorder.BorderBrush = TryFindResource("SearchBoxClickedBottomBorderBrush") as Brush;
+                        bottomBorder.Background = TryFindResource("SearchBoxClickedHighlightBackground") as Brush;
+                        bottomBorder.BorderBrush = TryFindResource("SearchBoxClickedHighlightBorderBrush") as Brush;
                     }
 
                     else if (searchTextBox.IsMouseOver)
                     {
-                        bottomBorder.Background = TryFindResource("SearchBoxHoverBottomBackgroundBrush") as Brush;
-                        bottomBorder.BorderBrush = TryFindResource("SearchBoxHoverBottomBorderBrush") as Brush;
+                        bottomBorder.Background = TryFindResource("SearchBoxHoverHighlightBackground") as Brush;
+                        bottomBorder.BorderBrush = TryFindResource("SearchBoxHoverHighlightBorderBrush") as Brush;
                     }
 
                     else

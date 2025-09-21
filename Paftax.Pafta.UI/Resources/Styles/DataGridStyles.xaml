@@ -1,25 +1,28 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!--Color Dictionary-->
+    <!--#region Color Dictionary-->
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
         <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/ScrollBarStyles.xaml"/>
         <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/CheckBoxStyles.xaml"/>
         <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/FontStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
+    <!--#endregion-->
 
     <!--DataGridStyle-->
     <Style TargetType="DataGrid">
-        <Setter Property="Background" Value="{DynamicResource DataGridBackgroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource DataGridBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DataGridForeground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource DataGridBorderBrush}"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="AllowDrop" Value="False"/>
-        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
         <Setter Property="FontWeight" Value="{StaticResource FontWeightNormal}"/>
         <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
+        <Setter Property="AllowDrop" Value="False"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
         <Setter Property="CanUserReorderColumns" Value="False"/>
         <Setter Property="CanUserResizeColumns" Value="True"/>
         <Setter Property="CanUserResizeRows" Value="False"/>
@@ -39,6 +42,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DataGrid">
+                    <!--Border-->
                     <Border BorderBrush="{TemplateBinding Background}"
                             Background="{TemplateBinding Background}"
                             BorderThickness="{TemplateBinding BorderThickness}">
@@ -63,7 +67,7 @@
 
                                             <Border Grid.Row="0"
                                                     Grid.Column="1"
-                                                    Background="{DynamicResource DataGridColumnHeaderBackgroundBrush}"
+                                                    Background="{DynamicResource DataGridColumnHeaderBackground}"
                                                     Panel.ZIndex="1"
                                                     Margin="-1,0,0,0"/>
 
@@ -99,7 +103,7 @@
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="Margin" Value="0"/>
                     <Setter Property="Background" Value="Transparent"/>
-                    <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource DataGridForeground}"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
                     <Setter Property="Height" Value="25"/>
@@ -129,16 +133,16 @@
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="Height" Value="25"/>
-                    <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource DataGridForeground}"/>
                     <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
                     <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
 
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource DataGridRowClickedBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource DataGridRowSelectedBackground}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource DataGridRowHoverBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource DataGridRowHoverBackground}"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>
@@ -149,13 +153,13 @@
         <Setter Property="ColumnHeaderStyle">
             <Setter.Value>
                 <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackgroundBrush}"/>
+                    <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackground}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource DataGridForeground}"/>
                     <Setter Property="BorderBrush" Value="{DynamicResource DataGridColumnHeaderBorderBrush}"/>
                     <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
-                    <Setter Property="SnapsToDevicePixels" Value="True"/>
                     <Setter Property="FontWeight" Value="{StaticResource FontWeightNormal}"/>
                     <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
-                    <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+                    <Setter Property="SnapsToDevicePixels" Value="True"/>
                     <Setter Property="BorderThickness" Value="0,0,1,0"/>
                     <Setter Property="Margin" Value="0"/>
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>

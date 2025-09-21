@@ -3,6 +3,7 @@ using Autodesk.Revit.UI.Events;
 using Paftax.Pafta.UI;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 
 namespace Paftax.Pafta.Revit2026.Services.Revit
@@ -19,7 +20,7 @@ namespace Paftax.Pafta.Revit2026.Services.Revit
         {
             CollectAllRibbonItems();
             UpdateRibbonItemImages();
-            UIThemeService.ApplyThemeToApplication(GetThemeString());
+            UIThemeController.SetTheme(GetThemeString());
         }
 
         /// <summary>
@@ -28,7 +29,7 @@ namespace Paftax.Pafta.Revit2026.Services.Revit
         public void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
         {
             UpdateRibbonItemImages();
-            UIThemeService.ApplyThemeToApplication(GetThemeString());
+            UIThemeController.SetTheme(GetThemeString());
         }
 
         #region Ribbon Item Management

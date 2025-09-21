@@ -2,13 +2,19 @@
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public abstract class BaseViewModel : ObservableObject
+    public abstract partial class BaseViewModel : ObservableObject
     {
-        public event Action? CancelRequest;
+        [ObservableProperty]
+        private string title = "Base View";
 
-        protected void OnCancelRequest()
+        [ObservableProperty]
+        private string helpText = string.Empty;
+
+        public event Action? CloseRequest;
+
+        protected void OnCloseRequest()
         {
-            CancelRequest?.Invoke();
+            CloseRequest?.Invoke();
         }
     }
 }
