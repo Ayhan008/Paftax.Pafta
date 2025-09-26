@@ -4,19 +4,13 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+	<NoWarn>MSB3277</NoWarn> 
 	<AssemblyName>PaftaxPaftaUI</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="ViewModels\HelpDialogViewModel.cs">
-      <Generator>MSBuild:Compile</Generator>
-    </Compile>
-  </ItemGroup>
-	
+    <ProjectReference Include="..\Paftax.Pafta.Shared\Paftax.Pafta.Shared.csproj" />
+  </ItemGroup>	
 </Project>

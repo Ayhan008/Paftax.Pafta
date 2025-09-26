@@ -1,5 +1,8 @@
-﻿using Paftax.Pafta.UI.ViewModels;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Paftax.Pafta.Shared.Interfaces;
+using Paftax.Pafta.UI.ViewModels;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Paftax.Pafta.UI
 {
@@ -8,16 +11,26 @@ namespace Paftax.Pafta.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(BaseViewModel vm)
+        public bool ShowCloseButton { get; set; } = true;
+        public bool ShowMaximizeButton { get; set; } = false;
+        public bool ShowMinimizeButton { get; set; } = false;
+        public bool ShowHelpButton { get; set; } = true;
+        public MainWindow()
         {
             InitializeComponent();
-
-            DataContext = new MainWindowViewModel
+            
+            Loaded += (s, e) =>
             {
-                CurrentViewModel = vm
+                TitleBar.CloseButton = ShowCloseButton;
+                TitleBar.MaximizeButton = ShowMaximizeButton;
+                TitleBar.MinimizeButton = ShowMinimizeButton;
+                TitleBar.HelpButton = ShowHelpButton;
             };
-
-            vm.CloseRequest += () => this.Close();
+            
+            if (DataContext is MainViewModel vm)
+            {
+                vm.CloseRequest += () => Close();
+            }
         }
     }
 }

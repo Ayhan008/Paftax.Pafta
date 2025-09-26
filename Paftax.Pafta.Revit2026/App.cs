@@ -1,9 +1,6 @@
-﻿using Autodesk.Revit.ApplicationServices;
-using Autodesk.Revit.UI;
-using Paftax.Pafta.Revit2026.Services.Revit;
-using Paftax.Pafta.UI;
+﻿using Autodesk.Revit.UI;
+using Paftax.Pafta.Revit2026.Services;
 using System.Reflection;
-using System.Windows;
 
 namespace Paftax.Pafta.Revit2026
 {
@@ -173,7 +170,7 @@ namespace Paftax.Pafta.Revit2026
             #endregion
 
             #region Update Image by Theme
-            ApplicationThemeService themeService = new(application, tabName);
+            ThemeService themeService = new(application, tabName);
             themeService.Initialize();
             application.ThemeChanged += themeService.OnThemeChanged;
             #endregion

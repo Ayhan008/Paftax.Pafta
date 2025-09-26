@@ -1,9 +1,0 @@
-﻿namespace Paftax.Pafta.UI.Models
-{
-    public class ScheduleModel
-    {
-        public required string Name { get; set; }
-        public required long Id { get; set; }
-        public bool IsChecked { get; set; }
-    }
-}

@@ -2,14 +2,16 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using DocumentFormat.OpenXml.Packaging;
-using Paftax.Pafta.Revit2026.Models;
-using Paftax.Pafta.Revit2026.Services.OpenXml;
-using Paftax.Pafta.Revit2026.Services.OpenXml.Stylesheets;
-using Paftax.Pafta.Revit2026.Services.Revit;
+using Paftax.Pafta.Revit2026.Factories;
+using Paftax.Pafta.Revit2026.Mappers;
+using Paftax.Pafta.Revit2026.Services;
 using Paftax.Pafta.Revit2026.Utilities;
-using Paftax.Pafta.UI;
-using Paftax.Pafta.UI.Models;
+using Paftax.Pafta.Shared.Exporters.OpenXml;
+using Paftax.Pafta.Shared.Exporters.OpenXml.Stylesheets;
+using Paftax.Pafta.Shared.Models;
+using Paftax.Pafta.UI.Services;
 using Paftax.Pafta.UI.ViewModels;
+using System.Diagnostics;
 
 namespace Paftax.Pafta.Revit2026.Commands
 {
@@ -18,58 +20,55 @@ namespace Paftax.Pafta.Revit2026.Commands
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            UIApplication uiApplication = commandData.Application;
-            UIDocument uiDocument = uiApplication.ActiveUIDocument;
-            Document document = uiDocument.Document;
-
-            List<ViewSchedule> viewSchedules = GetViewSchedules(document);
-            List<ScheduleModel> scheduleModels = [.. Mappers.MapToScheduleModels(viewSchedules)];
-
-            ExportScheduleViewModel exportScheduleViewModel = new();
-            exportScheduleViewModel.LoadSchedules(scheduleModels);
-
-            MainWindow mainWindow = new(exportScheduleViewModel)
+            try
             {
-                Title = "Export Schedules",
-                Width = 400,
-                Height = 700,       
-            };
+                UIApplication uiApplication = commandData.Application;
+                UIDocument uiDocument = uiApplication.ActiveUIDocument;
+                Document document = uiDocument.Document;
 
-            mainWindow.ShowDialog();
+                ElementCollectorService elementCollectorService = new(document);
+                List<ViewSchedule> viewSchedules = elementCollectorService.GetElementsInDocument<ViewSchedule>();
 
-            if (exportScheduleViewModel.CanExport == true)
-            {
-                List<ScheduleModel> selectedSchedules = exportScheduleViewModel.GetSelectedSchedules();
-                List<ViewSchedule> selectedViewSchedules = [.. Mappers.MapToViewSchedules(selectedSchedules, document)];
+                List<ScheduleModel> scheduleModels = [.. ScheduleMapper.MapToScheduleModels(viewSchedules)];
 
-                if (exportScheduleViewModel.IsMerged == true)
+                ExportScheduleViewModel exportScheduleViewModel = new();
+                exportScheduleViewModel.LoadSchedules(scheduleModels);
+
+                DialogService<ExportScheduleViewModel> dialogService = new(exportScheduleViewModel);
+                dialogService.ShowDialog("Export Schedule", 400, 700);
+
+                if (exportScheduleViewModel.IsReadyForExport == true)
                 {
-                    ExportSchedulesMerged(selectedViewSchedules, exportScheduleViewModel.ExportFolderPath);
-                }
+                    List<ScheduleModel> selectedSchedules = exportScheduleViewModel.SelectedSchedules();
+                    List<ViewSchedule> selectedViewSchedules = elementCollectorService.GetElementsByIds<ViewSchedule>(selectedSchedules.Select(s => s.Id));
 
-                if (exportScheduleViewModel.IsSeperated == true)
-                {
-                    ExportSchedulesSeperate(selectedViewSchedules, exportScheduleViewModel.ExportFolderPath);
+
+                    if (exportScheduleViewModel.IsMerged == true)
+                    {
+                        ExportSchedulesMerged(selectedViewSchedules, exportScheduleViewModel.ExportFolderPath);
+                    }
+
+                    if (exportScheduleViewModel.IsSeperated == true)
+                    {
+                        ExportSchedulesSeperate(selectedViewSchedules, exportScheduleViewModel.ExportFolderPath);
+                    }
+                    return Result.Succeeded;
                 }
-                return Result.Succeeded;
+                return Result.Cancelled;
             }
-            return Result.Cancelled;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Pafta Export Error", ex.ToString());
+                message = ex.Message;
+                return Result.Failed;
+            }
         }
 
-        private static List<ViewSchedule> GetViewSchedules(Document document)
-        {
-            FilteredElementCollector collector = new(document);
-            collector.OfClass(typeof(ViewSchedule));
-
-            List<ViewSchedule> schedules = [.. collector.Cast<ViewSchedule>()];
-
-            return schedules;
-        }
         private static void ExportSchedulesSeperate(List<ViewSchedule> viewSchedules, string folderPath)
         {
-            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataService.CreateScheduleTableData(viewSchedules);
+            List<ScheduleTableDataTransferObject> scheduleTableDatas = DataTransferObjectFactory.FromViewSchedules(viewSchedules);
 
-            foreach (ScheduleTableDataModel scheduleTableData in scheduleTableDatas)
+            foreach (ScheduleTableDataTransferObject scheduleTableData in scheduleTableDatas)
             {
                 string safeFileName = FileUtilities.MakeValidFileName(scheduleTableData.Name);
                 string filePath = Path.Combine(folderPath, $"{safeFileName}.xlsx");
@@ -100,7 +99,7 @@ namespace Paftax.Pafta.Revit2026.Commands
         private static void ExportSchedulesMerged(List<ViewSchedule> viewSchedules, string folderPath)
         {
             string filePath = Path.Combine(folderPath, "MergedSchedules.xlsx");
-            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataService.CreateScheduleTableData(viewSchedules);
+            List<ScheduleTableDataTransferObject> scheduleTableDatas = DataTransferObjectFactory.FromViewSchedules(viewSchedules);
             List<string> sheetNames = [.. scheduleTableDatas.Select(s => s.Name)];
 
             if (FileUtilities.IsFileOpen(filePath))
@@ -114,7 +113,7 @@ namespace Paftax.Pafta.Revit2026.Commands
 
             StyleService.AddStylesPart(spreadsheetDocument, ScheduleStylesheets.GenericStylesheet());
 
-            foreach (ScheduleTableDataModel scheduleTableData in scheduleTableDatas)
+            foreach (ScheduleTableDataTransferObject scheduleTableData in scheduleTableDatas)
             {
                 SheetService.FillSheet(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TitlePart, 0, 1);
                 SheetService.SetCustomRowHeight(spreadsheetDocument, scheduleTableData.Name, 1, 24);

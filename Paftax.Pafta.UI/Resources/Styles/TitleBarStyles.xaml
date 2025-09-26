@@ -47,8 +47,8 @@
                     <Border x:Name="Border"
                             Background="{TemplateBinding Background}"
                             CornerRadius="0,9.5,0,0">
-                        <controls:FontIcon Glyph="&#xE10A;"
-                                           FontSize="20"
+                        <controls:FontIcon Glyph="&#xe8bb;"
+                                           FontSize="15"
                                            Background="Transparent"
                                            BorderThickness="0"
                                            Foreground="{DynamicResource TitleBarForeground}"
@@ -74,7 +74,7 @@
     <Style x:Key="TitleBarMaximizeButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonBaseStyle}">
         <Setter Property="Content">
             <Setter.Value>
-                <controls:FontIcon Glyph="&#xE922;" FontSize="20"
+                <controls:FontIcon Glyph="&#xE922;" FontSize="15"
                                    Background="Transparent"
                                    BorderThickness="0"
                                    Foreground="{DynamicResource TitleBarForeground}"/>
@@ -86,7 +86,7 @@
     <Style x:Key="TitleBarMinimizeButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonBaseStyle}">
         <Setter Property="Content">
             <Setter.Value>
-                <controls:FontIcon Glyph="&#xE921;" FontSize="20"
+                <controls:FontIcon Glyph="&#xE921;" FontSize="15"
                                    Background="Transparent"
                                    BorderThickness="0"
                                    Foreground="{DynamicResource TitleBarForeground}"/>

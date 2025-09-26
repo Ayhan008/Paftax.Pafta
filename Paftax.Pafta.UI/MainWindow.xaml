@@ -6,16 +6,15 @@
         xmlns:local="clr-namespace:Paftax.Pafta.UI"
         xmlns:views="clr-namespace:Paftax.Pafta.UI.Views"
         xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels"
-        xmlns:behaviors="clr-namespace:Paftax.Pafta.UI.Behaviors"
-        behaviors:ThemeChangedBehavior.EnableTheme="True"
+        xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"
         xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls" 
-        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         WindowStyle="None"
-        Title="MainWindow" Height="600" Width="700">
+        Title="BaseWindow" Height="600" Width="700">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -24,7 +23,11 @@
             </ResourceDictionary.MergedDictionaries>
             
             <DataTemplate DataType="{x:Type vm:ExportScheduleViewModel}">
-                <views:ExportScheduleView/>
+                <views:ExportScheduleUserControl/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:RoomToSheetViewModel}">
+                <views:RoomToSheetUserControl/>
             </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
@@ -55,13 +58,16 @@
                 <controls:TitleBar x:Name="TitleBar"
                                    HorizontalAlignment="Stretch"
                                    Grid.Row="0"
-                                   VerticalAlignment="Stretch"/>
+                                   VerticalAlignment="Stretch"
+                                   HelpButton="{Binding ShowHelpButton, RelativeSource={RelativeSource AncestorType=Window}}"
+                                   MaximizeButton="{Binding ShowMaximizeButton, RelativeSource={RelativeSource AncestorType=Window}}"
+                                   MinimizeButton="{Binding ShowMinimizeButton, RelativeSource={RelativeSource AncestorType=Window}}"
+                                   CloseButton="{Binding ShowCloseButton, RelativeSource={RelativeSource AncestorType=Window}}"/>
 
-                <ContentControl x:Name="DynamicContentControl"
+                <ContentControl Content="{Binding CurrentView}"
                                 Grid.Row="1" 
                                 HorizontalAlignment="Stretch" 
-                                VerticalAlignment="Stretch"
-                                Content="{Binding CurrentViewModel}"/>
+                                VerticalAlignment="Stretch"/>
             </Grid>
         </Border>
     </Grid>

@@ -22,11 +22,13 @@
                         <Grid Width="14" Height="14">
                             <Ellipse x:Name="Border"
                                      Stroke="{TemplateBinding BorderBrush}"
+                                     Cursor="Hand"
                                      StrokeThickness="{TemplateBinding BorderThickness}"
                                      Fill="{TemplateBinding Background}"/>
                             
                             <Ellipse x:Name="CheckMark"
                                      Width="9" Height="9"
+                                     Cursor="Hand"
                                      StrokeThickness="0"
                                      Fill="Transparent"
                                      HorizontalAlignment="Center"
