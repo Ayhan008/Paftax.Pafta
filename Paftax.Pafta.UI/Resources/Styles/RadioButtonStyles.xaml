@@ -3,8 +3,8 @@
 
     <!--Color Dictionary-->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/FontStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Themes/Dark.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/FontStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <!--Radio Button Style-->

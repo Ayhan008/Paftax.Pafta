@@ -1,8 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Paftax.Pafta.Shared.Interfaces;
-using Paftax.Pafta.UI.ViewModels;
+﻿using Paftax.Pafta.UI.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Paftax.Pafta.UI
 {
@@ -18,7 +15,7 @@ namespace Paftax.Pafta.UI
         public MainWindow()
         {
             InitializeComponent();
-            
+
             Loaded += (s, e) =>
             {
                 TitleBar.CloseButton = ShowCloseButton;
@@ -26,7 +23,7 @@ namespace Paftax.Pafta.UI
                 TitleBar.MinimizeButton = ShowMinimizeButton;
                 TitleBar.HelpButton = ShowHelpButton;
             };
-            
+
             if (DataContext is MainViewModel vm)
             {
                 vm.CloseRequest += () => Close();

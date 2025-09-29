@@ -19,11 +19,11 @@ namespace Paftax.Pafta.Revit2026.Commands
             UIDocument uiDocument = uiApplication.ActiveUIDocument;
             Document document = uiDocument.Document;
 
-            List<RichRoomDataModel> richRoomDataModels = [];
+            List<RoomModel> richRoomDataModels = [];
             List<Room> selectedRooms = SelectRooms(uiDocument, document);
             foreach (Room room in selectedRooms)
             {
-                RichRoomDataModel richRoomDataModel = RichRoomDataModelFactory.Create(room);
+                RoomModel richRoomDataModel = RoomModelFactory.CreateRoomModelFromRevit(room);
                 richRoomDataModels.Add(richRoomDataModel);
             }
             

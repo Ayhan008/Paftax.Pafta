@@ -4,7 +4,7 @@ namespace Paftax.Pafta.UI.Services
 {
     public static class ThemeService
     {
-        private const string _assemblyName = "PaftaxPaftaUI";
+        private const string _assemblyName = "Paftax.Pafta.UI";
         private static readonly string _darkThemePath = $"pack://application:,,,/{_assemblyName};component/Resources/Themes/Dark.xaml";
         private static readonly string _lightThemePath = $"pack://application:,,,/{_assemblyName};component/Resources/Themes/Light.xaml";
 

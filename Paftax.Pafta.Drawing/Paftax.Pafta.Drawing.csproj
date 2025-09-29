@@ -4,13 +4,8 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-	<NoWarn>MSB3277</NoWarn> 
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Paftax.Pafta.Drawing\Paftax.Pafta.Drawing.csproj" />
-    <ProjectReference Include="..\Paftax.Pafta.Shared\Paftax.Pafta.Shared.csproj" />
-  </ItemGroup>	
 </Project>

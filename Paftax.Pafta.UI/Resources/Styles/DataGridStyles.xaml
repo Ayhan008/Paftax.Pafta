@@ -3,10 +3,10 @@
 
     <!--#region Color Dictionary-->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/ScrollBarStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/CheckBoxStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/FontStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Themes/Dark.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/ScrollBarStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/CheckBoxStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/FontStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     <!--#endregion-->
 

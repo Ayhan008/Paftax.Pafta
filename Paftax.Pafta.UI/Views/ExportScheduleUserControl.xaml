@@ -15,8 +15,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
-                <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Generic.xaml"/>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Themes/Dark.xaml"/>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>

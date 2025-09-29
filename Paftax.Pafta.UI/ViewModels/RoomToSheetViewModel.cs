@@ -6,10 +6,10 @@ namespace Paftax.Pafta.UI.ViewModels
 {
     public partial class RoomToSheetViewModel : ObservableObject
     {
-        public ObservableCollection<RichRoomDataModel> Rooms { get; } = [];
+        public ObservableCollection<RoomModel> Rooms { get; } = [];
         public GraphicDesignerViewModel GraphicDesignerViewModel { get; set; } = new();
 
-        public void LoadData(List<RichRoomDataModel> rooms)
+        public void LoadData(List<RoomModel> rooms)
         {
             Rooms.Clear();
             foreach (var room in rooms)

@@ -1,17 +1,17 @@
-﻿                                                            <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/ButtonStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/DataGridStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/RadioButtonStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/CheckBoxStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/FontStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/TextBlockStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/BorderStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/TextBoxStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/TitleBarStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/FontIconStyles.xaml"/>
-        <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Styles/SearchBoxStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/ButtonStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/DataGridStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/RadioButtonStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/CheckBoxStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/FontStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/TextBlockStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/BorderStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/TextBoxStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/TitleBarStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/FontIconStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/SearchBoxStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

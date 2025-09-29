@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
+             xmlns:drawing="clr-namespace:Paftax.Pafta.Drawing;assembly=Paftax.Pafta.Drawing"
              xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls"
              xmlns:converters="clr-namespace:Paftax.Pafta.UI.Converters"
              xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"
@@ -15,11 +16,11 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Themes/Dark.xaml"/>
-                <ResourceDictionary Source="/PaftaxPaftaUI;component/Resources/Generic.xaml"/>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Themes/Dark.xaml"/>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <converters:RevitPointsToWindowsPointCollectionConverter x:Key="PointsConverter"/>
+            <converters:PointDListToPointCollection x:Key="PointsConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     
@@ -27,18 +28,9 @@
         <Grid>
             <ScrollViewer HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Auto" 
-                          x:Name="CanvasScrollViewer"
+                          x:Name="ScrollViewer"
                           Focusable="False">
-                <Canvas x:Name="MainCanvas" Background="{DynamicResource DataGridColumnHeaderBackground}" Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}">
-                    <ItemsControl ItemsSource="{Binding Rooms}" >
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Polygon Points="{Binding RoomGeometryData.GeomertyPoints, Converter={StaticResource PointsConverter}}"
-                                         Stroke="Black" Fill="Transparent" StrokeThickness="10"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Canvas>
+                <drawing:DrawingCanvas x:Name="DrawingCanvas" Background="{DynamicResource DataGridColumnHeaderBackground}"/>
             </ScrollViewer>
         </Grid>
     </Border>

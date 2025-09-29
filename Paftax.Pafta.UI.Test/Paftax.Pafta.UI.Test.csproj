@@ -1,16 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-	<NoWarn>MSB3277</NoWarn> 
     <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Paftax.Pafta.Drawing\Paftax.Pafta.Drawing.csproj" />
     <ProjectReference Include="..\Paftax.Pafta.Shared\Paftax.Pafta.Shared.csproj" />
-  </ItemGroup>	
+    <ProjectReference Include="..\Paftax.Pafta.UI\Paftax.Pafta.UI.csproj" />
+  </ItemGroup>
+
 </Project>
