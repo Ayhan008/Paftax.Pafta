@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Paftax.Pafta.Drawing.Geometries.Primitives;
+using Paftax.Pafta.Drawing.Geometries;
 using Paftax.Pafta.Shared.Models;
 using System.Collections.ObjectModel;
 
@@ -11,6 +11,9 @@ namespace Paftax.Pafta.UI.ViewModels
 
         [ObservableProperty]
         private List<Curve> curves = [];
+
+        [ObservableProperty]
+        private double scale = 0.05;
 
         public void LoadData(List<RoomModel> rooms)
         {

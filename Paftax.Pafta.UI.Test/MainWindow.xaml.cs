@@ -11,13 +11,6 @@ namespace Paftax.Pafta.UI.Test
         public MainWindow()
         {
             InitializeComponent();
-
-            DrawingCanvas.AddPolygon(
-            [
-                new Point(50, 50),
-                new Point(150, 50),
-                new Point(100, 150)
-            ]);
         }
     }
 }

@@ -30,7 +30,10 @@
                           VerticalScrollBarVisibility="Auto" 
                           x:Name="ScrollViewer"
                           Focusable="False">
-                <drawing:DrawingCanvas x:Name="DrawingCanvas" Background="{DynamicResource DataGridColumnHeaderBackground}"/>
+                <drawing:DrawingCanvas x:Name="DrawingCanvas" 
+                                       Background="{DynamicResource DataGridColumnHeaderBackground}" 
+                                       Foreground="{DynamicResource ButtonForeground}"
+                                       Scale="{Binding Scale}"/>
             </ScrollViewer>
         </Grid>
     </Border>
