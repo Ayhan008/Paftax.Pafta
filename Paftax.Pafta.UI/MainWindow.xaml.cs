@@ -24,10 +24,10 @@ namespace Paftax.Pafta.UI
                 TitleBar.HelpButton = ShowHelpButton;
             };
 
-            if (DataContext is MainViewModel vm)
+            DataContextChanged += (s, e) =>
             {
-                vm.CloseRequest += () => Close();
-            }
+                ContentControl.Content = e.NewValue;
+            };
         }
     }
 }

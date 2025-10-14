@@ -2,12 +2,12 @@
 
 namespace Paftax.Pafta.Drawing.Geometries
 {
-    public sealed class Line(XY start, XY end) : Curve
+    public sealed class Line(PointXY start, PointXY end) : Curve
     {
-        public XY Start { get; } = start;
-        public XY End { get; } = end;
+        public PointXY Start { get; } = start;
+        public PointXY End { get; } = end;
 
-        public override XY GetEndPoint(int index) =>
+        public override PointXY GetEndPoint(int index) =>
             index == 0 ? Start : End;
 
         public override double Length =>

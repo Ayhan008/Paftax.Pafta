@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Dialogs\CommandDialog.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Paftax.Pafta.Drawing\Paftax.Pafta.Drawing.csproj" />
     <ProjectReference Include="..\Paftax.Pafta.Shared\Paftax.Pafta.Shared.csproj" />
   </ItemGroup>	

@@ -1,5 +1,5 @@
-using Paftax.Pafta.Drawing.Annotations;
-using Paftax.Pafta.Drawing.Elements;
+using Paftax.Pafta.Drawing.Entities;
+using Paftax.Pafta.Drawing.Entities.Abstracts;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -12,7 +12,7 @@ namespace Paftax.Pafta.Drawing
         private readonly VisualCollection _visuals;
 
         // Elements and Annotations
-        private readonly List<Element> _elements = [];
+        private readonly List<Entity> _elements = [];
         private readonly List<Annotation> _annotations = [];
 
         // Pan and Zoom state
@@ -44,11 +44,11 @@ namespace Paftax.Pafta.Drawing
         public static readonly DependencyProperty ForegroundProperty =
             DependencyProperty.Register(nameof(Foreground), typeof(Brush), typeof(DrawingCanvas),
                 new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.AffectsRender));
-        
+
         public static readonly DependencyProperty ScaleProperty =
             DependencyProperty.Register(nameof(Scale), typeof(double), typeof(DrawingCanvas),
-                new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender, OnScaleChanged));  
-        
+                new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender, OnScaleChanged));
+
         public static readonly DependencyProperty SelectedGeometryColorProperty =
             DependencyProperty.Register(nameof(SelectedGeometryColor), typeof(Brush), typeof(DrawingCanvas),
                 new FrameworkPropertyMetadata(Brushes.Red, FrameworkPropertyMetadataOptions.AffectsRender));
@@ -91,20 +91,22 @@ namespace Paftax.Pafta.Drawing
         protected override Visual GetVisualChild(int index) => _visuals[index];
         #endregion
 
-        #region Annotations
+        #region Commands
         public void AddElevation(Point point)
         {
-            Elevation elevation = new()
+            ElevationMarker elevation = new()
             {
                 Center = point,
                 Rotation = 90,
                 SheetNumber = "A101",
                 DetailNumber = "1",
-                DrawingVisual = new DrawingVisual()
+                DrawingVisual = new DrawingVisual(),
+                Brush = Brushes.Aqua
             };
+
             using (var dc = elevation.DrawingVisual.RenderOpen())
             {
-                elevation.Draw(dc, Foreground);
+                elevation.Draw(dc);
             }
 
             _annotations.Add(elevation);
@@ -113,16 +115,40 @@ namespace Paftax.Pafta.Drawing
             ApplyTransformToVisual(elevation.DrawingVisual, isAnnotation: true);
             InvalidateVisual();
         }
-        #endregion
 
-        #region Element Management
-        public void AddElement(Element element)
+        public void AddSection(Point start, Point end)
+        {
+            SectionLine section = new()
+            {
+                Start = start,
+                End = end,
+                Rotation = 90,
+                SheetNumber = "A101",
+                DetailNumber = "1",
+                DrawingVisual = new DrawingVisual(),
+                Brush = Brushes.Aqua,
+                Direction = -1,
+            };
+
+            using (var dc = section.DrawingVisual.RenderOpen())
+            {
+                section.Draw(dc);
+            }
+
+            _annotations.Add(section);
+            _visuals.Add(section.DrawingVisual);
+
+            ApplyTransformToVisual(section.DrawingVisual, isAnnotation: true);
+            InvalidateVisual();
+        }
+
+        public void AddElement(Entity element)
         {
             if (element == null) return;
 
             element.DrawingVisual = new DrawingVisual();
             using (var dc = element.DrawingVisual.RenderOpen())
-                element.Draw(dc, Foreground);
+                element.Draw(dc);
 
             _elements.Add(element);
             _visuals.Add(element.DrawingVisual);
@@ -131,7 +157,7 @@ namespace Paftax.Pafta.Drawing
             InvalidateVisual();
         }
 
-        public void RemoveElement(Element element)
+        public void RemoveElement(Entity element)
         {
             if (element?.DrawingVisual != null)
             {
@@ -154,7 +180,7 @@ namespace Paftax.Pafta.Drawing
         private void ApplyTransformToVisual(DrawingVisual visual, bool isAnnotation)
         {
             // Calculate the transformation matrix
-            double scale = isAnnotation ? (_zoomScale/Scale)/90 : _zoomScale;
+            double scale = isAnnotation ? (_zoomScale / Scale) / 90 : _zoomScale;
 
             // Flip Y axis and apply scalingze
             Matrix matrix = new ScaleTransform(scale, -scale).Value;
@@ -266,30 +292,6 @@ namespace Paftax.Pafta.Drawing
                 Cursor = Cursors.SizeAll;
                 return;
             }
-
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                bool changed = false;
-                Point world = DeviceToAnnotation(mousePos);
-
-                foreach (var elevation in _annotations.OfType<Elevation>())
-                {
-                    bool hit = elevation.HitTriangle(world);
-                    if (hit != elevation.IsViewBoxVisible)
-                    {
-                        elevation.IsViewBoxVisible = hit;
-                        changed = true;
-                    }
-                    else if (!hit && elevation.IsViewBoxVisible)
-                    {
-                        // ensure only one active
-                        elevation.IsViewBoxVisible = false;
-                    }
-                }
-
-                if (changed)
-                    Redraw();
-            }
         }
 
         /// <summary>
@@ -334,16 +336,6 @@ namespace Paftax.Pafta.Drawing
 
                 Cursor = Cursors.Arrow;
             }
-        }
-
-        private Point DeviceToAnnotation(Point devicePoint)
-        {
-            double scale = (_zoomScale / Scale) / 90.0;
-            Vector canvasCenter = new(ActualWidth / 2, ActualHeight / 2);
-            Vector v = (Vector)(devicePoint - canvasCenter - _panOffset);
-            double worldX = v.X / scale;
-            double worldY = v.Y / -scale;
-            return new Point(worldX, worldY);
         }
         #endregion
 
@@ -435,15 +427,15 @@ namespace Paftax.Pafta.Drawing
             {
                 using var dc = visual.RenderOpen();
 
-                Element? element = _elements.FirstOrDefault(el => el.DrawingVisual == visual);
+                Entity? element = _elements.FirstOrDefault(el => el.DrawingVisual == visual);
                 if (element != null)
                 {
-                    element.Draw(dc, Foreground);
+                    element.Draw(dc);
                     continue;
                 }
 
                 Annotation? annotation = _annotations.FirstOrDefault(ann => ann.DrawingVisual == visual);
-                annotation?.Draw(dc, Foreground);
+                annotation?.Draw(dc);
             }
         }
     }

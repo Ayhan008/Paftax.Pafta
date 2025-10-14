@@ -1,20 +1,18 @@
-﻿using Paftax.Pafta.Drawing.Geometries;
-using Paftax.Pafta.Drawing.Structs;
+﻿using Paftax.Pafta.Drawing.Entities.Abstracts;
+using Paftax.Pafta.Drawing.Geometries;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Paftax.Pafta.Drawing.Elements
+namespace Paftax.Pafta.Drawing.Entities
 {
-    public class Room : Element
+    public class RoomGeometry : SpatialElement
     {
+        public double Volume { get; set; } = 0;
         public string Name { get; set; } = string.Empty;
         public string Number { get; set; } = string.Empty;
-        public double Area { get; set; }
-        public new Bounding Bounding { get; set; } = new(new XY(0, 0), new XY(0, 0));
-        public List<Curve> BoundarySegments { get; } = [];
-        public override void Draw(DrawingContext dc, Brush brush)
+        public override void Draw(DrawingContext dc)
         {
-            Pen pen = new(brush, 1) { LineJoin = PenLineJoin.Miter };
+            Pen pen = new(Brush, 1) { LineJoin = PenLineJoin.Miter };
 
             if (BoundarySegments.Count == 0) return;
 

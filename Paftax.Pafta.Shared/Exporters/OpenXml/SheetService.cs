@@ -1,14 +1,14 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using System.Diagnostics;
-using System.Reflection.Metadata;
 
 namespace Paftax.Pafta.Shared.Exporters.OpenXml
 {
-    public class SheetService
+    public class SheetService(SpreadsheetDocument spreadsheetDocument, string name)
     {
+        private readonly SpreadsheetDocument _spreadsheetDocument = spreadsheetDocument;
+        private readonly string _sheetName = name;
+
         /// <summary>
         /// Fills the specified sheet in the spreadsheet document with the provided data, starting from the given row and applying the specified style index.
         /// </summary>
@@ -19,12 +19,12 @@ namespace Paftax.Pafta.Shared.Exporters.OpenXml
         /// <param name="startRow"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static Workbook FillSheet(SpreadsheetDocument document, string sheetName, List<List<string>> data, uint styleIndex, uint startRow)
+        public Workbook FillSheet(List<List<string>> data, uint styleIndex, uint startRow)
         {
-            WorkbookPart workbookPart = document.WorkbookPart ?? document.AddWorkbookPart();
+            WorkbookPart workbookPart = _spreadsheetDocument.WorkbookPart ?? _spreadsheetDocument.AddWorkbookPart();
             Sheets? sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? throw new Exception("No sheets found in the workbook.");
-            Sheet? sheet = sheets.Elements<Sheet>().FirstOrDefault(s => s.Name == sheetName) ?? throw new Exception($"Sheet with name '{sheetName}' not found.");
-            WorksheetPart? worksheetPart = (WorksheetPart?)workbookPart.GetPartById(sheet.Id!) ?? throw new Exception($"WorksheetPart for sheet '{sheetName}' not found.");
+            Sheet? sheet = sheets.Elements<Sheet>().FirstOrDefault(s => s.Name == _sheetName) ?? throw new Exception($"Sheet with name '{_sheetName}' not found.");
+            WorksheetPart? worksheetPart = (WorksheetPart?)workbookPart.GetPartById(sheet.Id!) ?? throw new Exception($"WorksheetPart for sheet '{_sheetName}' not found.");
             SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>() ?? new SheetData();
 
             for (int i = 0; i < data.Count; i++)
@@ -54,12 +54,12 @@ namespace Paftax.Pafta.Shared.Exporters.OpenXml
         /// <param name="cellReferences"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static Workbook MergeCells(SpreadsheetDocument document, string sheetName, HashSet<string> cellReferences)
+        public Workbook MergeCells(HashSet<string> cellReferences)
         {
-            WorkbookPart workbookPart = document.WorkbookPart ?? document.AddWorkbookPart();
+            WorkbookPart workbookPart = _spreadsheetDocument.WorkbookPart ?? _spreadsheetDocument.AddWorkbookPart();
             Sheets? sheets = workbookPart.Workbook.GetFirstChild<Sheets>() ?? throw new Exception("No sheets found in the workbook.");
-            Sheet? sheet = sheets.Elements<Sheet>().FirstOrDefault(s => s.Name == sheetName) ?? throw new Exception($"Sheet with name '{sheetName}' not found.");
-            WorksheetPart? worksheetPart = (WorksheetPart?)workbookPart.GetPartById(sheet.Id!) ?? throw new Exception($"WorksheetPart for sheet '{sheetName}' not found.");
+            Sheet? sheet = sheets.Elements<Sheet>().FirstOrDefault(s => s.Name == _sheetName) ?? throw new Exception($"Sheet with name '{_sheetName}' not found.");
+            WorksheetPart? worksheetPart = (WorksheetPart?)workbookPart.GetPartById(sheet.Id!) ?? throw new Exception($"WorksheetPart for sheet '{_sheetName}' not found.");
             MergeCells mergeCells;
             if (worksheetPart.Worksheet.Elements<MergeCells>().Any())
             {
@@ -68,7 +68,6 @@ namespace Paftax.Pafta.Shared.Exporters.OpenXml
             else
             {
                 mergeCells = new MergeCells();
-                // Insert the MergeCells element after the SheetData element.
                 if (worksheetPart.Worksheet.Elements<SheetData>().Any())
                 {
                     worksheetPart.Worksheet.InsertAfter(mergeCells, worksheetPart.Worksheet.Elements<SheetData>().First());
@@ -99,23 +98,23 @@ namespace Paftax.Pafta.Shared.Exporters.OpenXml
         /// <returns>The updated Workbook object reflecting the change to the row height.</returns>
         /// <exception cref="Exception">Thrown if the workbook part, sheet, or sheet data cannot be found in the spreadsheet document.</exception>
         /// <exception cref="ArgumentNullException">Thrown if the specified row does not exist in the worksheet.</exception>
-        public static Workbook SetCustomRowHeight(SpreadsheetDocument spreadsheetDocument, string sheetName, uint rowIndex, double rowHeight)
+        public Workbook SetCustomRowHeight(uint rowIndex, double rowHeight)
         {
-            WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart
+            WorkbookPart workbookPart = _spreadsheetDocument.WorkbookPart
                 ?? throw new Exception("No WorkbookPart found.");
 
             // Find the sheet
             Sheet? sheet = workbookPart.Workbook.Sheets?
                 .Elements<Sheet>()
-                .FirstOrDefault(s => s.Name == sheetName)
-                ?? throw new Exception($"Sheet '{sheetName}' not found.");
+                .FirstOrDefault(s => s.Name == _sheetName)
+                ?? throw new Exception($"Sheet '{_sheetName}' not found.");
 
             WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
             SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>()
                 ?? throw new Exception("SheetData not found.");
 
             // Find the row by index (create if missing)
-            Row? row = sheetData.Elements<Row>().FirstOrDefault(r => r.RowIndex! == rowIndex) 
+            Row? row = sheetData.Elements<Row>().FirstOrDefault(r => r.RowIndex! == rowIndex)
                 ?? throw new ArgumentNullException($"Row with index {rowIndex} not found.");
             row.Height = rowHeight;
             row.CustomHeight = true;
@@ -131,16 +130,16 @@ namespace Paftax.Pafta.Shared.Exporters.OpenXml
         /// <param name="sheetName"></param>
         /// <param name="data"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        public static void SetColumnWidthsFromData(SpreadsheetDocument spreadsheetDocument, string sheetName, List<List<string>> data)
+        public void SetColumnWidthsFromData(List<List<string>> data)
         {
             if (data == null || data.Count == 0) return;
 
-            WorkbookPart? workbookPart = spreadsheetDocument.WorkbookPart;
+            WorkbookPart? workbookPart = _spreadsheetDocument.WorkbookPart;
             Sheets? sheets = workbookPart?.Workbook.Sheets
                 ?? throw new InvalidOperationException("Workbook does not contain any sheets.");
             Sheet sheet = sheets
                  .OfType<Sheet>()
-                 .FirstOrDefault(s => s.Name == sheetName)
+                 .FirstOrDefault(s => s.Name == _sheetName)
                  ?? throw new InvalidOperationException("Sheet not found");
 
             WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
@@ -167,7 +166,7 @@ namespace Paftax.Pafta.Shared.Exporters.OpenXml
                 {
                     Min = (uint)(i + 1),
                     Max = (uint)(i + 1),
-                    Width = maxLengths[i] + 2, // padding
+                    Width = maxLengths[i] + 8, // padding
                     CustomWidth = true
                 });
             }

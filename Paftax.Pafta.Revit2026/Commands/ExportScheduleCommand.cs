@@ -9,7 +9,7 @@ using Paftax.Pafta.Revit2026.Utilities;
 using Paftax.Pafta.Shared.Exporters.OpenXml;
 using Paftax.Pafta.Shared.Exporters.OpenXml.Stylesheets;
 using Paftax.Pafta.Shared.Models;
-using Paftax.Pafta.UI.Services;
+using Paftax.Pafta.UI.Dialogs;
 using Paftax.Pafta.UI.ViewModels;
 using System.Diagnostics;
 
@@ -34,8 +34,7 @@ namespace Paftax.Pafta.Revit2026.Commands
                 ExportScheduleViewModel exportScheduleViewModel = new();
                 exportScheduleViewModel.LoadSchedules(scheduleModels);
 
-                DialogService<ExportScheduleViewModel> dialogService = new(exportScheduleViewModel);
-                dialogService.ShowDialog("Export Schedule", 400, 700);
+                CommandDialog<ExportScheduleViewModel>.Show("Export Schedule", 400, 700);
 
                 if (exportScheduleViewModel.IsReadyForExport == true)
                 {
@@ -66,9 +65,9 @@ namespace Paftax.Pafta.Revit2026.Commands
 
         private static void ExportSchedulesSeperate(List<ViewSchedule> viewSchedules, string folderPath)
         {
-            List<ScheduleTableDataTransferObject> scheduleTableDatas = DataTransferObjectFactory.FromViewSchedules(viewSchedules);
+            List<ScheduleTableData> scheduleTableDatas = ScheduleTableDataFactory.FromViewSchedules(viewSchedules);
 
-            foreach (ScheduleTableDataTransferObject scheduleTableData in scheduleTableDatas)
+            foreach (ScheduleTableData scheduleTableData in scheduleTableDatas)
             {
                 string safeFileName = FileUtilities.MakeValidFileName(scheduleTableData.Name);
                 string filePath = Path.Combine(folderPath, $"{safeFileName}.xlsx");
@@ -83,15 +82,17 @@ namespace Paftax.Pafta.Revit2026.Commands
                     ?? throw new InvalidOperationException("Failed to create spreadsheet document.");
 
                 StyleService.AddStylesPart(spreadsheetDocument, ScheduleStylesheets.GenericStylesheet());
-                SheetService.FillSheet(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TitlePart, 0, 1);
-                SheetService.SetCustomRowHeight(spreadsheetDocument, scheduleTableData.Name, 1, 24);
+                SheetService sheetService = new(spreadsheetDocument, scheduleTableData.Name);
 
-                SheetService.FillSheet(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.HeaderPart, 1, 2);
-                SheetService.FillSheet(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.BodyPart, 2, 2);
+                sheetService.FillSheet(scheduleTableData.TitlePart, 0, 1);
+                sheetService.SetCustomRowHeight(1, 24);
 
-                SheetService.MergeCells(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.MergedCells);
+                sheetService.FillSheet(scheduleTableData.HeaderPart, 1, 2);
+                sheetService.FillSheet(scheduleTableData.BodyPart, 2, scheduleTableData.HeaderRowCount + 1);
 
-                SheetService.SetColumnWidthsFromData(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TableData);
+                sheetService.MergeCells(scheduleTableData.MergedCells);
+                sheetService.SetColumnWidthsFromData(scheduleTableData.TableData);
+
                 spreadsheetDocument.Dispose();
             }
         }
@@ -99,7 +100,7 @@ namespace Paftax.Pafta.Revit2026.Commands
         private static void ExportSchedulesMerged(List<ViewSchedule> viewSchedules, string folderPath)
         {
             string filePath = Path.Combine(folderPath, "MergedSchedules.xlsx");
-            List<ScheduleTableDataTransferObject> scheduleTableDatas = DataTransferObjectFactory.FromViewSchedules(viewSchedules);
+            List<ScheduleTableData> scheduleTableDatas = ScheduleTableDataFactory.FromViewSchedules(viewSchedules);
             List<string> sheetNames = [.. scheduleTableDatas.Select(s => s.Name)];
 
             if (FileUtilities.IsFileOpen(filePath))
@@ -113,17 +114,18 @@ namespace Paftax.Pafta.Revit2026.Commands
 
             StyleService.AddStylesPart(spreadsheetDocument, ScheduleStylesheets.GenericStylesheet());
 
-            foreach (ScheduleTableDataTransferObject scheduleTableData in scheduleTableDatas)
+            foreach (ScheduleTableData scheduleTableData in scheduleTableDatas)
             {
-                SheetService.FillSheet(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TitlePart, 0, 1);
-                SheetService.SetCustomRowHeight(spreadsheetDocument, scheduleTableData.Name, 1, 24);
+                SheetService sheetService = new(spreadsheetDocument, scheduleTableData.Name);
 
-                SheetService.FillSheet(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.HeaderPart, 1, 2);
-                SheetService.FillSheet(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.BodyPart, 2, 2);
+                sheetService.FillSheet(scheduleTableData.TitlePart, 0, 1);
+                sheetService.SetCustomRowHeight(1, 24);
 
-                SheetService.MergeCells(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.MergedCells);
+                sheetService.FillSheet(scheduleTableData.HeaderPart, 1, 2);
+                sheetService.FillSheet(scheduleTableData.BodyPart, 2, scheduleTableData.HeaderRowCount+1);
 
-                SheetService.SetColumnWidthsFromData(spreadsheetDocument, scheduleTableData.Name, scheduleTableData.TableData);
+                sheetService.MergeCells(scheduleTableData.MergedCells);
+                sheetService.SetColumnWidthsFromData(scheduleTableData.TableData);
             }
             spreadsheetDocument.Dispose();
         }

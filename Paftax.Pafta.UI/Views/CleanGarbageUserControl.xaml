@@ -1,0 +1,162 @@
+﻿<UserControl x:Class="Paftax.Pafta.UI.Views.CleanGarbageUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
+             xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"           
+             xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels" 
+             xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls" d:DataContext="{d:DesignInstance Type=vm:CleanGarbageViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Themes/Dark.xaml"/>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="45"/>
+        </Grid.RowDefinitions>
+
+        <TabControl Grid.Row="0" Margin="10" SelectedIndex="0">
+            <TabItem Header="Tags">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <controls:SearchBox VerticalAlignment="Top"
+                                        Grid.Row="0"
+                                        HorizontalAlignment="Stretch" 
+                                        Margin="10" Height="30"
+                                        PlaceholderText="Search for tags..."
+                                        SearchText="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <DataGrid x:Name="TagCategoriesDataGrid" 
+                              Grid.Row="1" 
+                              AutoGenerateColumns="False" 
+                              Margin="10,0,10,10" 
+                              properties:MutipleCheck.IsEnabled="True"
+                              ItemsSource="{Binding TagCategories}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="30">
+                                <DataGridTemplateColumn.Header>
+                                    <CheckBox x:Name="SelectAllCheckBox" 
+                                              IsChecked="{Binding DataContext.IsAllChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                                  Foreground="{DynamicResource DataGridForeground}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Category" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding Category}" 
+                                                Width="*"/>
+                            <DataGridTextColumn Header="Count" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding Count}" 
+                                                Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="View Templates">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <controls:SearchBox VerticalAlignment="Top"
+                                        Grid.Row="0"
+                                        HorizontalAlignment="Stretch" 
+                                        Margin="10" Height="30"
+                                        PlaceholderText="Search for View Templates..."
+                                        SearchText="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <DataGrid Grid.Row="1" 
+                              AutoGenerateColumns="False" 
+                              Margin="10,0,10,10" 
+                              properties:MutipleCheck.IsEnabled="True"
+                              ItemsSource="{Binding ViewTemplates}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="30">
+                                <DataGridTemplateColumn.Header>
+                                    <CheckBox IsChecked="{Binding DataContext.IsAllChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                                  Foreground="{DynamicResource DataGridForeground}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Name" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding Name}" 
+                                                Width="*"/>
+                            <DataGridTextColumn Header="View Count" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding ViewCount}" 
+                                                Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Filters">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <controls:SearchBox VerticalAlignment="Top"
+                                        Grid.Row="0"
+                                        HorizontalAlignment="Stretch" 
+                                        Margin="10" Height="30"
+                                        PlaceholderText="Search for Filter..."
+                                        SearchText="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <DataGrid Grid.Row="1" 
+                              AutoGenerateColumns="False" 
+                              Margin="10,0,10,10" 
+                              properties:MutipleCheck.IsEnabled="True"
+                              ItemsSource="{Binding Filters}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="30">
+                                <DataGridTemplateColumn.Header>
+                                    <CheckBox IsChecked="{Binding DataContext.IsAllChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                                  Foreground="{DynamicResource DataGridForeground}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Name" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding Name}" 
+                                                Width="*"/>
+                            <DataGridTextColumn Header="Template Count" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding TemplateCount}" 
+                                                Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

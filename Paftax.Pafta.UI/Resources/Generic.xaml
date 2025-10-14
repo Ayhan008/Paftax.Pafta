@@ -13,5 +13,7 @@
         <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/TitleBarStyles.xaml"/>
         <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/FontIconStyles.xaml"/>
         <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/SearchBoxStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/TabControlStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/TabItemStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

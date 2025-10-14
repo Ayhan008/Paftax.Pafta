@@ -5,7 +5,7 @@ using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using Paftax.Pafta.Revit2026.Factories;
 using Paftax.Pafta.Shared.Models;
-using Paftax.Pafta.UI.Services;
+using Paftax.Pafta.UI.Dialogs;
 using Paftax.Pafta.UI.ViewModels;
 
 namespace Paftax.Pafta.Revit2026.Commands
@@ -30,9 +30,7 @@ namespace Paftax.Pafta.Revit2026.Commands
             RoomToSheetViewModel roomToSheetViewModel = new();
             roomToSheetViewModel.LoadData(richRoomDataModels);
 
-            DialogService<RoomToSheetViewModel> dialogService = new(roomToSheetViewModel);
-            dialogService.ShowDialog("Room To Sheet", 1200, 900);
-
+            CommandDialog<RoomToSheetViewModel>.Show("Room To Sheet", 400, 700);
             return Result.Succeeded;
         }
 

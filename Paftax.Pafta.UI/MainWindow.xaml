@@ -9,7 +9,6 @@
         xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"
         xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls" 
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
@@ -28,6 +27,14 @@
 
             <DataTemplate DataType="{x:Type vm:RoomToSheetViewModel}">
                 <views:RoomToSheetUserControl/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:CleanGarbageViewModel}">
+                <views:CleanGarbageUserControl/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:InfoDialogViewModel}">
+                <views:InfoDialogUserControl/>
             </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
@@ -64,7 +71,8 @@
                                    MinimizeButton="{Binding ShowMinimizeButton, RelativeSource={RelativeSource AncestorType=Window}}"
                                    CloseButton="{Binding ShowCloseButton, RelativeSource={RelativeSource AncestorType=Window}}"/>
 
-                <ContentControl Content="{Binding CurrentView}"
+                <ContentControl x:Name="ContentControl"
+                                Content="{Binding}"
                                 Grid.Row="1" 
                                 HorizontalAlignment="Stretch" 
                                 VerticalAlignment="Stretch"/>

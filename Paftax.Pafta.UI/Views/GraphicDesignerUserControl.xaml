@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
              xmlns:drawing="clr-namespace:Paftax.Pafta.Drawing;assembly=Paftax.Pafta.Drawing"
              xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls"
-             xmlns:converters="clr-namespace:Paftax.Pafta.UI.Converters"
              xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"
              xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels" 
              d:DataContext="{d:DesignInstance Type=vm:GraphicDesignerViewModel}" 
@@ -19,8 +18,6 @@
                 <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Themes/Dark.xaml"/>
                 <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <converters:PointDListToPointCollection x:Key="PointsConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     

@@ -1,18 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Paftax.Pafta.Shared.Interfaces;
 using Paftax.Pafta.Shared.Models;
+using Paftax.Pafta.UI.ViewModels.Abstracts;
 using System.Collections.ObjectModel;
 using System.IO;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class ExportScheduleViewModel : ObservableObject, IExportScheduleViewModel
+    public partial class ExportScheduleViewModel : ViewModel
     {
         private readonly List<ScheduleModel> _loadedSchedules = [];
         public ObservableCollection<ScheduleModel> Schedules { get; } = [];
-        public event Action? CloseRequest;
-        public event Action? RequestExport;
+        public event Action? RequestAction;
 
         [ObservableProperty]
         private bool isReadyForExport = false;
@@ -89,7 +88,7 @@ namespace Paftax.Pafta.UI.ViewModels
         private void Cancel()
         {
             IsReadyForExport = false;
-            CloseRequest?.Invoke();
+            CloseAction?.Invoke();
         }
 
         [RelayCommand(CanExecute = nameof(CanExport))]
@@ -105,8 +104,8 @@ namespace Paftax.Pafta.UI.ViewModels
             if (selectedSchedules.Count > 0)
             {
                 IsReadyForExport = true;
-                RequestExport?.Invoke();
-                CloseRequest?.Invoke();
+                RequestAction?.Invoke();
+                CloseAction?.Invoke();
 
                 ExportCommand.NotifyCanExecuteChanged();
             }

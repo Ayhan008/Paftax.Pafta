@@ -152,6 +152,22 @@ namespace Paftax.Pafta.Revit2026
             exportPanel.AddItem(quickExportPushButtonData);
             #endregion
 
+            #region Clean Panel
+            RibbonPanel cleanPanel = application.CreateRibbonPanel(tabName, "Clean");
+            // Clean Project Button
+            PushButtonData cleanProjectPushButtonData = new(
+                "CleanProjectPushButton",
+                "Clean\nProject",
+                typeof(App).Assembly.Location,
+                "Paftax.Pafta.Revit2026.Commands.CleanProjectCommand")
+            {
+                ToolTip = "Clean up your Revit project by removing unused elements",
+                LongDescription = "Clean up your Revit project by removing unused elements. " +
+                                  "You can remove unused families, types, views, and more."
+            };
+            cleanPanel.AddItem(cleanProjectPushButtonData);
+            #endregion
+
             #region Settings Panel
             RibbonPanel settingsPanel = application.CreateRibbonPanel(tabName, "Settings");
 

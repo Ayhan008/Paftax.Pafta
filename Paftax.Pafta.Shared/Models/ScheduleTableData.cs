@@ -1,6 +1,6 @@
 ﻿namespace Paftax.Pafta.Shared.Models
 {
-    public class ScheduleTableDataTransferObject
+    public class ScheduleTableData
     {     
         public required long Id { get; set; }
         public required string Name { get; set; }
@@ -9,5 +9,12 @@
         public List<List<string>> HeaderPart { get; set; } = [];
         public List<List<string>> TitlePart { get; set; } = [];
         public List<List<string>> TableData { get; set; } = [];
+        public uint HeaderRowCount 
+        { 
+            get 
+            { 
+                return (uint)HeaderPart.Count; 
+            }
+        }
     }
 }

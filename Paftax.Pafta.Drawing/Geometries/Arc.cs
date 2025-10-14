@@ -2,13 +2,13 @@
 
 namespace Paftax.Pafta.Drawing.Geometries
 {
-    public sealed class Arc(XY start, XY end, XY center, double radius) : Curve
+    public sealed class Arc(PointXY start, PointXY end, PointXY center, double radius) : Curve
     {
         public double Radius { get; } = radius;
-        public XY Start { get; } = start;
-        public XY End { get; } = end;
-        public XY Center { get; } = center;
+        public PointXY Start { get; } = start;
+        public PointXY End { get; } = end;
+        public PointXY Center { get; } = center;
         public override double Length => throw new NotImplementedException();
-        public override XY GetEndPoint(int index) => index == 0 ? Start : End;
+        public override PointXY GetEndPoint(int index) => index == 0 ? Start : End;
     }
 }

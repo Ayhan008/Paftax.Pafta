@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Paftax.Pafta.Shared.Models;
+using Paftax.Pafta.UI.ViewModels.Abstracts;
 using System.Collections.ObjectModel;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class RoomToSheetViewModel : ObservableObject
+    public partial class RoomToSheetViewModel : ViewModel
     {
         public ObservableCollection<RoomModel> Rooms { get; } = [];
         public GraphicDesignerViewModel GraphicDesignerViewModel { get; set; } = new();

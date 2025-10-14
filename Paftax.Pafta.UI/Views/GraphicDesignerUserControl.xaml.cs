@@ -17,7 +17,9 @@ namespace Paftax.Pafta.UI.Views
                     foreach (RoomModel room in vm.Rooms)
                     {
                         DrawingCanvas.AddElement(room.RoomGeometry);
-                        DrawingCanvas.AddElevation(new XY(0, 0));
+                        DrawingCanvas.AddElevation(new PointXY(0, 0));
+                        DrawingCanvas.AddSection(new PointXY(0,200), new PointXY(0,-200));
+                        DrawingCanvas.AddSection(new PointXY(-150, 0), new PointXY(150, 0));
                     }
                     DrawingCanvas.ZoomToFitAll();
                 }

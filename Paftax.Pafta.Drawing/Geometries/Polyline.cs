@@ -12,7 +12,7 @@ namespace Paftax.Pafta.Drawing.Geometries
         public IReadOnlyList<Curve> Segments { get; } =
             [.. (curves ?? throw new ArgumentNullException(nameof(curves)))];
 
-        public override XY GetEndPoint(int index) =>
+        public override PointXY GetEndPoint(int index) =>
             index == 0 ? Segments[0].GetEndPoint(0) : Segments[^1].GetEndPoint(1);
 
         public override double Length => Segments.Sum(s => s.Length);

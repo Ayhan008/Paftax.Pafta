@@ -4,16 +4,16 @@ using Paftax.Pafta.Shared.Models;
 
 namespace Paftax.Pafta.Revit2026.Factories
 {
-    internal static class DataTransferObjectFactory
+    internal static class ScheduleTableDataFactory
     {
         /// <summary>
         /// Creates a ScheduleTableDataDto from a ViewSchedule.
         /// </summary>
         /// <param name="viewSchedule"></param>
         /// <returns></returns>
-        public static ScheduleTableDataTransferObject FromViewSchedule(ViewSchedule viewSchedule)
+        public static ScheduleTableData FromViewSchedule(ViewSchedule viewSchedule)
         {
-            ScheduleTableDataTransferObject scheduleTableData = new()
+            ScheduleTableData scheduleTableData = new()
             {
                 Id = viewSchedule.Id.ToLong(),
                 Name = viewSchedule.Name,
@@ -31,7 +31,7 @@ namespace Paftax.Pafta.Revit2026.Factories
         /// </summary>
         /// <param name="viewSchedules"></param>
         /// <returns></returns>
-        public static List<ScheduleTableDataTransferObject> FromViewSchedules(List<ViewSchedule> viewSchedules)
+        public static List<ScheduleTableData> FromViewSchedules(List<ViewSchedule> viewSchedules)
         {
             return [.. viewSchedules.Select(FromViewSchedule)];
         }
@@ -121,12 +121,16 @@ namespace Paftax.Pafta.Revit2026.Factories
                     rowData.Add(cellValue);
                 }
 
-                headerSectionData.Add(rowData);
-
                 if (isFullyUnmerged)
                 {
+                    if (row == 0)
+                    {
+                        headerSectionData.Add(rowData);
+                    }
                     break;
                 }
+
+                headerSectionData.Add(rowData);
             }
 
             return headerSectionData;
