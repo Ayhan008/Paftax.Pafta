@@ -7,7 +7,6 @@ namespace Paftax.Pafta.UI.Views
         public ExportScheduleUserControl()
         {
             InitializeComponent();
-
         }
     }
 }

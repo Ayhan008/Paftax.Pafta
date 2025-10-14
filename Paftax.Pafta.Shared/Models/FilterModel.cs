@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.Shared.Models
 {
-    public partial class FilterModel : ObservableObject
+    public partial class FilterModel : ObservableObject, IElement
     {
         public required string Name { get; set; }
         public required long Id { get; set; }

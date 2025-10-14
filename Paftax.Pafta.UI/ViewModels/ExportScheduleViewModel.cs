@@ -1,17 +1,18 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Paftax.Pafta.Shared.Interfaces;
 using Paftax.Pafta.Shared.Models;
-using Paftax.Pafta.UI.ViewModels.Abstracts;
 using System.Collections.ObjectModel;
 using System.IO;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class ExportScheduleViewModel : ViewModel
+    public partial class ExportScheduleViewModel : ObservableObject, ICloseable
     {
         private readonly List<ScheduleModel> _loadedSchedules = [];
         public ObservableCollection<ScheduleModel> Schedules { get; } = [];
         public event Action? RequestAction;
+        public event Action? CloseAction;
 
         [ObservableProperty]
         private bool isReadyForExport = false;
@@ -57,7 +58,7 @@ namespace Paftax.Pafta.UI.ViewModels
             foreach (ScheduleModel scheduleModel in filtered)
                 Schedules.Add(scheduleModel);
         }
-      
+
         partial void OnIsMergedChanged(bool value)
         {
             if (value)
@@ -126,7 +127,7 @@ namespace Paftax.Pafta.UI.ViewModels
                         ExportCommand.NotifyCanExecuteChanged();
                 };
                 Schedules.Add(schedule);
-            }                    
+            }
         }
 
         public List<ScheduleModel> SelectedSchedules()

@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Paftax.Pafta.Shared.Enums;
-using Paftax.Pafta.UI.ViewModels.Abstracts;
+using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class InfoDialogViewModel : ViewModel
+    public partial class InfoDialogViewModel : ObservableObject, ICloseable
     {
         [ObservableProperty]
         private string message = string.Empty;
@@ -15,6 +15,8 @@ namespace Paftax.Pafta.UI.ViewModels
 
         [ObservableProperty]
         private string glyph = string.Empty;
+
+        public event Action? CloseAction;
 
         [RelayCommand]
         private void Ok()

@@ -1,10 +1,11 @@
-﻿using Paftax.Pafta.Shared.Models;
-using Paftax.Pafta.UI.ViewModels.Abstracts;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Paftax.Pafta.Shared.Interfaces;
+using Paftax.Pafta.Shared.Models;
 using System.Collections.ObjectModel;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class CleanGarbageViewModel : ViewModel
+    public partial class CleanGarbageViewModel : ObservableObject
     {
         public ObservableCollection<TagCategoryModel> TagCategories { get; } = [];
         public ObservableCollection<FilterModel> Filters { get; } = [];

@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Paftax.Pafta.UI.ViewModels;
+using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.UI.Dialogs
 {
@@ -20,6 +20,12 @@ namespace Paftax.Pafta.UI.Dialogs
                 Width = width,
                 Height = height
             };
+
+            if (viewModel is ICloseable closeableViewModel)
+            {
+                closeableViewModel.CloseAction += baseWindow.Close;
+            }
+
             baseWindow.ShowDialog();
         }
 
@@ -32,6 +38,12 @@ namespace Paftax.Pafta.UI.Dialogs
                 Width = width,
                 Height = height
             };
+
+            if (viewModel is ICloseable closeableViewModel)
+            {
+                closeableViewModel.CloseAction += baseWindow.Close;
+            }
+
             baseWindow.Show();
         }
     }

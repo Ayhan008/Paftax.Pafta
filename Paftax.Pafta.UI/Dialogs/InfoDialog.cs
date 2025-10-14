@@ -25,7 +25,7 @@ namespace Paftax.Pafta.UI.Dialogs
                 ShowMinimizeButton = false,
             };
 
-            viewModel.CloseAction = mainWindow.Close;
+            viewModel.CloseAction += mainWindow.Close;
             mainWindow.ShowDialog();     
         }
     }

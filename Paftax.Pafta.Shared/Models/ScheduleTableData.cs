@@ -1,6 +1,8 @@
-﻿namespace Paftax.Pafta.Shared.Models
+﻿using Paftax.Pafta.Shared.Interfaces;
+
+namespace Paftax.Pafta.Shared.Models
 {
-    public class ScheduleTableData
+    public class ScheduleTableData: IElement
     {     
         public required long Id { get; set; }
         public required string Name { get; set; }
