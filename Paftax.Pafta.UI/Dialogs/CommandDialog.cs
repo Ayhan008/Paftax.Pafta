@@ -8,10 +8,9 @@ namespace Paftax.Pafta.UI.Dialogs
     public static class CommandDialog
     {
         private static readonly Dictionary<Type, Window> OpenWindows = [];
-
-        public static void Show(ObservableObject viewModel)
+        public static Window Show(ObservableObject viewModel)
         {
-            DialogOptions dialogOptions = new()
+            var dialogOptions = new DialogOptions
             {
                 Title = "Info Dialog",
                 Width = 400,
@@ -22,22 +21,25 @@ namespace Paftax.Pafta.UI.Dialogs
                 ShowMinimizeButton = false
             };
 
-            Show(viewModel, dialogOptions);
+            Window window = Show(viewModel, dialogOptions);
+            return window;
         }
 
-        public static void Show(ObservableObject viewModel, DialogOptions dialogOptions)
+        public static Window Show(ObservableObject viewModel, DialogOptions dialogOptions)
         {
             Type vmType = viewModel.GetType();
 
             if (OpenWindows.TryGetValue(vmType, out var existingWindow))
             {
-                existingWindow.Activate();
-                existingWindow.Topmost = true;
-                existingWindow.Topmost = false;
-                return;
+                existingWindow.Dispatcher.Invoke(() =>
+                {
+                    existingWindow.Activate();
+                    existingWindow.Topmost = true;
+                    existingWindow.Topmost = false;
+                });          
             }
 
-            var baseWindow = new MainWindow
+            MainWindow baseWindow = new()
             {
                 DataContext = viewModel,
                 Title = dialogOptions.Title,
@@ -57,7 +59,10 @@ namespace Paftax.Pafta.UI.Dialogs
 
             if (viewModel is ICloseable closeableViewModel)
             {
-                closeableViewModel.CloseAction += baseWindow.Close;
+                closeableViewModel.CloseAction += () =>
+                {
+                    baseWindow.Dispatcher.Invoke(() => baseWindow.Close());
+                };
             }
 
             OpenWindows[vmType] = baseWindow;
@@ -66,6 +71,8 @@ namespace Paftax.Pafta.UI.Dialogs
                 baseWindow.ShowDialog();
             else
                 baseWindow.Show();
+
+            return baseWindow;
         }
     }
 }

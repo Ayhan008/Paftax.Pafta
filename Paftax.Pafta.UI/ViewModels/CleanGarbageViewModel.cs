@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Paftax.Pafta.Shared.Interfaces;
 using Paftax.Pafta.Shared.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -6,7 +8,7 @@ using System.Windows.Threading;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class CleanGarbageViewModel : ObservableObject
+    public partial class CleanGarbageViewModel : ObservableObject, ICloseable
     {
         #region Collections
         private readonly ObservableCollection<TagCategoryModel> _allTagCategories = [];
@@ -26,8 +28,6 @@ namespace Paftax.Pafta.UI.ViewModels
         public Action? RequestLoadFilters { get; set; }
         public Action? RequestLoadLines { get; set; }
 
-        [ObservableProperty]
-        private bool _isBusy = false;
         [ObservableProperty]
         private int _selectedTabIndex = 0;
 
@@ -57,22 +57,46 @@ namespace Paftax.Pafta.UI.ViewModels
         private bool _isAllLinesChecked = false;
         #endregion
 
-        private bool _linesLoaded = false;
+        [ObservableProperty]
+        private Visibility _materialsProgressRing = Visibility.Collapsed;
+        [ObservableProperty]
+        private Visibility _linesProgressRing = Visibility.Collapsed;
+        [ObservableProperty]
+        private Visibility _filtersProgressRing = Visibility.Collapsed;
+
+        public event Action? CloseAction;
+        public event Action? CleanAction;
+        public event Action? CancelAction;
+
+        [RelayCommand]
+        private void Cancel()
+        {
+            CancelAction?.Invoke();
+            CloseAction?.Invoke();     
+        }
+
+        [RelayCommand]
+        private void Clean()
+        {
+            CleanAction?.Invoke();
+            CloseAction?.Invoke();
+        }
+
         private bool _filtersLoaded = false;
         private bool _materialsLoaded = false;
+        private bool _linesLoaded = false;      
 
         partial void OnSelectedTabIndexChanged(int value)
         {
             if (value == 4 && !_linesLoaded)
             {
                 _linesLoaded = true;
-                IsBusy = true;
                 Application.Current.Dispatcher.BeginInvoke(
                     DispatcherPriority.ApplicationIdle,
                     new Action(() =>
                     {
+                        LinesProgressRing = Visibility.Visible;
                         RequestLoadLines?.Invoke();
-                        IsBusy = false;
                     }));
             }
             else if (value == 2 && !_filtersLoaded)
@@ -80,14 +104,22 @@ namespace Paftax.Pafta.UI.ViewModels
                 _filtersLoaded = true;
                 Application.Current.Dispatcher.BeginInvoke(
                     DispatcherPriority.ApplicationIdle,
-                    new Action(() => RequestLoadFilters?.Invoke()));
+                    new Action(() =>
+                    {
+                        FiltersProgressRing = Visibility.Visible;
+                        RequestLoadFilters?.Invoke();
+                    }));
             }
             else if (value == 3 && !_materialsLoaded)
             {
                 _materialsLoaded = true;
                 Application.Current.Dispatcher.BeginInvoke(
                     DispatcherPriority.ApplicationIdle,
-                    new Action(() => RequestLoadMaterials?.Invoke()));
+                    new Action(() =>
+                    {
+                        MaterialsProgressRing = Visibility.Visible;
+                        RequestLoadMaterials?.Invoke();
+                    }));
             }
         }
 
@@ -159,6 +191,7 @@ namespace Paftax.Pafta.UI.ViewModels
                 _allFilters.Add(model);
 
             FilterCollection(_allFilters, Filters, x => x.Name, FilterSearchText);
+            FiltersProgressRing = Visibility.Collapsed;
         }
 
         public void LoadLineModels(IEnumerable<LineModel> models)
@@ -167,7 +200,8 @@ namespace Paftax.Pafta.UI.ViewModels
             foreach (var model in models)
                 _allLines.Add(model);
 
-            FilterCollection(_allLines, Lines, x => x.Name, LineSearchText);          
+            FilterCollection(_allLines, Lines, x => x.Name, LineSearchText);
+            LinesProgressRing = Visibility.Collapsed;
         }
 
         public void LoadMaterialModels(IEnumerable<MaterialModel> models)
@@ -177,6 +211,7 @@ namespace Paftax.Pafta.UI.ViewModels
                 _allMaterials.Add(model);
 
             FilterCollection(_allMaterials, Materials, x => x.Name, MaterialSearchText);
+            MaterialsProgressRing = Visibility.Collapsed;
         }
     }
 }

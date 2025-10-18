@@ -168,6 +168,33 @@
                                                 Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <Grid Grid.Row="1" 
+                          HorizontalAlignment="Center" 
+                          VerticalAlignment="Center" 
+                          Visibility="{Binding FiltersProgressRing}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+
+                        <controls:ProgressRing Width="80" Height="80"
+                                               Grid.Row="0"
+                                               HorizontalAlignment="Center" 
+                                               StrokeThickness="6"
+                                               Background="{DynamicResource DataGridColumnHeaderBackground}"
+                                               Foreground="{DynamicResource DataGridForeground}"
+                                               IsIndeterminate="True"
+                                               VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Row="1" IsHitTestVisible="False" Text="Loading Filters..." 
+                                   FontFamily="{StaticResource PrimaryFont}"
+                                   FontWeight="{StaticResource FontWeightBold}"
+                                   FontSize="{StaticResource FontSizeMedium}"
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Bottom"
+                                   Foreground="{DynamicResource DataGridForeground}"/>
+                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Materials">
@@ -181,7 +208,7 @@
                                         Grid.Row="0"
                                         HorizontalAlignment="Stretch" 
                                         Margin="10" Height="30"
-                                        PlaceholderText="Search for Filter..."
+                                        PlaceholderText="Search for Materials..."
                                         SearchText="{Binding MaterialSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <DataGrid Grid.Row="1" 
@@ -215,6 +242,33 @@
                                                 Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <Grid Grid.Row="1" 
+                          HorizontalAlignment="Center" 
+                          VerticalAlignment="Center" 
+                          Visibility="{Binding MaterialsProgressRing}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+
+                        <controls:ProgressRing Width="80" Height="80"
+                                               Grid.Row="0"
+                                               HorizontalAlignment="Center" 
+                                               StrokeThickness="6"
+                                               Background="{DynamicResource DataGridColumnHeaderBackground}"
+                                               Foreground="{DynamicResource DataGridForeground}"
+                                               IsIndeterminate="True"
+                                               VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Row="1" IsHitTestVisible="False" Text="Loading Materials..." 
+                                   FontFamily="{StaticResource PrimaryFont}"
+                                   FontWeight="{StaticResource FontWeightBold}"
+                                   FontSize="{StaticResource FontSizeMedium}"
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Bottom"
+                                   Foreground="{DynamicResource DataGridForeground}"/>
+                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Lines">
@@ -228,7 +282,7 @@
                                         Grid.Row="0"
                                         HorizontalAlignment="Stretch" 
                                         Margin="10" Height="30"
-                                        PlaceholderText="Search for Filter..."
+                                        PlaceholderText="Search for Lines..."
                                         SearchText="{Binding LineSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <DataGrid Grid.Row="1" 
@@ -263,17 +317,54 @@
                         </DataGrid.Columns>
                     </DataGrid>
 
-                    <controls:ProgressRing Width="50" Height="50"
-                                           Grid.Row="1"
-                                           Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                           HorizontalAlignment="Center" 
-                                           StrokeThickness="4"
-                                           Background="White"
-                                           Foreground="White"
-                                           IsIndeterminate="True"
-                                           VerticalAlignment="Center"/>
+                    <Grid Grid.Row="1" 
+                          HorizontalAlignment="Center" 
+                          VerticalAlignment="Center" 
+                          Visibility="{Binding LinesProgressRing}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+
+                        <controls:ProgressRing Width="80" Height="80"
+                                               Grid.Row="0"
+                                               HorizontalAlignment="Center" 
+                                               StrokeThickness="6"
+                                               Background="{DynamicResource DataGridColumnHeaderBackground}"
+                                               Foreground="{DynamicResource DataGridForeground}"
+                                               IsIndeterminate="True"
+                                               VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Row="1" IsHitTestVisible="False" Text="Loading Lines..." 
+                                   FontFamily="{StaticResource PrimaryFont}"
+                                   FontWeight="{StaticResource FontWeightBold}"
+                                   FontSize="{StaticResource FontSizeMedium}"
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Bottom"
+                                   Foreground="{DynamicResource DataGridForeground}"/>
+                    </Grid>
                 </Grid>
             </TabItem>
         </TabControl>
+
+        <StackPanel Orientation="Horizontal" 
+                    Margin="0,0,10,0"
+                    Grid.Row="1" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Center">
+            
+            <Button x:Name="CleanButton" Content="Clean" 
+                    Grid.Row="2" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    Command="{Binding CleanCommand}"/>
+
+            <Button x:Name="CancelButton" Content="Cancel" 
+                    Grid.Row="2" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Center"
+                    Command="{Binding CancelCommand}"/>
+        </StackPanel>
     </Grid>
 </UserControl>

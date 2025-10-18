@@ -8,6 +8,7 @@ using Paftax.Pafta.UI.Dialogs;
 using Paftax.Pafta.UI.Services;
 using Paftax.Pafta.UI.ViewModels;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace Paftax.Pafta.Revit2026.Commands
 {
@@ -16,62 +17,91 @@ namespace Paftax.Pafta.Revit2026.Commands
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            UIApplication uiApp = commandData.Application;
-            UIDocument uiDoc = uiApp.ActiveUIDocument;
-            Document doc = uiDoc.Document;
+            Document doc = commandData.Application.ActiveUIDocument.Document;
 
             List<TagCategoryModel> tagCategoryModels = TagCategoryModelFactory.CreateModels(doc);
             List<ViewTemplateModel> viewTemplateModels = ViewTemplateModelFactory.CreateModels(doc);
 
-            CleanGarbageViewModel cleanGarbageViewModel = new();     
-            cleanGarbageViewModel.LoadTagCategoryModels(tagCategoryModels);
-            cleanGarbageViewModel.LoadViewTemplateModels(viewTemplateModels);
-
             CleanGarbageHandler handler = new();
             ExternalEvent externalEvent = ExternalEvent.Create(handler);
 
-            cleanGarbageViewModel.RequestLoadMaterials = () =>
+            MaterialModelFactory.CancelRequested = false;
+            FilterModelFactory.CancelRequested = false;
+            LineModelFactory.CancelRequested = false;
+
+            Thread uiThread = new(() =>
             {
-                handler.SetAction(app =>
+                Dispatcher threadDispatcher = Dispatcher.CurrentDispatcher;
+
+                CleanGarbageViewModel cleanGarbageViewModel = new();
+                cleanGarbageViewModel.LoadTagCategoryModels(tagCategoryModels);
+                cleanGarbageViewModel.LoadViewTemplateModels(viewTemplateModels);
+
+                DialogOptions dialogOptions = new()
                 {
-                    List<MaterialModel> materialModels = MaterialModelFactory.CreateModels(app.ActiveUIDocument.Document);
-                    Application.Current.Dispatcher.BeginInvoke(() =>
-                        cleanGarbageViewModel.LoadMaterialModels(materialModels));
-                });
-                externalEvent.Raise();
-            };
+                    Title = "Clean Project",
+                    Width = 400,
+                    Height = 700,
+                    Async = true
+                };
 
-            cleanGarbageViewModel.RequestLoadFilters = () =>
-            {
-                handler.SetAction(app =>
+                Window window = CommandDialog.Show(cleanGarbageViewModel, dialogOptions);
+                window.Closing += (s, e) =>
                 {
-                    List<FilterModel> filterModels = FilterModelFactory.CreateModels(app.ActiveUIDocument.Document);
-                    Application.Current.Dispatcher.BeginInvoke(() =>
-                        cleanGarbageViewModel.LoadFilterModels(filterModels));
-                });
-                externalEvent.Raise();
-            };
+                    MaterialModelFactory.CancelRequested = true;
+                    FilterModelFactory.CancelRequested = true;
+                    LineModelFactory.CancelRequested = true;
+                };          
 
-            cleanGarbageViewModel.RequestLoadLines = () =>
-            {
-                handler.SetAction(app =>
+                cleanGarbageViewModel.RequestLoadMaterials = () =>
                 {
-                    List<LineModel> lineModels = LineModelFactory.CreateModels(app.ActiveUIDocument.Document);
-                    Application.Current.Dispatcher.BeginInvoke(() =>
-                        cleanGarbageViewModel.LoadLineModels(lineModels));
-                });
-                externalEvent.Raise();
-            };
+                    handler.SetAction(app =>
+                    {
+                        if (!MaterialModelFactory.CancelRequested)
+                        {
+                            List<MaterialModel> materialModels = MaterialModelFactory.CreateModels(doc);
+                            threadDispatcher.Invoke(() =>
+                                cleanGarbageViewModel.LoadMaterialModels(materialModels));
+                        }
+                    });
+                    externalEvent.Raise();
+                };
 
-            DialogOptions dialogOptions = new()
-            {
-                Title = "Clean Project",
-                Width = 400,
-                Height = 700,
-                Async = true
-            };
+                cleanGarbageViewModel.RequestLoadFilters = () =>
+                {
+                    handler.SetAction(app =>
+                    {
+                        if (!FilterModelFactory.CancelRequested)
+                        {
+                            List<FilterModel> filterModels = FilterModelFactory.CreateModels(doc);
+                            threadDispatcher.Invoke(() =>
+                                cleanGarbageViewModel.LoadFilterModels(filterModels));
+                        }
+                    });
+                    externalEvent.Raise();
+                };
 
-            CommandDialog.Show(cleanGarbageViewModel, dialogOptions);
+                cleanGarbageViewModel.RequestLoadLines = () =>
+                {
+                    handler.SetAction(app =>
+                    {
+                        if (!LineModelFactory.CancelRequested)
+                        {
+                            List<LineModel> lineModels = LineModelFactory.CreateModels(doc);
+                            threadDispatcher.Invoke(() =>
+                                cleanGarbageViewModel.LoadLineModels(lineModels));
+                        }
+                    });
+                    externalEvent.Raise();
+                };
+
+                Dispatcher.Run();
+            });
+
+            uiThread.SetApartmentState(ApartmentState.STA);
+            uiThread.IsBackground = true;
+            uiThread.Start();
+
             return Result.Succeeded;
         }
     }
