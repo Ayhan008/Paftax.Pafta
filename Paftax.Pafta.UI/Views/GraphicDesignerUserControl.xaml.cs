@@ -18,7 +18,7 @@ namespace Paftax.Pafta.UI.Views
                     {
                         DrawingCanvas.AddElement(room.RoomGeometry);
                         DrawingCanvas.AddElevation(new PointXY(0, 0));
-                        DrawingCanvas.AddSection(new PointXY(0,200), new PointXY(0,-200));
+                        DrawingCanvas.AddSection(new PointXY(0, 200), new PointXY(0, -200));
                         DrawingCanvas.AddSection(new PointXY(-150, 0), new PointXY(150, 0));
                     }
                     DrawingCanvas.ZoomToFitAll();

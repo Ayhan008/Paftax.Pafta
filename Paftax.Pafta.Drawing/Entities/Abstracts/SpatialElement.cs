@@ -1,5 +1,4 @@
 ﻿using Paftax.Pafta.Drawing.Geometries;
-using Paftax.Pafta.Drawing.Structs;
 
 namespace Paftax.Pafta.Drawing.Entities.Abstracts
 {

@@ -83,8 +83,8 @@ namespace Paftax.Pafta.Drawing.Entities
             dir.Normalize();
 
             Point center = new(
-                End.X - dir.X  * Direction,
-                End.Y - dir.Y  * Direction
+                End.X - dir.X * Direction,
+                End.Y - dir.Y * Direction
             );
 
             double baseAngle = Math.Atan2(dir.Y, dir.X) * 180 / Math.PI;

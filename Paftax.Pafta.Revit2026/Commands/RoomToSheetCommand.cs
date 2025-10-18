@@ -6,6 +6,7 @@ using Autodesk.Revit.UI.Selection;
 using Paftax.Pafta.Revit2026.Factories;
 using Paftax.Pafta.Shared.Models;
 using Paftax.Pafta.UI.Dialogs;
+using Paftax.Pafta.UI.Services;
 using Paftax.Pafta.UI.ViewModels;
 
 namespace Paftax.Pafta.Revit2026.Commands
@@ -26,11 +27,18 @@ namespace Paftax.Pafta.Revit2026.Commands
                 RoomModel richRoomDataModel = RoomModelFactory.CreateRoomModelFromRevit(room);
                 richRoomDataModels.Add(richRoomDataModel);
             }
-            
+
             RoomToSheetViewModel roomToSheetViewModel = new();
             roomToSheetViewModel.LoadData(richRoomDataModels);
 
-            CommandDialog<RoomToSheetViewModel>.Show("Room To Sheet", 400, 700);
+            DialogOptions dialogOptions = new()
+            {
+                Title = "Room To Sheet",
+                Width = 400,
+                Height = 700
+            };
+
+            CommandDialog.Show(roomToSheetViewModel, dialogOptions);
             return Result.Succeeded;
         }
 

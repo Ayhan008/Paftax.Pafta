@@ -86,8 +86,8 @@ namespace Paftax.Pafta.UI.Controls
                         Window.GetWindow(this)?.DragMove();
                     }
                 };
-            }   
-            
+            }
+
             if (GetTemplateChild("PART_Title") is TextBlock titleTextBlock)
             {
                 titleTextBlock.Text = Window.GetWindow(this)?.Title;

@@ -3,13 +3,13 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using DocumentFormat.OpenXml.Packaging;
 using Paftax.Pafta.Revit2026.Factories;
-using Paftax.Pafta.Revit2026.Mappers;
 using Paftax.Pafta.Revit2026.Services;
 using Paftax.Pafta.Revit2026.Utilities;
 using Paftax.Pafta.Shared.Exporters.OpenXml;
 using Paftax.Pafta.Shared.Exporters.OpenXml.Stylesheets;
 using Paftax.Pafta.Shared.Models;
 using Paftax.Pafta.UI.Dialogs;
+using Paftax.Pafta.UI.Services;
 using Paftax.Pafta.UI.ViewModels;
 using System.Diagnostics;
 
@@ -29,12 +29,19 @@ namespace Paftax.Pafta.Revit2026.Commands
                 ElementCollectorService elementCollectorService = new(document);
                 List<ViewSchedule> viewSchedules = elementCollectorService.GetElementsInDocument<ViewSchedule>();
 
-                List<ScheduleModel> scheduleModels = [.. ScheduleMapper.MapToScheduleModels(viewSchedules)];
+                List<ScheduleModel> scheduleModels = ScheduleModelFactory.CreateScheduleModels(viewSchedules);
 
                 ExportScheduleViewModel exportScheduleViewModel = new();
                 exportScheduleViewModel.LoadSchedules(scheduleModels);
 
-                CommandDialog<ExportScheduleViewModel>.Show("Export Schedule", 400, 700);
+                DialogOptions dialogOptions = new()
+                {
+                    Title = "Export Schedule",
+                    Width = 400,
+                    Height = 700
+                };
+
+                CommandDialog.Show(exportScheduleViewModel, dialogOptions);
 
                 if (exportScheduleViewModel.IsReadyForExport == true)
                 {
@@ -122,7 +129,7 @@ namespace Paftax.Pafta.Revit2026.Commands
                 sheetService.SetCustomRowHeight(1, 24);
 
                 sheetService.FillSheet(scheduleTableData.HeaderPart, 1, 2);
-                sheetService.FillSheet(scheduleTableData.BodyPart, 2, scheduleTableData.HeaderRowCount+1);
+                sheetService.FillSheet(scheduleTableData.BodyPart, 2, scheduleTableData.HeaderRowCount + 1);
 
                 sheetService.MergeCells(scheduleTableData.MergedCells);
                 sheetService.SetColumnWidthsFromData(scheduleTableData.TableData);

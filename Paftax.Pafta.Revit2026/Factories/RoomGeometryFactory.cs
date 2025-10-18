@@ -22,7 +22,7 @@ namespace Paftax.Pafta.Revit2026.Factories
 
             RoomGeometry room = new()
             {
-                Id = new Drawing.Structs.ElementId(revitRoom.Id.ToLong()),
+                Id = new Drawing.Structs.ElementId(revitRoom.Id.Value),
                 Name = revitRoom.Name,
                 Number = revitRoom.Number,
                 Area = revitRoom.Area,

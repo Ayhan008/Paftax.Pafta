@@ -3,12 +3,11 @@ using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.Shared.Models
 {
-    public partial class ViewTemplateModel : ObservableObject, IElement
+    public partial class LineModel : ObservableObject, IElement
     {
-        public required string Name { get; set; }
         public required long Id { get; set; }
-        public bool IsActive { get; set; }
-        public int ViewCount { get; set; }
+        public required string Name { get; set; }
+        public int Count { get; set; }  
 
         [ObservableProperty]
         private bool isChecked;

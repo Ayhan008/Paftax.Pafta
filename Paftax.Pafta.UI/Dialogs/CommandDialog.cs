@@ -1,24 +1,58 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Paftax.Pafta.Shared.Interfaces;
+using Paftax.Pafta.UI.Services;
+using System.Windows;
 
 namespace Paftax.Pafta.UI.Dialogs
 {
-    public static class CommandDialog<TViewModel> where TViewModel : ObservableObject, new()
+    public static class CommandDialog
     {
-        public static void Show(string title, int width, int height)
+        private static readonly Dictionary<Type, Window> OpenWindows = [];
+
+        public static void Show(ObservableObject viewModel)
         {
-            var viewModel = new TViewModel();
-            Show(viewModel, title, width, height);
+            DialogOptions dialogOptions = new()
+            {
+                Title = "Info Dialog",
+                Width = 400,
+                Height = 300,
+                ShowCloseButton = true,
+                ShowHelpButton = false,
+                ShowMaximizeButton = false,
+                ShowMinimizeButton = false
+            };
+
+            Show(viewModel, dialogOptions);
         }
 
-        public static void Show(TViewModel viewModel, string title, int width, int height)
+        public static void Show(ObservableObject viewModel, DialogOptions dialogOptions)
         {
+            Type vmType = viewModel.GetType();
+
+            if (OpenWindows.TryGetValue(vmType, out var existingWindow))
+            {
+                existingWindow.Activate();
+                existingWindow.Topmost = true;
+                existingWindow.Topmost = false;
+                return;
+            }
+
             var baseWindow = new MainWindow
             {
                 DataContext = viewModel,
-                Title = title,
-                Width = width,
-                Height = height
+                Title = dialogOptions.Title,
+                Width = dialogOptions.Width,
+                Height = dialogOptions.Height,
+                ShowCloseButton = true,
+                ShowHelpButton = dialogOptions.ShowHelpButton,
+                ShowMaximizeButton = dialogOptions.ShowMaximizeButton,
+                ShowMinimizeButton = dialogOptions.ShowMinimizeButton,
+                Topmost = true
+            };
+
+            baseWindow.Closed += (s, e) =>
+            {
+                OpenWindows.Remove(vmType);
             };
 
             if (viewModel is ICloseable closeableViewModel)
@@ -26,25 +60,12 @@ namespace Paftax.Pafta.UI.Dialogs
                 closeableViewModel.CloseAction += baseWindow.Close;
             }
 
-            baseWindow.ShowDialog();
-        }
+            OpenWindows[vmType] = baseWindow;
 
-        public static void ShowAsync(TViewModel viewModel, string title, int width, int height)
-        {
-            var baseWindow = new MainWindow
-            {
-                DataContext = viewModel,
-                Title = title,
-                Width = width,
-                Height = height
-            };
-
-            if (viewModel is ICloseable closeableViewModel)
-            {
-                closeableViewModel.CloseAction += baseWindow.Close;
-            }
-
-            baseWindow.Show();
+            if (dialogOptions.Async == false)
+                baseWindow.ShowDialog();
+            else
+                baseWindow.Show();
         }
     }
 }

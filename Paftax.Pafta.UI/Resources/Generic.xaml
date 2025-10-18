@@ -15,5 +15,6 @@
         <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/SearchBoxStyles.xaml"/>
         <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/TabControlStyles.xaml"/>
         <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/TabItemStyles.xaml"/>
+        <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/ProgressRingStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

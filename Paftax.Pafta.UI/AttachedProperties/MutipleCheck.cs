@@ -15,14 +15,14 @@ namespace Paftax.Pafta.UI.AttachedProperties
 
         public static void SetIsEnabled(DependencyObject element, bool value)
         {
-             element.SetValue(IsEnabledProperty, value);
+            element.SetValue(IsEnabledProperty, value);
         }
-            
+
         public static bool GetIsEnabled(DependencyObject element)
         {
             return (bool)element.GetValue(IsEnabledProperty);
         }
-            
+
         private static void OnIsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not DataGrid grid)

@@ -5,12 +5,10 @@ using System.Collections.ObjectModel;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class RoomToSheetViewModel : ObservableObject, ICloseable
+    public partial class RoomToSheetViewModel : ObservableObject
     {
         public ObservableCollection<RoomModel> Rooms { get; } = [];
         public GraphicDesignerViewModel GraphicDesignerViewModel { get; set; } = new();
-
-        public event Action? CloseAction;
 
         public void LoadData(List<RoomModel> rooms)
         {

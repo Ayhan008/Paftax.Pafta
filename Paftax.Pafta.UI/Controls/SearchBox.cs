@@ -74,9 +74,9 @@ namespace Paftax.Pafta.UI.Controls
                     {
                         bottomBorder.Background = Brushes.Transparent;
                         bottomBorder.BorderBrush = Brushes.Transparent;
-                    }         
-                }               
-            }  
+                    }
+                }
+            }
         }
 
         protected void OnSearchTextBoxChanged()

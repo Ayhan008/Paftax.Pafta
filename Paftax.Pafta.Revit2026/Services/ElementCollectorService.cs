@@ -32,7 +32,7 @@ namespace Paftax.Pafta.Revit2026.Services
             return new FilteredElementCollector(_doc)
                 .OfClass(typeof(T))
                 .Cast<T>()
-                .FirstOrDefault(e => e.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase) && 
+                .FirstOrDefault(e => e.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase) &&
                 (e is FamilyInstance fi && fi.Symbol.Family.Name.Equals(familyName, StringComparison.OrdinalIgnoreCase)));
 
         }

@@ -1,5 +1,4 @@
-﻿using Paftax.Pafta.UI.ViewModels;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Paftax.Pafta.UI
 {

@@ -1,6 +1,4 @@
-﻿using Paftax.Pafta.Drawing.Structs;
-
-namespace Paftax.Pafta.Drawing.Entities.Abstracts
+﻿namespace Paftax.Pafta.Drawing.Entities.Abstracts
 {
     public abstract class Annotation : Entity
     {

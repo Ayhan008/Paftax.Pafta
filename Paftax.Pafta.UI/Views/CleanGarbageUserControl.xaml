@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
              xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"           
              xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels" 
+             xmlns:converters="clr-namespace:Paftax.Pafta.UI.Converters"
              xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls" d:DataContext="{d:DesignInstance Type=vm:CleanGarbageViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="400">
@@ -16,6 +17,7 @@
                 <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Themes/Dark.xaml"/>
                 <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     
@@ -25,7 +27,8 @@
             <RowDefinition Height="45"/>
         </Grid.RowDefinitions>
 
-        <TabControl Grid.Row="0" Margin="10" SelectedIndex="0">
+        <TabControl Grid.Row="0" Margin="10" SnapsToDevicePixels="True"
+                    SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
             <TabItem Header="Tags">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -38,19 +41,21 @@
                                         HorizontalAlignment="Stretch" 
                                         Margin="10" Height="30"
                                         PlaceholderText="Search for tags..."
-                                        SearchText="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        SearchText="{Binding TagSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <DataGrid x:Name="TagCategoriesDataGrid" 
                               Grid.Row="1" 
                               AutoGenerateColumns="False" 
                               Margin="10,0,10,10" 
                               properties:MutipleCheck.IsEnabled="True"
+                              EnableRowVirtualization="True"
+                              EnableColumnVirtualization="True"
                               ItemsSource="{Binding TagCategories}">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Width="30">
                                 <DataGridTemplateColumn.Header>
                                     <CheckBox x:Name="SelectAllCheckBox" 
-                                              IsChecked="{Binding DataContext.IsAllChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                              IsChecked="{Binding DataContext.IsAllTagsChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                                 </DataGridTemplateColumn.Header>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -66,7 +71,7 @@
                             <DataGridTextColumn Header="Count" 
                                                 Foreground="{DynamicResource DataGridForeground}"
                                                 Binding="{Binding Count}" 
-                                                Width="80"/>
+                                                Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -83,18 +88,22 @@
                                         HorizontalAlignment="Stretch" 
                                         Margin="10" Height="30"
                                         PlaceholderText="Search for View Templates..."
-                                        SearchText="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        SearchText="{Binding ViewTemplateSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <DataGrid Grid.Row="1" 
                               AutoGenerateColumns="False" 
                               Margin="10,0,10,10" 
+                              EnableRowVirtualization="True"
+                              EnableColumnVirtualization="True"
                               properties:MutipleCheck.IsEnabled="True"
                               ItemsSource="{Binding ViewTemplates}">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Width="30">
-                                <DataGridTemplateColumn.Header>
-                                    <CheckBox IsChecked="{Binding DataContext.IsAllChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
-                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding DataContext.IsAllViewTemplatesChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
@@ -126,18 +135,22 @@
                                         HorizontalAlignment="Stretch" 
                                         Margin="10" Height="30"
                                         PlaceholderText="Search for Filter..."
-                                        SearchText="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        SearchText="{Binding FilterSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <DataGrid Grid.Row="1" 
                               AutoGenerateColumns="False" 
                               Margin="10,0,10,10" 
+                              EnableRowVirtualization="True"
+                              EnableColumnVirtualization="True"
                               properties:MutipleCheck.IsEnabled="True"
                               ItemsSource="{Binding Filters}">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Width="30">
-                                <DataGridTemplateColumn.Header>
-                                    <CheckBox IsChecked="{Binding DataContext.IsAllChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
-                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding DataContext.IsAllFiltersChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
@@ -155,6 +168,110 @@
                                                 Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Materials">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <controls:SearchBox VerticalAlignment="Top"
+                                        Grid.Row="0"
+                                        HorizontalAlignment="Stretch" 
+                                        Margin="10" Height="30"
+                                        PlaceholderText="Search for Filter..."
+                                        SearchText="{Binding MaterialSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <DataGrid Grid.Row="1" 
+                              AutoGenerateColumns="False" 
+                              Margin="10,0,10,10" 
+                              EnableRowVirtualization="True"
+                              EnableColumnVirtualization="True"
+                              properties:MutipleCheck.IsEnabled="True"
+                              ItemsSource="{Binding Materials}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="30">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding DataContext.IsAllMaterialsChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                                  Foreground="{DynamicResource DataGridForeground}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Name" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding Name}" 
+                                                Width="*"/>
+                            <DataGridTextColumn Header="Template Count" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding Count}" 
+                                                Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Lines">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <controls:SearchBox VerticalAlignment="Top"
+                                        Grid.Row="0"
+                                        HorizontalAlignment="Stretch" 
+                                        Margin="10" Height="30"
+                                        PlaceholderText="Search for Filter..."
+                                        SearchText="{Binding LineSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <DataGrid Grid.Row="1" 
+                              AutoGenerateColumns="False" 
+                              Margin="10,0,10,10" 
+                              EnableRowVirtualization="True"
+                              EnableColumnVirtualization="True"
+                              properties:MutipleCheck.IsEnabled="True"
+                              ItemsSource="{Binding Lines}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="30">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding DataContext.IsAllLinesChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                                  Foreground="{DynamicResource DataGridForeground}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Name" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding Name}" 
+                                                Width="*"/>
+                            <DataGridTextColumn Header="Template Count" 
+                                                Foreground="{DynamicResource DataGridForeground}"
+                                                Binding="{Binding Count}" 
+                                                Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <controls:ProgressRing Width="50" Height="50"
+                                           Grid.Row="1"
+                                           Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                           HorizontalAlignment="Center" 
+                                           StrokeThickness="4"
+                                           Background="White"
+                                           Foreground="White"
+                                           IsIndeterminate="True"
+                                           VerticalAlignment="Center"/>
                 </Grid>
             </TabItem>
         </TabControl>

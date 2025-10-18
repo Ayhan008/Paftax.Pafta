@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Paftax.Pafta.Revit2026.Utilities;
+using Paftax.Pafta.Shared.Enums;
 using Paftax.Pafta.Shared.Models;
 
 namespace Paftax.Pafta.Revit2026.Factories
@@ -15,14 +16,20 @@ namespace Paftax.Pafta.Revit2026.Factories
         {
             ScheduleTableData scheduleTableData = new()
             {
-                Id = viewSchedule.Id.ToLong(),
+                Id = viewSchedule.Id.Value,
                 Name = viewSchedule.Name,
                 MergedCells = GetMergedCellData(viewSchedule),
-                BodyPart = GetBodySectionData(viewSchedule),
-                HeaderPart = GetHeaderSectionData(viewSchedule),
-                TitlePart = GetTitleSectionData(viewSchedule),
-                TableData = GetTableData(GetTitleSectionData(viewSchedule), GetHeaderSectionData(viewSchedule))
             };
+
+            scheduleTableData.TableParts[SchedulePart.Body] = GetBodySectionData(viewSchedule);
+            scheduleTableData.TableParts[SchedulePart.Header] = GetHeaderSectionData(viewSchedule);
+            scheduleTableData.TableParts[SchedulePart.Title] = GetTitleSectionData(viewSchedule);
+
+            scheduleTableData.TableData = GetTableData(
+                scheduleTableData.BodyPart,
+                scheduleTableData.HeaderPart
+            );
+
             return scheduleTableData;
         }
 

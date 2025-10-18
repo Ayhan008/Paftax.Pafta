@@ -1,6 +1,4 @@
-﻿using System.Windows.Media.Media3D;
-
-namespace Paftax.Pafta.Drawing.Structs
+﻿namespace Paftax.Pafta.Drawing.Structs
 {
     public struct BoundingBoxXYZ(PointXYZ min, PointXYZ max)
     {

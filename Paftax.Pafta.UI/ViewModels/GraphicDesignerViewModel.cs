@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Paftax.Pafta.Drawing.Geometries;
-using Paftax.Pafta.Shared.Interfaces;
 using Paftax.Pafta.Shared.Models;
 using System.Collections.ObjectModel;
 

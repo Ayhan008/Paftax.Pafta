@@ -17,21 +17,16 @@ namespace Paftax.Pafta.UI.AttachedProperties
         {
             if (d is FrameworkElement fe && (bool)e.NewValue)
             {
-                ThemeService.ApplyTheme(UI.Theme.CurrentTheme, fe);
+                ThemeManager.ApplyTheme(fe);
 
                 fe.Loaded += (s, args) =>
                 {
-                    ThemeService.ApplyTheme(UI.Theme.CurrentTheme, fe);
+                    ThemeManager.ApplyTheme(fe);
                 };
 
-                UI.Theme.ThemeChanged += theme =>
+                fe.Unloaded -= (s, args) =>
                 {
-                    ThemeService.ApplyTheme(theme, fe);
-                };
-
-                fe.Unloaded += (s, args) =>
-                {
-                    UI.Theme.ThemeChanged -= theme => ThemeService.ApplyTheme(theme, fe);
+                    ThemeManager.ApplyTheme(fe);
                 };
             }
         }
