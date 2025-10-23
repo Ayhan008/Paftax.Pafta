@@ -57,14 +57,6 @@ namespace Paftax.Pafta.UI.Dialogs
                 OpenWindows.Remove(vmType);
             };
 
-            if (viewModel is ICloseable closeableViewModel)
-            {
-                closeableViewModel.CloseAction += () =>
-                {
-                    baseWindow.Dispatcher.Invoke(() => baseWindow.Close());
-                };
-            }
-
             OpenWindows[vmType] = baseWindow;
 
             if (dialogOptions.Async == false)

@@ -9,7 +9,7 @@
              xmlns:converters="clr-namespace:Paftax.Pafta.UI.Converters"
              xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls" d:DataContext="{d:DesignInstance Type=vm:CleanGarbageViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="400">
+             d:DesignHeight="800" d:DesignWidth="450">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -27,30 +27,55 @@
             <RowDefinition Height="45"/>
         </Grid.RowDefinitions>
 
+        <Border Grid.Row="0" 
+                HorizontalAlignment="Stretch" 
+                Height="1"
+                VerticalAlignment="Top"/>
+
         <TabControl Grid.Row="0" Margin="10" SnapsToDevicePixels="True"
                     SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
-            <TabItem Header="Tags">
+            <TabItem Header="Views">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <controls:SearchBox VerticalAlignment="Top"
-                                        Grid.Row="0"
-                                        HorizontalAlignment="Stretch" 
-                                        Margin="10" Height="30"
-                                        PlaceholderText="Search for tags..."
-                                        SearchText="{Binding TagSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Grid Grid.Row="0" Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <DataGrid x:Name="TagCategoriesDataGrid" 
+                        <ComboBox x:Name="ViewsComboBox"
+                                  Grid.Column="0"
+                                  BorderThickness="1"
+                                  SelectedIndex="1"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
+                                  Height="30"
+                                  Width="100">
+                            <ComboBoxItem Content="All" Height="25"/>
+                            <ComboBoxItem Content="Unplaced" Height="25"/>
+                        </ComboBox>
+
+                        <controls:SearchBox VerticalAlignment="Center"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Stretch" 
+                                            Width="Auto"
+                                            Margin="10,0,0,0" Height="30"
+                                            PlaceholderText="Search for a View..."
+                                            SearchText="{Binding ViewSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+
+                    <DataGrid x:Name="ViewsDataGrid" 
                               Grid.Row="1" 
                               AutoGenerateColumns="False" 
                               Margin="10,0,10,10" 
                               properties:MutipleCheck.IsEnabled="True"
                               EnableRowVirtualization="True"
                               EnableColumnVirtualization="True"
-                              ItemsSource="{Binding TagCategories}">
+                              ItemsSource="{Binding Views}">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Width="30">
                                 <DataGridTemplateColumn.Header>
@@ -64,18 +89,28 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Category" 
+
+                            <DataGridTemplateColumn Header="" Width="30">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <controls:FontIcon Glyph="{Binding IsPlacedGlyph}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTextColumn Header="Name" 
                                                 Foreground="{DynamicResource DataGridForeground}"
-                                                Binding="{Binding Category}" 
+                                                Binding="{Binding Name}" 
                                                 Width="*"/>
-                            <DataGridTextColumn Header="Count" 
+                            <DataGridTextColumn Header="View Type" 
                                                 Foreground="{DynamicResource DataGridForeground}"
-                                                Binding="{Binding Count}" 
+                                                Binding="{Binding ViewType}" 
                                                 Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
+
             <TabItem Header="View Templates">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -83,13 +118,33 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <controls:SearchBox VerticalAlignment="Top"
-                                        Grid.Row="0"
-                                        HorizontalAlignment="Stretch" 
-                                        Margin="10" Height="30"
-                                        PlaceholderText="Search for View Templates..."
-                                        SearchText="{Binding ViewTemplateSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Grid Grid.Row="0" Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <ComboBox x:Name="ViewTemplatesComboBox"
+                              Grid.Column="0"
+                              BorderThickness="1"
+                              SelectedIndex="1"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center"
+                              Height="30"
+                              Width="100">
+                            <ComboBoxItem Content="All" Height="25"/>
+                            <ComboBoxItem Content="Unused" Height="25"/>
+                        </ComboBox>
 
+                        <controls:SearchBox VerticalAlignment="Center"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Stretch" 
+                                        Width="Auto"
+                                        Margin="10,0,0,0" Height="30"
+                                        PlaceholderText="Search for a View Template..."
+                                        SearchText="{Binding ViewTemplateSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                    
                     <DataGrid Grid.Row="1" 
                               AutoGenerateColumns="False" 
                               Margin="10,0,10,10" 
@@ -123,6 +178,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
+
             <TabItem Header="Filters">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -130,12 +186,33 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <controls:SearchBox VerticalAlignment="Top"
-                                        Grid.Row="0"
-                                        HorizontalAlignment="Stretch" 
-                                        Margin="10" Height="30"
-                                        PlaceholderText="Search for Filter..."
-                                        SearchText="{Binding FilterSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Grid Grid.Row="0" Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox x:Name="FiltersTypeComboBox"
+                                  Grid.Column="0"
+                                  BorderThickness="1"
+                                  SelectedIndex="1"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
+                                  Height="30"
+                                  Width="100">
+                            <ComboBoxItem Content="All" Height="25"/>
+                            <ComboBoxItem Content="Unused" Height="25"/>
+                        </ComboBox>
+
+                        <controls:SearchBox VerticalAlignment="Top"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Stretch" 
+                                            Margin="10,0,0,0" Height="30"
+                                            PlaceholderText="Search for a Filter..."
+                                            SearchText="{Binding FilterSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+
+                    
 
                     <DataGrid Grid.Row="1" 
                               AutoGenerateColumns="False" 
@@ -204,12 +281,31 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <controls:SearchBox VerticalAlignment="Top"
-                                        Grid.Row="0"
-                                        HorizontalAlignment="Stretch" 
-                                        Margin="10" Height="30"
-                                        PlaceholderText="Search for Materials..."
-                                        SearchText="{Binding MaterialSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Grid Grid.Row="0" Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox x:Name="MaterialsComboBox"
+                                  Grid.Column="0"
+                                  BorderThickness="1"
+                                  SelectedIndex="1"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
+                                  Height="30"
+                                  Width="100">
+                            <ComboBoxItem Content="All" Height="25"/>
+                            <ComboBoxItem Content="Unused" Height="25"/>
+                        </ComboBox>
+
+                        <controls:SearchBox VerticalAlignment="Top"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Stretch" 
+                                            Margin="10,0,0,0" Height="30"
+                                            PlaceholderText="Search for a Material..."
+                                            SearchText="{Binding MaterialSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
 
                     <DataGrid Grid.Row="1" 
                               AutoGenerateColumns="False" 
@@ -236,7 +332,7 @@
                                                 Foreground="{DynamicResource DataGridForeground}"
                                                 Binding="{Binding Name}" 
                                                 Width="*"/>
-                            <DataGridTextColumn Header="Template Count" 
+                            <DataGridTextColumn Header="Type Count" 
                                                 Foreground="{DynamicResource DataGridForeground}"
                                                 Binding="{Binding Count}" 
                                                 Width="100"/>
@@ -278,12 +374,31 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <controls:SearchBox VerticalAlignment="Top"
-                                        Grid.Row="0"
-                                        HorizontalAlignment="Stretch" 
-                                        Margin="10" Height="30"
-                                        PlaceholderText="Search for Lines..."
-                                        SearchText="{Binding LineSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Grid Grid.Row="0" Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox x:Name="LinesComboBox"
+                                  Grid.Column="0"
+                                  BorderThickness="1"
+                                  SelectedIndex="1"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
+                                  Height="30"
+                                  Width="100">
+                            <ComboBoxItem Content="All" Height="25"/>
+                            <ComboBoxItem Content="Unplaced" Height="25"/>
+                        </ComboBox>
+
+                        <controls:SearchBox VerticalAlignment="Top"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Stretch" 
+                                            Margin="10,0,0,0" Height="30"
+                                            PlaceholderText="Search for a Line..."
+                                            SearchText="{Binding LineSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
 
                     <DataGrid Grid.Row="1" 
                               AutoGenerateColumns="False" 
@@ -310,7 +425,7 @@
                                                 Foreground="{DynamicResource DataGridForeground}"
                                                 Binding="{Binding Name}" 
                                                 Width="*"/>
-                            <DataGridTextColumn Header="Template Count" 
+                            <DataGridTextColumn Header="Instance Count" 
                                                 Foreground="{DynamicResource DataGridForeground}"
                                                 Binding="{Binding Count}" 
                                                 Width="100"/>
@@ -347,6 +462,11 @@
             </TabItem>
         </TabControl>
 
+        <Border Grid.Row="0" 
+                HorizontalAlignment="Stretch" 
+                Height="1"
+                VerticalAlignment="Bottom"/>
+
         <StackPanel Orientation="Horizontal" 
                     Margin="0,0,10,0"
                     Grid.Row="1" 
@@ -358,6 +478,7 @@
                     HorizontalAlignment="Right" 
                     Margin="0,0,10,0"
                     VerticalAlignment="Center"
+                    Style="{StaticResource ResultButtonStyle}"
                     Command="{Binding CleanCommand}"/>
 
             <Button x:Name="CancelButton" Content="Cancel" 

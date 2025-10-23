@@ -3,10 +3,9 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Paftax.Pafta.Revit2026.Events;
 using Paftax.Pafta.Revit2026.Factories;
+using Paftax.Pafta.Revit2026.Services;
 using Paftax.Pafta.Shared.Models;
-using Paftax.Pafta.UI.Dialogs;
 using Paftax.Pafta.UI.Services;
-using Paftax.Pafta.UI.ViewModels;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -17,84 +16,107 @@ namespace Paftax.Pafta.Revit2026.Commands
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            Document doc = commandData.Application.ActiveUIDocument.Document;
+            // Get Revit document
+            UIApplication uiApplication = commandData.Application;
+            UIDocument uiDocument = uiApplication.ActiveUIDocument;
+            Document doc = uiDocument.Document;
 
-            List<TagCategoryModel> tagCategoryModels = TagCategoryModelFactory.CreateModels(doc);
-            List<ViewTemplateModel> viewTemplateModels = ViewTemplateModelFactory.CreateModels(doc);
+            // Prepare data models
+            List<ViewModel> viewModels = new ViewModelFactory(doc).CreateModels();
+            List<ViewTemplateModel> viewTemplateModels = new ViewTemplateModelFactory(doc).CreateModels();
 
+            // Set up External Event and Handler
             CleanGarbageHandler handler = new();
             ExternalEvent externalEvent = ExternalEvent.Create(handler);
 
-            MaterialModelFactory.CancelRequested = false;
-            FilterModelFactory.CancelRequested = false;
-            LineModelFactory.CancelRequested = false;
-
+            // Start UI thread
             Thread uiThread = new(() =>
             {
+                // Create Dispatcher for the new thread
                 Dispatcher threadDispatcher = Dispatcher.CurrentDispatcher;
 
-                CleanGarbageViewModel cleanGarbageViewModel = new();
-                cleanGarbageViewModel.LoadTagCategoryModels(tagCategoryModels);
-                cleanGarbageViewModel.LoadViewTemplateModels(viewTemplateModels);
+                // Dialog Service
+                CleanGarbageDialogService dialogService = new();
+                dialogService.LoadViewModels(viewModels);
+                dialogService.LoadViewTemplateModels(viewTemplateModels);
+                Window window = dialogService.Show();
 
-                DialogOptions dialogOptions = new()
-                {
-                    Title = "Clean Project",
-                    Width = 400,
-                    Height = 700,
-                    Async = true
-                };
+                CancellationTokenSource cancellationTokenSource = new();
 
-                Window window = CommandDialog.Show(cleanGarbageViewModel, dialogOptions);
-                window.Closing += (s, e) =>
-                {
-                    MaterialModelFactory.CancelRequested = true;
-                    FilterModelFactory.CancelRequested = true;
-                    LineModelFactory.CancelRequested = true;
-                };          
-
-                cleanGarbageViewModel.RequestLoadMaterials = () =>
+                // Load Materials when requested
+                dialogService.LoadMaterialsRequested = () =>
                 {
                     handler.SetAction(app =>
                     {
-                        if (!MaterialModelFactory.CancelRequested)
-                        {
-                            List<MaterialModel> materialModels = MaterialModelFactory.CreateModels(doc);
-                            threadDispatcher.Invoke(() =>
-                                cleanGarbageViewModel.LoadMaterialModels(materialModels));
-                        }
+                        List<MaterialModel> materialModels = new MaterialModelFactory(doc).Cancellable(cancellationTokenSource.Token).CreateModels();
+                        threadDispatcher.Invoke(() => dialogService.LoadMaterialModels(materialModels));
                     });
                     externalEvent.Raise();
                 };
 
-                cleanGarbageViewModel.RequestLoadFilters = () =>
+                // Load Filters when requested
+                dialogService.LoadFiltersRequested = () =>
                 {
                     handler.SetAction(app =>
                     {
-                        if (!FilterModelFactory.CancelRequested)
-                        {
-                            List<FilterModel> filterModels = FilterModelFactory.CreateModels(doc);
-                            threadDispatcher.Invoke(() =>
-                                cleanGarbageViewModel.LoadFilterModels(filterModels));
-                        }
+                        List<FilterModel> filterModels = new FilterModelFactory(doc).Cancellable(cancellationTokenSource.Token).CreateModels();
+                        threadDispatcher.Invoke(() => dialogService.LoadFilterModels(filterModels));
                     });
                     externalEvent.Raise();
                 };
 
-                cleanGarbageViewModel.RequestLoadLines = () =>
+                // Load Lines when requested
+                dialogService.LoadLinesRequested = () =>
                 {
                     handler.SetAction(app =>
                     {
-                        if (!LineModelFactory.CancelRequested)
-                        {
-                            List<LineModel> lineModels = LineModelFactory.CreateModels(doc);
-                            threadDispatcher.Invoke(() =>
-                                cleanGarbageViewModel.LoadLineModels(lineModels));
-                        }
+                        List<LineModel> lineModels = new LineModelFactory(doc).Cancellable(cancellationTokenSource.Token).CreateModels();
+                        threadDispatcher.Invoke(() => dialogService.LoadLineModels(lineModels));
                     });
                     externalEvent.Raise();
                 };
 
+                dialogService.CleanAction += () =>
+                {
+                    window.Close();
+
+                    List<FilterModel> selectedFilters = dialogService.GetSelectedFilterModels();
+                    List<MaterialModel> selectedMaterials = dialogService.GetSelectedMaterialModels();
+                    List<LineModel> selectedLines = dialogService.GetSelectedLineModels();
+                    List<ViewModel> selectedViewModels = dialogService.GetSelectedViewModels();
+                    List<ViewTemplateModel> selectedViewTemplates = dialogService.GetSelectedViewTemplateModels();
+
+                    List<ParameterFilterElement> filtersToDelete = new ElementCollectorService(doc).GetElementsByIds<ParameterFilterElement>(selectedFilters.Select(f => f.Id));
+                    List<Material> materialsToDelete = new ElementCollectorService(doc).GetElementsByIds<Material>(selectedMaterials.Select(m => m.Id));
+                    List<LinePatternElement> linesToDelete = new ElementCollectorService(doc).GetElementsByIds<LinePatternElement>(selectedLines.Select(l => l.Id));
+                    List<View> viewTemplatesToDelete = new ElementCollectorService(doc).GetElementsByIds<View>(selectedViewTemplates.Select(vt => vt.Id));
+
+                    handler.SetAction(uiApp =>
+                    {
+                        Document doc = uiApp.ActiveUIDocument.Document;
+
+                        using Transaction t = new(doc, "Clean Project");
+                        t.Start();
+
+                        List<ElementId> idsToDelete =
+                        [
+                            .. selectedFilters.Select(f => new ElementId(f.Id)),
+                            .. selectedMaterials.Select(m => new ElementId(m.Id)),
+                            .. selectedViewModels.Select(v => new ElementId(v.Id)),
+                            .. selectedLines.Select(l => new ElementId(l.Id)),
+                            .. selectedViewTemplates.Select(vt => new ElementId(vt.Id)),
+                        ];
+                        doc.Delete(idsToDelete);
+
+                        t.Commit();
+                    });
+                    externalEvent.Raise();
+                };
+
+                // Handle window closing and cancel operations
+                window.Closed += (s, e) => { cancellationTokenSource.Cancel(); };
+                dialogService.CancelAction += () => { window.Close(); };
+                dialogService.CloseAction += () => { window.Close(); };
                 Dispatcher.Run();
             });
 

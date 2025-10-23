@@ -1,12 +1,12 @@
 ﻿using Autodesk.Revit.DB;
-using Paftax.Pafta.Revit2026.Utilities;
 using Paftax.Pafta.Shared.Models;
 
 namespace Paftax.Pafta.Revit2026.Factories
 {
-    internal class TagModelFactory
+    internal class TagModelFactory(Document document)
     {
-        public static TagModel FromTag(IndependentTag independentTag)
+        private readonly Document _document = document;
+        public static TagModel CreateModel(IndependentTag independentTag)
         {
             return new TagModel
             {

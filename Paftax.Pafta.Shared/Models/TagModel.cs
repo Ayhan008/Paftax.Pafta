@@ -3,7 +3,7 @@ using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.Shared.Models
 {
-    public partial class TagModel : ObservableObject, IElement
+    public partial class TagModel : ObservableObject
     {
         public required long Id { get; set; }
         public string TagCategory { get; set; } = string.Empty;

@@ -3,19 +3,17 @@ using CommunityToolkit.Mvvm.Input;
 using Paftax.Pafta.Shared.Interfaces;
 using Paftax.Pafta.Shared.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Windows.Data;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class ExportScheduleViewModel : ObservableObject, ICloseable
+    public partial class ExportScheduleViewModel : ObservableObject, IExportScheduleViewModel
     {
-        private readonly List<ScheduleModel> _loadedSchedules = [];
         public ObservableCollection<ScheduleModel> Schedules { get; } = [];
-        public event Action? RequestAction;
-        public event Action? CloseAction;
+        public ICollectionView SchedulesView { get; }
 
-        [ObservableProperty]
-        private bool isReadyForExport = false;
         [ObservableProperty]
         private bool isAllChecked = false;
         [ObservableProperty]
@@ -27,6 +25,15 @@ namespace Paftax.Pafta.UI.ViewModels
         [ObservableProperty]
         private string exportFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
+        public event Action? CloseAction;
+        public event Action? ExportAction;
+
+        public ExportScheduleViewModel()
+        {
+            SchedulesView = CollectionViewSource.GetDefaultView(Schedules);
+            SchedulesView.Filter = FilterSchedules;
+        }
+
         public bool CanExport
         {
             get
@@ -37,26 +44,28 @@ namespace Paftax.Pafta.UI.ViewModels
             }
         }
 
+        private bool FilterSchedules(object obj)
+        {
+            if (obj is ScheduleModel schedule)
+            {
+                return string.IsNullOrWhiteSpace(SearchText)
+                    || schedule.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+            }
+            return false;
+        }
+
         partial void OnIsAllCheckedChanged(bool value)
         {
-            foreach (var item in Schedules)
+            foreach (ScheduleModel scheduleModel in Schedules)
             {
-                if (item.IsChecked != value)
-                    item.IsChecked = value;
+                if (scheduleModel.IsChecked != value)
+                    scheduleModel.IsChecked = value;
             }
         }
 
         partial void OnSearchTextChanged(string value)
         {
-            Schedules.Clear();
-
-            var filtered = string.IsNullOrWhiteSpace(SearchText)
-                ? _loadedSchedules
-                : _loadedSchedules.Where(x =>
-                      x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-
-            foreach (ScheduleModel scheduleModel in filtered)
-                Schedules.Add(scheduleModel);
+            SchedulesView.Refresh();
         }
 
         partial void OnIsMergedChanged(bool value)
@@ -88,51 +97,38 @@ namespace Paftax.Pafta.UI.ViewModels
         [RelayCommand]
         private void Cancel()
         {
-            IsReadyForExport = false;
             CloseAction?.Invoke();
         }
 
         [RelayCommand(CanExecute = nameof(CanExport))]
         private void Export()
         {
-            SelectedSchedules();
-
             if (!string.IsNullOrWhiteSpace(ExportFolderPath) && !Directory.Exists(ExportFolderPath))
                 Directory.CreateDirectory(ExportFolderPath);
 
-            var selectedSchedules = SelectedSchedules();
-
-            if (selectedSchedules.Count > 0)
+            if (Schedules.Where(s => s.IsChecked == true).ToList().Count > 0)
             {
-                IsReadyForExport = true;
-                RequestAction?.Invoke();
+                ExportAction?.Invoke();
                 CloseAction?.Invoke();
-
                 ExportCommand.NotifyCanExecuteChanged();
             }
         }
 
-        public void LoadSchedules(List<ScheduleModel> scheduleModels)
+        public void LoadSchedules(IEnumerable<ScheduleModel> scheduleModels)
         {
-            _loadedSchedules.Clear();
             Schedules.Clear();
-
-            _loadedSchedules.AddRange(scheduleModels);
-
-            foreach (var schedule in _loadedSchedules)
+            foreach (ScheduleModel scheduleModel in scheduleModels)
             {
-                schedule.PropertyChanged += (s, e) =>
+                scheduleModel.PropertyChanged += (s, e) =>
                 {
-                    if (e.PropertyName == nameof(schedule.IsChecked))
+                    if (e.PropertyName == nameof(scheduleModel.IsChecked))
+                    {
                         ExportCommand.NotifyCanExecuteChanged();
+                    }
+                        
                 };
-                Schedules.Add(schedule);
+                Schedules.Add(scheduleModel);
             }
-        }
-
-        public List<ScheduleModel> SelectedSchedules()
-        {
-            return [.. _loadedSchedules.Where(s => s.IsChecked)];
         }
     }
 }

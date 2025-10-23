@@ -3,37 +3,43 @@ using CommunityToolkit.Mvvm.Input;
 using Paftax.Pafta.Shared.Interfaces;
 using Paftax.Pafta.Shared.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Threading;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class CleanGarbageViewModel : ObservableObject, ICloseable
+    public partial class CleanGarbageViewModel : ObservableObject, ICleanGarbageViewModel
     {
         #region Collections
-        private readonly ObservableCollection<TagCategoryModel> _allTagCategories = [];
-        private readonly ObservableCollection<ViewTemplateModel> _allViewTemplates = [];
-        private readonly ObservableCollection<FilterModel> _allFilters = [];
-        private readonly ObservableCollection<MaterialModel> _allMaterials = [];
-        private readonly ObservableCollection<LineModel> _allLines = [];
-
-        public ObservableCollection<TagCategoryModel> TagCategories { get; } = [];
+        public ObservableCollection<ViewModel> Views { get; } = [];
         public ObservableCollection<ViewTemplateModel> ViewTemplates { get; } = [];
         public ObservableCollection<FilterModel> Filters { get; } = [];
         public ObservableCollection<MaterialModel> Materials { get; } = [];
         public ObservableCollection<LineModel> Lines { get; } = [];
+
+        public ICollectionView ViewsView { get; private set; }
+        public ICollectionView ViewTemplatesView { get; private set; }
+        public ICollectionView FiltersView { get; private set; }
+        public ICollectionView MaterialsView { get; private set; }
+        public ICollectionView LinesView { get; private set; }
         #endregion
 
         public Action? RequestLoadMaterials { get; set; }
         public Action? RequestLoadFilters { get; set; }
         public Action? RequestLoadLines { get; set; }
 
+        public event Action? CloseAction;
+        public event Action? CleanAction;
+        public event Action? CancelAction;
+
         [ObservableProperty]
         private int _selectedTabIndex = 0;
 
         #region Search Texts
         [ObservableProperty]
-        private string _tagSearchText = string.Empty;
+        private string _viewSearchText = string.Empty;
         [ObservableProperty]
         private string _viewTemplateSearchText = string.Empty;
         [ObservableProperty]
@@ -46,7 +52,7 @@ namespace Paftax.Pafta.UI.ViewModels
 
         #region DataGrid SelectAll CheckBoxes
         [ObservableProperty]
-        private bool _isAllTagsChecked = false;
+        private bool _isAllViewsChecked = false;
         [ObservableProperty]
         private bool _isAllViewTemplatesChecked = false;
         [ObservableProperty]
@@ -64,15 +70,11 @@ namespace Paftax.Pafta.UI.ViewModels
         [ObservableProperty]
         private Visibility _filtersProgressRing = Visibility.Collapsed;
 
-        public event Action? CloseAction;
-        public event Action? CleanAction;
-        public event Action? CancelAction;
-
         [RelayCommand]
         private void Cancel()
         {
             CancelAction?.Invoke();
-            CloseAction?.Invoke();     
+            CloseAction?.Invoke();
         }
 
         [RelayCommand]
@@ -84,7 +86,16 @@ namespace Paftax.Pafta.UI.ViewModels
 
         private bool _filtersLoaded = false;
         private bool _materialsLoaded = false;
-        private bool _linesLoaded = false;      
+        private bool _linesLoaded = false;
+
+        public CleanGarbageViewModel()
+        {
+            ViewsView = CollectionViewSource.GetDefaultView(Views);
+            ViewTemplatesView = CollectionViewSource.GetDefaultView(ViewTemplates);
+            FiltersView = CollectionViewSource.GetDefaultView(Filters);
+            MaterialsView = CollectionViewSource.GetDefaultView(Materials);
+            LinesView = CollectionViewSource.GetDefaultView(Lines);
+        }
 
         partial void OnSelectedTabIndexChanged(int value)
         {
@@ -123,9 +134,9 @@ namespace Paftax.Pafta.UI.ViewModels
             }
         }
 
-        partial void OnIsAllTagsCheckedChanged(bool value)
+        partial void OnIsAllViewsCheckedChanged(bool value)
         {
-            foreach (var item in TagCategories)
+            foreach (var item in Views)
                 if (item.IsChecked != value) item.IsChecked = value;
         }
 
@@ -153,64 +164,79 @@ namespace Paftax.Pafta.UI.ViewModels
                 if (item.IsChecked != value) item.IsChecked = value;
         }
 
-        partial void OnTagSearchTextChanged(string value) => FilterCollection(_allTagCategories, TagCategories, x => x.Category, value);
-        partial void OnViewTemplateSearchTextChanged(string value) => FilterCollection(_allViewTemplates, ViewTemplates, x => x.Name, value);
-        partial void OnFilterSearchTextChanged(string value) => FilterCollection(_allFilters, Filters, x => x.Name, value);
-        partial void OnMaterialSearchTextChanged(string value) => FilterCollection(_allMaterials, Materials, x => x.Name, value);
-        partial void OnLineSearchTextChanged(string value) => FilterCollection(_allLines, Lines, x => x.Name, value);
-
-        private static void FilterCollection<T>(ObservableCollection<T> master, ObservableCollection<T> view, Func<T, string> selector, string filter)
+        partial void OnViewSearchTextChanged(string value)
         {
-            view.Clear();
-            foreach (var item in master.Where(x => selector(x).Contains(filter, System.StringComparison.OrdinalIgnoreCase)))
-                view.Add(item);
+            ViewsView.Filter = item =>
+                string.IsNullOrEmpty(value) || ((TagCategoryModel)item).Category.Contains(value, StringComparison.OrdinalIgnoreCase);
+            ViewsView.Refresh();
         }
 
-        public void LoadTagCategoryModels(IEnumerable<TagCategoryModel> models)
+        partial void OnViewTemplateSearchTextChanged(string value)
         {
-            _allTagCategories.Clear();
-            foreach (var model in models)
-                _allTagCategories.Add(model);
+            ViewTemplatesView.Filter = item =>
+                string.IsNullOrEmpty(value) || ((ViewTemplateModel)item).Name.Contains(value, StringComparison.OrdinalIgnoreCase);
+            ViewTemplatesView.Refresh();
+        }
 
-            FilterCollection(_allTagCategories, TagCategories, x => x.Category, TagSearchText);
+        partial void OnFilterSearchTextChanged(string value)
+        {
+            FiltersView.Filter = item =>
+                string.IsNullOrEmpty(value) || ((FilterModel)item).Name.Contains(value, StringComparison.OrdinalIgnoreCase);
+            FiltersView.Refresh();
+        }
+
+        partial void OnMaterialSearchTextChanged(string value)
+        {
+            MaterialsView.Filter = item =>
+                string.IsNullOrEmpty(value) || ((MaterialModel)item).Name.Contains(value, StringComparison.OrdinalIgnoreCase);
+            MaterialsView.Refresh();
+        }
+
+        partial void OnLineSearchTextChanged(string value)
+        {
+            LinesView.Filter = item =>
+                string.IsNullOrEmpty(value) || ((LineModel)item).Name.Contains(value, StringComparison.OrdinalIgnoreCase);
+            LinesView.Refresh();
+        }
+
+        public void LoadViewModels(IEnumerable<ViewModel> models)
+        {
+            Views.Clear();
+            foreach (var model in models)
+                Views.Add(model);
         }
 
         public void LoadViewTemplateModels(IEnumerable<ViewTemplateModel> models)
         {
-            _allViewTemplates.Clear();
+            ViewTemplates.Clear();
             foreach (var model in models)
-                _allViewTemplates.Add(model);
-
-            FilterCollection(_allViewTemplates, ViewTemplates, x => x.Name, ViewTemplateSearchText);
+                ViewTemplates.Add(model);
         }
 
         public void LoadFilterModels(IEnumerable<FilterModel> models)
         {
-            _allFilters.Clear();
+            Filters.Clear();
             foreach (var model in models)
-                _allFilters.Add(model);
+                Filters.Add(model);
 
-            FilterCollection(_allFilters, Filters, x => x.Name, FilterSearchText);
             FiltersProgressRing = Visibility.Collapsed;
         }
 
         public void LoadLineModels(IEnumerable<LineModel> models)
         {
-            _allLines.Clear();
+            Lines.Clear();
             foreach (var model in models)
-                _allLines.Add(model);
+                Lines.Add(model);
 
-            FilterCollection(_allLines, Lines, x => x.Name, LineSearchText);
             LinesProgressRing = Visibility.Collapsed;
         }
 
         public void LoadMaterialModels(IEnumerable<MaterialModel> models)
         {
-            _allMaterials.Clear();
+            Materials.Clear();
             foreach (var model in models)
-                _allMaterials.Add(model);
+                Materials.Add(model);
 
-            FilterCollection(_allMaterials, Materials, x => x.Name, MaterialSearchText);
             MaterialsProgressRing = Visibility.Collapsed;
         }
     }

@@ -5,7 +5,7 @@ using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class InfoDialogViewModel : ObservableObject, ICloseable
+    public partial class InfoDialogViewModel : ObservableObject, IInfoDialogViewModel
     {
         [ObservableProperty]
         private string message = string.Empty;

@@ -3,7 +3,7 @@ using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.Shared.Models
 {
-    public class ScheduleTableData : IElement
+    public class ScheduleTableData
     {
         public required long Id { get; set; }
         public required string Name { get; set; }

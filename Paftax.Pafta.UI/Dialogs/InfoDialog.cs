@@ -30,12 +30,12 @@ namespace Paftax.Pafta.UI.Dialogs
             mainWindow.ShowDialog();
         }
 
-        public static void Show(string message, IconType iconType = IconType.Success)
+        public static void Show(string title, string message, IconType iconType = IconType.Success)
         {
             DialogOptions dialogOptions = new()
             {
-                Title = "Info Dialog",
-                Width = 400,
+                Title = title,
+                Width = 500,
                 Height = 300,
                 ShowHelpButton = false,
                 ShowCloseButton = true,

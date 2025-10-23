@@ -8,10 +8,8 @@ using Paftax.Pafta.Revit2026.Utilities;
 using Paftax.Pafta.Shared.Exporters.OpenXml;
 using Paftax.Pafta.Shared.Exporters.OpenXml.Stylesheets;
 using Paftax.Pafta.Shared.Models;
-using Paftax.Pafta.UI.Dialogs;
 using Paftax.Pafta.UI.Services;
-using Paftax.Pafta.UI.ViewModels;
-using System.Diagnostics;
+using System.Windows;
 
 namespace Paftax.Pafta.Revit2026.Commands
 {
@@ -20,54 +18,33 @@ namespace Paftax.Pafta.Revit2026.Commands
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            try
+            UIApplication uiApplication = commandData.Application;
+            UIDocument uiDocument = uiApplication.ActiveUIDocument;
+            Document document = uiDocument.Document;
+
+            List<ScheduleModel> scheduleModels = new ScheduleModelFactory(document).CreateModels();
+
+            ExportScheduleDialogService exportScheduleDialogService = new();
+            exportScheduleDialogService.LoadSchedules(scheduleModels);
+
+            exportScheduleDialogService.ExportAction += () =>
             {
-                UIApplication uiApplication = commandData.Application;
-                UIDocument uiDocument = uiApplication.ActiveUIDocument;
-                Document document = uiDocument.Document;
+                List<ScheduleModel> selectedSchedules = exportScheduleDialogService.SelectedSchedules;
+                List<ViewSchedule> selectedViewSchedules = new ElementCollectorService(document).GetElementsByIds<ViewSchedule>(selectedSchedules.Select(s => s.Id));
 
-                ElementCollectorService elementCollectorService = new(document);
-                List<ViewSchedule> viewSchedules = elementCollectorService.GetElementsInDocument<ViewSchedule>();
 
-                List<ScheduleModel> scheduleModels = ScheduleModelFactory.CreateScheduleModels(viewSchedules);
-
-                ExportScheduleViewModel exportScheduleViewModel = new();
-                exportScheduleViewModel.LoadSchedules(scheduleModels);
-
-                DialogOptions dialogOptions = new()
+                if (exportScheduleDialogService.IsMerged == true)
                 {
-                    Title = "Export Schedule",
-                    Width = 400,
-                    Height = 700
-                };
-
-                CommandDialog.Show(exportScheduleViewModel, dialogOptions);
-
-                if (exportScheduleViewModel.IsReadyForExport == true)
-                {
-                    List<ScheduleModel> selectedSchedules = exportScheduleViewModel.SelectedSchedules();
-                    List<ViewSchedule> selectedViewSchedules = elementCollectorService.GetElementsByIds<ViewSchedule>(selectedSchedules.Select(s => s.Id));
-
-
-                    if (exportScheduleViewModel.IsMerged == true)
-                    {
-                        ExportSchedulesMerged(selectedViewSchedules, exportScheduleViewModel.ExportFolderPath);
-                    }
-
-                    if (exportScheduleViewModel.IsSeperated == true)
-                    {
-                        ExportSchedulesSeperate(selectedViewSchedules, exportScheduleViewModel.ExportFolderPath);
-                    }
-                    return Result.Succeeded;
+                    ExportSchedulesMerged(selectedViewSchedules, exportScheduleDialogService.ExportFolderPath);
                 }
-                return Result.Cancelled;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Pafta Export Error", ex.ToString());
-                message = ex.Message;
-                return Result.Failed;
-            }
+
+                if (exportScheduleDialogService.IsSeperated == true)
+                {
+                    ExportSchedulesSeperate(selectedViewSchedules, exportScheduleDialogService.ExportFolderPath);
+                }
+            };
+            Window window = exportScheduleDialogService.ShowDialog();
+            return Result.Succeeded;
         }
 
         private static void ExportSchedulesSeperate(List<ViewSchedule> viewSchedules, string folderPath)

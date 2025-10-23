@@ -3,32 +3,31 @@ using Paftax.Pafta.Shared.Models;
 
 namespace Paftax.Pafta.Revit2026.Factories
 {
-    internal class LineModelFactory
+    internal class LineModelFactory(Document document)
     {
-        private static volatile bool _cancelRequested = false;
-        public static bool CancelRequested
+        private readonly Document _document = document;
+        private CancellationToken _token = CancellationToken.None;
+
+        public LineModelFactory Cancellable(CancellationToken token)
         {
-            get => _cancelRequested;
-            set => _cancelRequested = value;
+            _token = token;
+            return this;
         }
 
         /// <summary>
         /// Creates a list of LineModel instances representing line categories in the given Revit document.
         /// </summary>
-        /// <param name="document"></param>
-        /// <returns></returns>
-        public static List<LineModel> CreateModels(Document document)
+        public List<LineModel> CreateModels()
         {
             List<LineModel> lineModels = [];
 
-            Category linesCat = document.Settings.Categories.get_Item(BuiltInCategory.OST_Lines);
+            Category linesCat = _document.Settings.Categories.get_Item(BuiltInCategory.OST_Lines);
             if (linesCat == null)
                 return lineModels;
 
             foreach (Category subCat in linesCat.SubCategories)
             {
-                if (CancelRequested)
-                    break;
+                _token.ThrowIfCancellationRequested();
 
                 if (subCat.Name.StartsWith('<') && subCat.Name.EndsWith('>'))
                     continue;
@@ -36,26 +35,25 @@ namespace Paftax.Pafta.Revit2026.Factories
                 int count = 0;
                 if (subCat.Id == new ElementId(BuiltInCategory.OST_Lines))
                 {
-                    count += new FilteredElementCollector(document)
+                    count += new FilteredElementCollector(_document)
                         .OfClass(typeof(CurveElement))
                         .WhereElementIsNotElementType()
                         .Where(e => e.Category != null && e.Category.Id == subCat.Id)
                         .Count();
                 }
 
-                IEnumerable<View> views = new FilteredElementCollector(document)
+                IEnumerable<View> views = new FilteredElementCollector(_document)
                     .OfClass(typeof(View))
                     .Cast<View>()
-                    .Where(v => v.IsTemplate == false);
+                    .Where(v => !v.IsTemplate);
 
                 foreach (View view in views)
                 {
-                    if (CancelRequested)
-                        break;
+                    _token.ThrowIfCancellationRequested();
 
                     try
                     {
-                        count += new FilteredElementCollector(document, view.Id)
+                        count += new FilteredElementCollector(_document, view.Id)
                             .OfClass(typeof(CurveElement))
                             .WhereElementIsNotElementType()
                             .Where(e => e.Category != null && e.Category.Id == subCat.Id)

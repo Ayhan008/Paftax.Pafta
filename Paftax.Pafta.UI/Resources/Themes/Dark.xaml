@@ -159,10 +159,14 @@
     <!--#region  ComboBox Colors-->
     <!-- ComboBox -->
     <SolidColorBrush x:Key="ComboBoxBackground" Color="#303946"/>
-    <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#303946"/>
+    <SolidColorBrush x:Key="ComboBoxForeground" Color="#ffffff"/>
+    <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#343d4b"/>
 
     <SolidColorBrush x:Key="ComboBoxHoverHighlightBackground" Color="#576276"/>
     <SolidColorBrush x:Key="ComboBoxHoverHighlightBorderBrush" Color="#b9d0eb"/>
+
+    <SolidColorBrush x:Key="ComboBoxClickedHighlightBackground" Color="#416f8d"/>
+    <SolidColorBrush x:Key="ComboBoxClickedHighlightBorderBrush" Color="#38abdf"/>
     <!--#endregion-->
 
     <!--#region  CheckBox Colors-->

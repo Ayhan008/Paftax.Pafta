@@ -3,13 +3,18 @@ using Paftax.Pafta.Shared.Models;
 
 namespace Paftax.Pafta.Revit2026.Factories
 {
-    internal static class ScheduleModelFactory
+    internal class ScheduleModelFactory(Document document)
     {
-        public static List<ScheduleModel> CreateScheduleModels(List<ViewSchedule> viewSchedules)
+        private readonly Document _document = document;
+        public List<ScheduleModel> CreateModels()
         {
             List<ScheduleModel> scheduleModels = [];
 
-            foreach (var viewSchedule in viewSchedules)
+            IEnumerable<ViewSchedule> viewSchedules = new FilteredElementCollector(_document)
+                .OfClass(typeof(ViewSchedule))
+                .Cast<ViewSchedule>();
+
+            foreach (ViewSchedule viewSchedule in viewSchedules)
             {
                 ScheduleModel scheduleModel = new()
                 {

@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using Paftax.Pafta.UI.Dialogs;
 
 namespace Paftax.Pafta.Revit2026.Commands
 {
@@ -53,19 +54,19 @@ namespace Paftax.Pafta.Revit2026.Commands
             }
             catch (Exception ex)
             {
-                TaskDialog.Show("Export Error", $"Export failed:\n{ex.Message}");
+                InfoDialog.Show("Export Error", $"Export failed:\n{ex.Message}");
                 return Result.Failed;
             }
 
             string outputPath = fullPath + ".png";
             if (File.Exists(outputPath))
             {
-                TaskDialog.Show("Success", $"PNG created at:\n{outputPath}");
+                InfoDialog.Show("Success", $"PNG created at:\n{outputPath}");
                 return Result.Succeeded;
             }
             else
             {
-                TaskDialog.Show("Error", $"PNG file not found at:\n{outputPath}");
+                InfoDialog.Show("Error", $"PNG file not found at:\n{outputPath}");
                 return Result.Failed;
             }
         }

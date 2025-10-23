@@ -3,7 +3,7 @@ using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.Shared.Models
 {
-    public partial class LineModel : ObservableObject, IElement
+    public partial class LineModel : ObservableObject
     {
         public required long Id { get; set; }
         public required string Name { get; set; }

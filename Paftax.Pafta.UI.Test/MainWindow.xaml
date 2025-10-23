@@ -21,7 +21,7 @@
             <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
         </ResourceDictionary>
     </Window.Resources>
-    
+
     <Grid Background="White" VerticalAlignment="Center" HorizontalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -52,5 +52,10 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 IsEnabled="{Binding IsIndeterminate, Converter={StaticResource InverseBooleanConverter}}"/>
+
+        <ComboBox HorizontalAlignment="Left" Margin="-212,32,0,0" VerticalAlignment="Top" Width="120" Grid.Row="1" SelectedIndex="0">
+            <ComboBoxItem Tag="A" Height="30" Content="A"/>
+            <ComboBoxItem Tag="B" Height="30" Content="B"/>
+        </ComboBox>
     </Grid>
 </Window>

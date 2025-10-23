@@ -38,24 +38,20 @@
             </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
-    
+
     <Grid>
-        <Border CornerRadius="20"
-                Background="Black"
-                BorderThickness="0"
-                Opacity="0.03"/>
-
-        <Border CornerRadius="15"
-                Margin="5"
-                Background="Black"
-                BorderThickness="0"
-                Opacity="0.04"/>
-
         <Border BorderBrush="{DynamicResource WindowBorderBrush}" 
                 Background="{DynamicResource WindowBackground}" 
                 Margin="10"
                 BorderThickness="1"
                 CornerRadius="10">
+            <Border.Effect>
+                <DropShadowEffect Color="Black"
+                                  BlurRadius="20"
+                                  ShadowDepth="0"
+                                  Opacity="0.3"/>
+            </Border.Effect>
+            
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>

@@ -1,32 +1,30 @@
 ﻿using Autodesk.Revit.DB;
-using Paftax.Pafta.Revit2026.Utilities;
 using Paftax.Pafta.Shared.Models;
 
 namespace Paftax.Pafta.Revit2026.Factories
 {
-    internal class ViewTemplateModelFactory
+    internal class ViewTemplateModelFactory(Document document)
     {
-        public static List<ViewTemplateModel> CreateModels(Document document)
+        private readonly Document _document = document;
+        public List<ViewTemplateModel> CreateModels()
         {
+            List<ViewTemplateModel> viewTemplateModels = [];
 
-            IEnumerable<View> viewTemplates = new FilteredElementCollector(document)
+            IEnumerable<View> viewTemplates = new FilteredElementCollector(_document)
                 .OfClass(typeof(View))
                 .Cast<View>()
                 .Where(v => v.IsTemplate);
 
-            var normalViews = new FilteredElementCollector(document)
+            IEnumerable<View> normalViews = new FilteredElementCollector(_document)
                 .OfClass(typeof(View))
                 .Cast<View>()
-                .Where(v => !v.IsTemplate)
-                .ToList();
-
-            List<ViewTemplateModel> models = [];
+                .Where(v => !v.IsTemplate);
 
             foreach (var template in viewTemplates)
             {
                 int viewCount = normalViews.Count(v => v.ViewTemplateId == template.Id);
 
-                models.Add(new ViewTemplateModel
+                viewTemplateModels.Add(new ViewTemplateModel
                 {
                     Id = template.Id.Value,
                     Name = template.Name,
@@ -35,7 +33,7 @@ namespace Paftax.Pafta.Revit2026.Factories
                 });
             }
 
-            return models;
+            return viewTemplateModels;
         }
     }
 }

@@ -46,7 +46,7 @@
                   AutoGenerateColumns="False" 
                   Margin="10,0,10,10" 
                   properties:MutipleCheck.IsEnabled="True"
-                  ItemsSource="{Binding Schedules}">
+                  ItemsSource="{Binding SchedulesView}">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Width="30">
                     <DataGridTemplateColumn.Header>

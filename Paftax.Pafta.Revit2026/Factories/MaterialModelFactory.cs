@@ -3,23 +3,25 @@ using Paftax.Pafta.Shared.Models;
 
 namespace Paftax.Pafta.Revit2026.Factories
 {
-    internal class MaterialModelFactory
+    internal class MaterialModelFactory(Document document)
     {
-        private static volatile bool _cancelRequested = false;
-        public static bool CancelRequested
+        private readonly Document _document = document;
+        private CancellationToken _token = CancellationToken.None;
+
+        public MaterialModelFactory Cancellable(CancellationToken token)
         {
-            get => _cancelRequested;
-            set => _cancelRequested = value;
+            _token = token;
+            return this;
         }
 
-        public static List<MaterialModel> CreateModels(Document document)
+        public List<MaterialModel> CreateModels()
         {
-            var materials = new FilteredElementCollector(document)
+            var materials = new FilteredElementCollector(_document)
                 .OfClass(typeof(Material))
                 .Cast<Material>()
                 .ToList();
 
-            var elements = new FilteredElementCollector(document)
+            var elements = new FilteredElementCollector(_document)
                 .WhereElementIsNotElementType()
                 .ToElements();
 
@@ -27,14 +29,12 @@ namespace Paftax.Pafta.Revit2026.Factories
 
             foreach (var elem in elements)
             {
-                if (CancelRequested)
-                    break;
+                _token.ThrowIfCancellationRequested();
 
                 var matIds = elem.GetMaterialIds(false);
                 foreach (var id in matIds)
                 {
-                    if (CancelRequested)
-                        break;
+                    _token.ThrowIfCancellationRequested();
 
                     if (!materialCounts.TryAdd(id, 1))
                         materialCounts[id]++;
@@ -45,8 +45,7 @@ namespace Paftax.Pafta.Revit2026.Factories
 
             foreach (var mat in materials)
             {
-                if (CancelRequested)
-                    break;
+                _token.ThrowIfCancellationRequested();
 
                 models.Add(new MaterialModel
                 {

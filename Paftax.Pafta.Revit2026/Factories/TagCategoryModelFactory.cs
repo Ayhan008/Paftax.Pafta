@@ -3,11 +3,12 @@ using Paftax.Pafta.Shared.Models;
 
 namespace Paftax.Pafta.Revit2026.Factories
 {
-    internal class TagCategoryModelFactory
+    internal class TagCategoryModelFactory(Document document)
     {
-        public static List<TagCategoryModel> CreateModels(Document document)
+        private readonly Document _document = document;
+        public List<TagCategoryModel> CreateModels()
         {
-            IEnumerable<IndependentTag> tags = new FilteredElementCollector(document)
+            IEnumerable<IndependentTag> tags = new FilteredElementCollector(_document)
                 .OfClass(typeof(IndependentTag))
                 .Cast<IndependentTag>();
 
@@ -17,7 +18,7 @@ namespace Paftax.Pafta.Revit2026.Factories
                 {
                     Category = g.Key,
                     Count = g.Count(t => t.IsOrphaned),
-                    Tags = [.. g.Select(t => TagModelFactory.FromTag(t))]
+                    Tags = [.. g.Select(t => TagModelFactory.CreateModel(t))]
                 })];
 
             return result;
