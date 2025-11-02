@@ -67,10 +67,10 @@ namespace Paftax.Pafta.Revit2026
 
             // Copy Schedules Button
             PushButtonData copySchedulesPushButtonData = new(
-                "CopySchedulesPushButton",
-                "Copy\nSchedules",
+                "CopySchedulePushButton",
+                "Copy\nSchedule",
                 typeof(App).Assembly.Location,
-                "Paftax.Pafta.Revit2026.Commands.CopySchedulesCommand")
+                "Paftax.Pafta.Revit2026.Commands.CopyScheduleCommand")
             {
                 ToolTip = "Copy schedules from one sheet to multiple sheets",
                 LongDescription = "Select schedule in the active view. " +
@@ -81,10 +81,10 @@ namespace Paftax.Pafta.Revit2026
 
             // Move Viewports Button
             PushButtonData moveViewportsPushButtonData = new(
-                "MoveViewportsPushButton",
-                "Move\nViewports",
+                "MoveViewportPushButton",
+                "Move\nViewport",
                 typeof(App).Assembly.Location,
-                "Paftax.Pafta.Revit2026.Commands.MoveViewportsCommand")
+                "Paftax.Pafta.Revit2026.Commands.MoveViewportCommand")
             {
                 ToolTip = "Move viewports on multiple sheets",
                 LongDescription = "Select viewports in the active view. " +
@@ -112,8 +112,8 @@ namespace Paftax.Pafta.Revit2026
 
             // Export Sheet Button
             PushButtonData exportSheetsPushButtonData = new(
-                "ExportSheetsPushButton",
-                "Export\nSheets",
+                "ExportSheetPushButton",
+                "Export\nSheet",
                 typeof(App).Assembly.Location,
                 "Paftax.Pafta.Revit2026.Commands.ExportSheetsCommand")
             {

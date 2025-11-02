@@ -15,7 +15,7 @@ namespace Paftax.Pafta.Shared.Interfaces
         Action? RequestLoadFilters { get; set; }
         Action? RequestLoadLines { get; set; }
 
-        event Action? CloseAction;
+        event Action? CancelAction;
         event Action? CleanAction;
     }
 }

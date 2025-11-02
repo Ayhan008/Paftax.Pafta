@@ -161,6 +161,7 @@
                     <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
                     <Setter Property="SnapsToDevicePixels" Value="True"/>
                     <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                    <Setter Property="Cursor" Value="Hand"/>
                     <Setter Property="Margin" Value="0"/>
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>

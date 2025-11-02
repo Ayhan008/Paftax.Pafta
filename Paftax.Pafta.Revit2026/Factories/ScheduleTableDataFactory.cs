@@ -20,9 +20,9 @@ namespace Paftax.Pafta.Revit2026.Factories
                 MergedCells = GetMergedCellData(viewSchedule),
             };
 
-            scheduleTableData.TableParts[SchedulePart.Body] = GetBodySectionData(viewSchedule);
-            scheduleTableData.TableParts[SchedulePart.Header] = GetHeaderSectionData(viewSchedule);
-            scheduleTableData.TableParts[SchedulePart.Title] = GetTitleSectionData(viewSchedule);
+            scheduleTableData.TableParts[RevitSchedulePart.Body] = GetBodySectionData(viewSchedule);
+            scheduleTableData.TableParts[RevitSchedulePart.Header] = GetHeaderSectionData(viewSchedule);
+            scheduleTableData.TableParts[RevitSchedulePart.Title] = GetTitleSectionData(viewSchedule);
 
             scheduleTableData.TableData = GetTableData(
                 scheduleTableData.BodyPart,

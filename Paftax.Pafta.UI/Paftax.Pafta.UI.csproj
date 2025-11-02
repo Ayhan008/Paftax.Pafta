@@ -10,39 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="CommandDialog.cs" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Dialogs\CommandDialog.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Paftax.Pafta.Drawing\Paftax.Pafta.Drawing.csproj" />
     <ProjectReference Include="..\Paftax.Pafta.Shared\Paftax.Pafta.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resources\Languages\English.Designer.cs">
-      <DependentUpon>English.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Resources\Languages\Turkish.Designer.cs">
-      <DependentUpon>Turkish.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\Languages\English.resx">
-      <LastGenOutput>English.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Languages\Turkish.resx">
-      <LastGenOutput>Turkish.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
+    <Folder Include="Themes\" />
   </ItemGroup>	
 </Project>

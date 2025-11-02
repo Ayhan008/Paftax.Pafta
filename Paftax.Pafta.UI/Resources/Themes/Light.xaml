@@ -163,6 +163,13 @@
     <SolidColorBrush x:Key="ComboBoxHoverHighlightBorderBrush" Color="#b9d0eb"/>
     <!--#endregion-->
 
+    <!--#region ToggleButton Styles-->
+    <!--Generic ToggleButton-->
+    <SolidColorBrush x:Key="ToggleButtonBackground" Color="#ffffff"/>
+    <SolidColorBrush x:Key="ToggleButtonForeground" Color="#565656"/>
+    <SolidColorBrush x:Key="ToggleButtonBorderBrush" Color="#bdbdbd"/>
+    <!--#endregion-->
+
     <!--#region  CheckBox Colors-->
     <!--Generic CheckBox-->
     <SolidColorBrush x:Key="CheckBoxBackground" Color="#ffffff"/>

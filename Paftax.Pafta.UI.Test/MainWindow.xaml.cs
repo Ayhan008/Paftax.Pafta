@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Paftax.Pafta.UI.Services;
+﻿using Paftax.Pafta.UI.Test.Visuals;
 using System.Windows;
 
 namespace Paftax.Pafta.UI.Test
@@ -9,7 +8,6 @@ namespace Paftax.Pafta.UI.Test
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ViewModels.ProgressRingDemoViewModel();
         }
     }
 }

@@ -5,6 +5,7 @@ using Paftax.Pafta.Revit2026.Events;
 using Paftax.Pafta.Revit2026.Factories;
 using Paftax.Pafta.Revit2026.Services;
 using Paftax.Pafta.Shared.Models;
+using Paftax.Pafta.UI.Dialogs;
 using Paftax.Pafta.UI.Services;
 using System.Windows;
 using System.Windows.Threading;
@@ -16,69 +17,88 @@ namespace Paftax.Pafta.Revit2026.Commands
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            // Get Revit document
             UIApplication uiApplication = commandData.Application;
             UIDocument uiDocument = uiApplication.ActiveUIDocument;
             Document doc = uiDocument.Document;
 
-            // Prepare data models
+            // Prepare Revit Window Service
+            RevitWindowService windowService = new(uiApplication.MainWindowHandle);
+            Dispatcher revitDispatcher = windowService.GetDispatcher();
+
             List<ViewModel> viewModels = new ViewModelFactory(doc).CreateModels();
             List<ViewTemplateModel> viewTemplateModels = new ViewTemplateModelFactory(doc).CreateModels();
 
-            // Set up External Event and Handler
             CleanGarbageHandler handler = new();
             ExternalEvent externalEvent = ExternalEvent.Create(handler);
 
-            // Start UI thread
             Thread uiThread = new(() =>
             {
-                // Create Dispatcher for the new thread
                 Dispatcher threadDispatcher = Dispatcher.CurrentDispatcher;
 
-                // Dialog Service
                 CleanGarbageDialogService dialogService = new();
                 dialogService.LoadViewModels(viewModels);
                 dialogService.LoadViewTemplateModels(viewTemplateModels);
-                Window window = dialogService.Show();
 
                 CancellationTokenSource cancellationTokenSource = new();
+                Window window = dialogService.Show();
+                windowService.BlockRevitWhile(window);
 
-                // Load Materials when requested
+                // Load Materials
                 dialogService.LoadMaterialsRequested = () =>
                 {
                     handler.SetAction(app =>
                     {
-                        List<MaterialModel> materialModels = new MaterialModelFactory(doc).Cancellable(cancellationTokenSource.Token).CreateModels();
+                        var materialModels = new MaterialModelFactory(doc)
+                            .Cancellable(cancellationTokenSource.Token)
+                            .CreateModels();
                         threadDispatcher.Invoke(() => dialogService.LoadMaterialModels(materialModels));
                     });
                     externalEvent.Raise();
                 };
 
-                // Load Filters when requested
+                // Load Filters
                 dialogService.LoadFiltersRequested = () =>
                 {
                     handler.SetAction(app =>
                     {
-                        List<FilterModel> filterModels = new FilterModelFactory(doc).Cancellable(cancellationTokenSource.Token).CreateModels();
+                        var filterModels = new FilterModelFactory(doc)
+                            .Cancellable(cancellationTokenSource.Token)
+                            .CreateModels();
                         threadDispatcher.Invoke(() => dialogService.LoadFilterModels(filterModels));
                     });
                     externalEvent.Raise();
                 };
 
-                // Load Lines when requested
+                // Load Lines
                 dialogService.LoadLinesRequested = () =>
                 {
                     handler.SetAction(app =>
                     {
-                        List<LineModel> lineModels = new LineModelFactory(doc).Cancellable(cancellationTokenSource.Token).CreateModels();
+                        var lineModels = new LineModelFactory(doc)
+                            .Cancellable(cancellationTokenSource.Token)
+                            .CreateModels();
                         threadDispatcher.Invoke(() => dialogService.LoadLineModels(lineModels));
                     });
                     externalEvent.Raise();
                 };
 
+                window.Closing += (s, e) =>
+                {
+                    cancellationTokenSource.Cancel();
+                };
+
+                dialogService.CancelAction += () =>
+                {
+                    revitDispatcher.BeginInvoke(DispatcherPriority.Background,
+                        () => InfoDialog.Show("Clean Result", "Operation cancelled by user.", Shared.Enums.IconType.Error));
+
+                    cancellationTokenSource.Cancel();
+                    window.Close();      
+                };
+
                 dialogService.CleanAction += () =>
                 {
-                    window.Close();
+                    window.Close();      
 
                     List<FilterModel> selectedFilters = dialogService.GetSelectedFilterModels();
                     List<MaterialModel> selectedMaterials = dialogService.GetSelectedMaterialModels();
@@ -86,16 +106,17 @@ namespace Paftax.Pafta.Revit2026.Commands
                     List<ViewModel> selectedViewModels = dialogService.GetSelectedViewModels();
                     List<ViewTemplateModel> selectedViewTemplates = dialogService.GetSelectedViewTemplateModels();
 
-                    List<ParameterFilterElement> filtersToDelete = new ElementCollectorService(doc).GetElementsByIds<ParameterFilterElement>(selectedFilters.Select(f => f.Id));
-                    List<Material> materialsToDelete = new ElementCollectorService(doc).GetElementsByIds<Material>(selectedMaterials.Select(m => m.Id));
-                    List<LinePatternElement> linesToDelete = new ElementCollectorService(doc).GetElementsByIds<LinePatternElement>(selectedLines.Select(l => l.Id));
-                    List<View> viewTemplatesToDelete = new ElementCollectorService(doc).GetElementsByIds<View>(selectedViewTemplates.Select(vt => vt.Id));
+                    int elementCount = selectedFilters.Count + selectedMaterials.Count +
+                        selectedLines.Count + selectedViewModels.Count + selectedViewTemplates.Count;
+
+                    revitDispatcher.BeginInvoke(DispatcherPriority.Background, 
+                        () => InfoDialog.Show("Clean Result", $"{elementCount} elements deleted from project.", Shared.Enums.IconType.Info));
 
                     handler.SetAction(uiApp =>
                     {
-                        Document doc = uiApp.ActiveUIDocument.Document;
+                        var docInner = uiApp.ActiveUIDocument.Document;
 
-                        using Transaction t = new(doc, "Clean Project");
+                        using Transaction t = new(docInner, "Clean Project");
                         t.Start();
 
                         List<ElementId> idsToDelete =
@@ -106,17 +127,14 @@ namespace Paftax.Pafta.Revit2026.Commands
                             .. selectedLines.Select(l => new ElementId(l.Id)),
                             .. selectedViewTemplates.Select(vt => new ElementId(vt.Id)),
                         ];
-                        doc.Delete(idsToDelete);
+
+                        docInner.Delete(idsToDelete);
 
                         t.Commit();
                     });
+
                     externalEvent.Raise();
                 };
-
-                // Handle window closing and cancel operations
-                window.Closed += (s, e) => { cancellationTokenSource.Cancel(); };
-                dialogService.CancelAction += () => { window.Close(); };
-                dialogService.CloseAction += () => { window.Close(); };
                 Dispatcher.Run();
             });
 

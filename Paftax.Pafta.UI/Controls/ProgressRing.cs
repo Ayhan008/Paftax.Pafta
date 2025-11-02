@@ -1,5 +1,4 @@
-﻿// Paftax.Pafta.UI/Controls/ProgressRing.cs
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -40,11 +39,9 @@ namespace Paftax.Pafta.UI.Controls
         public static readonly DependencyProperty SpeedPropery =
             DependencyProperty.Register(nameof(Speed), typeof(double), typeof(ProgressRing),
                 new PropertyMetadata(2.0));
-
         #endregion
 
         #region Properties
-
         public double Value
         {
             get => (double)GetValue(ValueProperty);

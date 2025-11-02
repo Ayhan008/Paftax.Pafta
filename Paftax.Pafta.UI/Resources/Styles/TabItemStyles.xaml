@@ -29,6 +29,7 @@
                                           ContentSource="Header"
                                           RecognizesAccessKey="True"
                                           HorizontalAlignment="Center"
+                                          Cursor="Hand"
                                           VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>

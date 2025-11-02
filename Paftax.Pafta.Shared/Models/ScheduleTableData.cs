@@ -9,16 +9,16 @@ namespace Paftax.Pafta.Shared.Models
         public required string Name { get; set; }
         public HashSet<string> MergedCells { get; set; } = [];
 
-        public Dictionary<SchedulePart, List<List<string>>> TableParts { get; set; } = new()
+        public Dictionary<RevitSchedulePart, List<List<string>>> TableParts { get; set; } = new()
         {
-            { SchedulePart.Header, new List<List<string>>() },
-            { SchedulePart.Body, new List<List<string>>() },
-            { SchedulePart.Title, new List<List<string>>() }
+            { RevitSchedulePart.Header, new List<List<string>>() },
+            { RevitSchedulePart.Body, new List<List<string>>() },
+            { RevitSchedulePart.Title, new List<List<string>>() }
         };
 
-        public List<List<string>> HeaderPart => TableParts[SchedulePart.Header];
-        public List<List<string>> BodyPart => TableParts[SchedulePart.Body];
-        public List<List<string>> TitlePart => TableParts[SchedulePart.Title];
+        public List<List<string>> HeaderPart => TableParts[RevitSchedulePart.Header];
+        public List<List<string>> BodyPart => TableParts[RevitSchedulePart.Body];
+        public List<List<string>> TitlePart => TableParts[RevitSchedulePart.Title];
 
         public List<List<string>> TableData { get; set; } = [];
 

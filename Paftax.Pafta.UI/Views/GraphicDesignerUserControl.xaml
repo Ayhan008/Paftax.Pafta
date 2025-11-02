@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
-             xmlns:drawing="clr-namespace:Paftax.Pafta.Drawing;assembly=Paftax.Pafta.Drawing"
              xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls"
              xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"
+             xmlns:drawing="clr-namespace:Paftax.Pafta.Drawing;assembly=Paftax.Pafta.Drawing"
              xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels" 
              d:DataContext="{d:DesignInstance Type=vm:GraphicDesignerViewModel}" 
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="800" d:DesignWidth="1200">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -20,18 +20,73 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
-    <Border Background="{DynamicResource DataGridColumnHeaderBackground}">
-        <Grid>
-            <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto" 
-                          x:Name="ScrollViewer"
-                          Focusable="False">
-                <drawing:DrawingCanvas x:Name="DrawingCanvas" 
-                                       Background="{DynamicResource DataGridColumnHeaderBackground}" 
-                                       Foreground="{DynamicResource ButtonForeground}"
-                                       Scale="{Binding Scale}"/>
-            </ScrollViewer>
+
+    <Grid Background="{DynamicResource CanvasBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock x:Name="CoordinatesTextBlock"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Margin="5"
+                   Panel.ZIndex="1"
+                   Width="120"
+                   Foreground="Black"
+                   FontSize="12"
+                   Text="{Binding MouseCoordinates}"/>
+        
+        <drawing:DrawingCanvas x:Name="Canvas"  
+                               Grid.Column="0"
+                               Grid.Row="0"
+                               Scale="{Binding CanvasScale, Mode=TwoWay}"
+                               Background="{DynamicResource CanvasBackground}"/>
+        
+        <ScrollBar Grid.Column="1" Width="18" 
+                    x:Name="PART_VerticalScrollBar" 
+                    Margin="0,0,0,-1"
+                    Orientation="Vertical"
+                    Minimum="0"
+                    Style="{StaticResource DrawingScrollBar}" />
+
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Column="0" 
+                      HorizontalAlignment="Stretch"
+                      Height="18"
+                      Margin="1,1,0,1"
+                      Style="{StaticResource ScaleComboBoxStyle}" 
+                      SelectedIndex="{Binding SelectedScaleIndex}" 
+                      ItemsSource="{Binding Scales}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <ScrollBar Height="18" 
+                        Grid.Column="1"
+                        Margin="0,0,-1,0"
+                        Orientation="Horizontal"
+                        x:Name="PART_HorizontalScrollBar" 
+                        Minimum="0"
+                        Style="{StaticResource DrawingScrollBar}" />
         </Grid>
-    </Border>
+
+        <Border Grid.Row="1" 
+                Grid.Column="1"
+                Margin="1"
+                Background="{DynamicResource DrawingScrollBarBackground}"/>
+    </Grid>
 </UserControl>

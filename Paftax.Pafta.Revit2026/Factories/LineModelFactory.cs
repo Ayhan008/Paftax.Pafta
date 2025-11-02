@@ -75,5 +75,14 @@ namespace Paftax.Pafta.Revit2026.Factories
 
             return lineModels;
         }
+
+        public async Task<List<LineModel>> CreateModelsAsync()
+        {
+            return await Task.Run(() =>
+            {
+                _token.ThrowIfCancellationRequested();
+                return CreateModels();
+            }, _token);
+        }
     }
 }

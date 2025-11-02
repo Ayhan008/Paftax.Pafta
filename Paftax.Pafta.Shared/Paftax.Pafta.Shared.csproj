@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Models\ScheduleTableData.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
   </ItemGroup>
@@ -21,54 +17,48 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\Breakline_Light.tiff">
+    <Resource Include="Resources\CleanProjectPushButton_Dark.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\CeilingHanger_Light.tiff">
+    </Resource>
+    <Resource Include="Resources\CleanProjectPushButton_Light.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\CopySchedule_Dark.tiff">
+    </Resource>
+    <Resource Include="Resources\CopySchedulePushButton_Dark.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\CopySchedule_Light.tiff">
+    </Resource>
+    <Resource Include="Resources\CopySchedulePushButton_Light.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Developer_Dark.tiff">
+    </Resource>
+    <Resource Include="Resources\ExportSchedulePushButton_Dark.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Developer_Light.tiff">
+    </Resource>
+    <Resource Include="Resources\ExportSchedulePushButton_Light.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\ExcelToSchedule_Light.tiff">
+    </Resource>
+    <Resource Include="Resources\MoveViewportPushButton_Dark.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\ExportSchedulePushButton_Dark.tiff">
+    </Resource>
+    <Resource Include="Resources\MoveViewportPushButton_Light.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\ExportSchedulePushButton_Light.tiff">
+    </Resource>
+    <Resource Include="Resources\QuickExportPushButton_Dark.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\FloorPedestal_Light.tiff">
+    </Resource>
+    <Resource Include="Resources\QuickExportPushButton_Light.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MoveViewport_Dark.tiff">
+    </Resource>
+    <Resource Include="Resources\ExportSheetPushButton_Light.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MoveViewport_Light.tiff">
+    </Resource>
+    <Resource Include="Resources\ExportSheetPushButton_Dark.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\SheetsToExcel_Dark.tiff">
+    </Resource>
+    <Resource Include="Resources\RoomToSheetPushButton_Dark.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\SheetsToExcel_Light.tiff">
+    </Resource>
+    <Resource Include="Resources\RoomToSheetPushButton_Light.tiff">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\SheetToImage_Dark.tiff">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\SheetToImage_Light.tiff">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Resource>
   </ItemGroup>
 
 </Project>

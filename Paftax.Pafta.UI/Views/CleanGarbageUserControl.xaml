@@ -5,19 +5,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
              xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"           
-             xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels" 
+             xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels"
              xmlns:converters="clr-namespace:Paftax.Pafta.UI.Converters"
-             xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls" d:DataContext="{d:DesignInstance Type=vm:CleanGarbageViewModel}"
+             xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls" 
              mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="450">
+             d:DataContext="{d:DesignInstance Type=vm:CleanGarbageViewModel}"
+             d:DesignHeight="800" 
+             d:DesignWidth="450">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Themes/Dark.xaml"/>
                 <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Generic.xaml"/>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/FontStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+            <converters:BoolToVisibility x:Key="BoolToVisibility"/>
         </ResourceDictionary>
     </UserControl.Resources>
     
@@ -48,39 +51,37 @@
                         </Grid.ColumnDefinitions>
 
                         <ComboBox x:Name="ViewsComboBox"
-                                  Grid.Column="0"
+                                  SelectedIndex="{Binding SelectedViewFilterIndex, Mode=TwoWay}"
+                                  ItemsSource="{Binding ViewFilters}"
+                                  Grid.Column="0"                             
                                   BorderThickness="1"
-                                  SelectedIndex="1"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   Height="30"
-                                  Width="100">
-                            <ComboBoxItem Content="All" Height="25"/>
-                            <ComboBoxItem Content="Unplaced" Height="25"/>
-                        </ComboBox>
+                                  Width="100"/>
 
                         <controls:SearchBox VerticalAlignment="Center"
                                             Grid.Column="1"
                                             HorizontalAlignment="Stretch" 
-                                            Width="Auto"
-                                            Margin="10,0,0,0" Height="30"
+                                            Margin="10,0,0,0" 
+                                            Height="30"
                                             PlaceholderText="Search for a View..."
-                                            SearchText="{Binding ViewSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            SearchText="{Binding ViewSearchText, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
 
                     <DataGrid x:Name="ViewsDataGrid" 
                               Grid.Row="1" 
                               AutoGenerateColumns="False" 
                               Margin="10,0,10,10" 
-                              properties:MutipleCheck.IsEnabled="True"
                               EnableRowVirtualization="True"
                               EnableColumnVirtualization="True"
-                              ItemsSource="{Binding Views}">
+                              properties:MutipleCheck.IsEnabled="True"
+                              ItemsSource="{Binding ViewsView}">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Width="30">
                                 <DataGridTemplateColumn.Header>
                                     <CheckBox x:Name="SelectAllCheckBox" 
-                                              IsChecked="{Binding DataContext.IsAllTagsChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                              IsChecked="{Binding DataContext.IsAllViewsChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                                 </DataGridTemplateColumn.Header>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -90,18 +91,17 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="" Width="30">
+                            <DataGridTemplateColumn Header="Name" Width="*" SortMemberPath="Name">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <controls:FontIcon Glyph="{Binding IsPlacedGlyph}"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <controls:FontIcon Glyph="{Binding IsPlacedGlyph}" Background="Transparent" FontSize="15"/>
+                                            <TextBlock Text="{Binding Name}" Margin="10,0,0,0"/>
+                                        </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            
-                            <DataGridTextColumn Header="Name" 
-                                                Foreground="{DynamicResource DataGridForeground}"
-                                                Binding="{Binding Name}" 
-                                                Width="*"/>
+
                             <DataGridTextColumn Header="View Type" 
                                                 Foreground="{DynamicResource DataGridForeground}"
                                                 Binding="{Binding ViewType}" 
@@ -123,23 +123,21 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        
+
                         <ComboBox x:Name="ViewTemplatesComboBox"
-                              Grid.Column="0"
-                              BorderThickness="1"
-                              SelectedIndex="1"
-                              HorizontalAlignment="Left"
-                              VerticalAlignment="Center"
-                              Height="30"
-                              Width="100">
-                            <ComboBoxItem Content="All" Height="25"/>
-                            <ComboBoxItem Content="Unused" Height="25"/>
-                        </ComboBox>
+                                  Grid.Column="0"
+                                  BorderThickness="1"
+                                  SelectedIndex="{Binding SelectedViewTemplateFilterIndex, Mode=TwoWay}"
+                                  ItemsSource="{Binding ViewTemplateFilters}"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
+                                  Height="30"
+                                  Width="100"/>
+
 
                         <controls:SearchBox VerticalAlignment="Center"
                                         Grid.Column="1"
                                         HorizontalAlignment="Stretch" 
-                                        Width="Auto"
                                         Margin="10,0,0,0" Height="30"
                                         PlaceholderText="Search for a View Template..."
                                         SearchText="{Binding ViewTemplateSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -193,16 +191,14 @@
                         </Grid.ColumnDefinitions>
 
                         <ComboBox x:Name="FiltersTypeComboBox"
+                                  SelectedIndex="{Binding SelectedFilterFilterIndex, Mode=TwoWay}"
+                                  ItemsSource="{Binding FilterFilters}"
                                   Grid.Column="0"
                                   BorderThickness="1"
-                                  SelectedIndex="1"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   Height="30"
-                                  Width="100">
-                            <ComboBoxItem Content="All" Height="25"/>
-                            <ComboBoxItem Content="Unused" Height="25"/>
-                        </ComboBox>
+                                  Width="100"/>
 
                         <controls:SearchBox VerticalAlignment="Top"
                                             Grid.Column="1"
@@ -211,8 +207,6 @@
                                             PlaceholderText="Search for a Filter..."
                                             SearchText="{Binding FilterSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
-
-                    
 
                     <DataGrid Grid.Row="1" 
                               AutoGenerateColumns="False" 
@@ -248,11 +242,12 @@
 
                     <Grid Grid.Row="1" 
                           HorizontalAlignment="Center" 
-                          VerticalAlignment="Center" 
-                          Visibility="{Binding FiltersProgressRing}">
+                          VerticalAlignment="Top" 
+                          Margin="0,250,0,0"
+                          Visibility="{Binding FiltersLoaded, Converter={StaticResource BoolToVisibility}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <controls:ProgressRing Width="80" Height="80"
@@ -264,12 +259,14 @@
                                                IsIndeterminate="True"
                                                VerticalAlignment="Center"/>
 
-                        <TextBlock Grid.Row="1" IsHitTestVisible="False" Text="Loading Filters..." 
+                        <TextBlock Grid.Row="1" IsHitTestVisible="False" 
+                                   Text="{Binding FiltersLoadingStatusText}" 
                                    FontFamily="{StaticResource PrimaryFont}"
-                                   FontWeight="{StaticResource FontWeightBold}"
+                                   FontWeight="{StaticResource FontWeightNormal}"
                                    FontSize="{StaticResource FontSizeMedium}"
                                    HorizontalAlignment="Center" 
                                    VerticalAlignment="Bottom"
+                                   Margin="0,10,0,0"
                                    Foreground="{DynamicResource DataGridForeground}"/>
                     </Grid>
                 </Grid>
@@ -288,16 +285,15 @@
                         </Grid.ColumnDefinitions>
 
                         <ComboBox x:Name="MaterialsComboBox"
+                                  SelectedIndex="{Binding SelectedMaterialFilterIndex, Mode=TwoWay}"
+                                  ItemsSource="{Binding MaterialFilters}"
                                   Grid.Column="0"
                                   BorderThickness="1"
-                                  SelectedIndex="1"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   Height="30"
-                                  Width="100">
-                            <ComboBoxItem Content="All" Height="25"/>
-                            <ComboBoxItem Content="Unused" Height="25"/>
-                        </ComboBox>
+                                  Width="100"/>
+
 
                         <controls:SearchBox VerticalAlignment="Top"
                                             Grid.Column="1"
@@ -341,11 +337,12 @@
 
                     <Grid Grid.Row="1" 
                           HorizontalAlignment="Center" 
-                          VerticalAlignment="Center" 
-                          Visibility="{Binding MaterialsProgressRing}">
+                          VerticalAlignment="Top"
+                          Margin="0,250,0,0"
+                          Visibility="{Binding MaterialsLoaded, Converter={StaticResource BoolToVisibility}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <controls:ProgressRing Width="80" Height="80"
@@ -357,12 +354,14 @@
                                                IsIndeterminate="True"
                                                VerticalAlignment="Center"/>
 
-                        <TextBlock Grid.Row="1" IsHitTestVisible="False" Text="Loading Materials..." 
+                        <TextBlock Grid.Row="1" IsHitTestVisible="False"
+                                   Text="{Binding MaterialsLoadingStatusText}"
                                    FontFamily="{StaticResource PrimaryFont}"
-                                   FontWeight="{StaticResource FontWeightBold}"
+                                   FontWeight="{StaticResource FontWeightNormal}"
                                    FontSize="{StaticResource FontSizeMedium}"
+                                   Margin="0,10,0,0"
                                    HorizontalAlignment="Center" 
-                                   VerticalAlignment="Bottom"
+                                   VerticalAlignment="Top"
                                    Foreground="{DynamicResource DataGridForeground}"/>
                     </Grid>
                 </Grid>
@@ -381,16 +380,15 @@
                         </Grid.ColumnDefinitions>
 
                         <ComboBox x:Name="LinesComboBox"
+                                  SelectedIndex="{Binding SelectedLineFilterIndex, Mode=TwoWay}"
+                                  ItemsSource="{Binding LineFilters}"
                                   Grid.Column="0"
                                   BorderThickness="1"
-                                  SelectedIndex="1"
                                   HorizontalAlignment="Left"
                                   VerticalAlignment="Center"
                                   Height="30"
-                                  Width="100">
-                            <ComboBoxItem Content="All" Height="25"/>
-                            <ComboBoxItem Content="Unplaced" Height="25"/>
-                        </ComboBox>
+                                  Width="100"/>
+
 
                         <controls:SearchBox VerticalAlignment="Top"
                                             Grid.Column="1"
@@ -411,7 +409,7 @@
                             <DataGridTemplateColumn Width="30">
                                 <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
-                                        <CheckBox IsChecked="{Binding DataContext.IsAllLinesChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}" />
+                                        <CheckBox IsChecked="{Binding DataContext.IsAllLinesChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
                                 <DataGridTemplateColumn.CellTemplate>
@@ -434,11 +432,12 @@
 
                     <Grid Grid.Row="1" 
                           HorizontalAlignment="Center" 
-                          VerticalAlignment="Center" 
-                          Visibility="{Binding LinesProgressRing}">
+                          VerticalAlignment="Top"
+                          Margin="0,250,0,0"
+                          Visibility="{Binding LinesLoaded, Converter={StaticResource BoolToVisibility}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <controls:ProgressRing Width="80" Height="80"
@@ -450,12 +449,17 @@
                                                IsIndeterminate="True"
                                                VerticalAlignment="Center"/>
 
-                        <TextBlock Grid.Row="1" IsHitTestVisible="False" Text="Loading Lines..." 
+                        <TextBlock Grid.Row="1" IsHitTestVisible="False" 
+                                   Text="{Binding LinesLoadingStatusText}"
                                    FontFamily="{StaticResource PrimaryFont}"
-                                   FontWeight="{StaticResource FontWeightBold}"
+                                   FontWeight="{StaticResource FontWeightNormal}"
                                    FontSize="{StaticResource FontSizeMedium}"
+                                   TextAlignment="Center"
+                                   Padding="0"                  
+                                   LineHeight="20"
                                    HorizontalAlignment="Center" 
-                                   VerticalAlignment="Bottom"
+                                   Margin="0,10,0,0"
+                                   VerticalAlignment="Top"
                                    Foreground="{DynamicResource DataGridForeground}"/>
                     </Grid>
                 </Grid>

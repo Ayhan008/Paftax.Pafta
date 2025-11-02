@@ -1,75 +1,31 @@
-using Paftax.Pafta.Drawing.Entities;
-using Paftax.Pafta.Drawing.Entities.Abstracts;
+﻿using Paftax.Pafta.Drawing.Elements;
+using Paftax.Pafta.Drawing.Elements.Abstracts;
+using Paftax.Pafta.Drawing.Structs;
+using Paftax.Pafta.Drawing.Utilities;
+using Paftax.Pafta.Drawing.Visuals.Abstracts;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Paftax.Pafta.Drawing
 {
-    public partial class DrawingCanvas : FrameworkElement
+    public class DrawingCanvas : Canvas
     {
-        // Collection of visual elements
-        private readonly VisualCollection _visuals;
+        public event Action<Point, Point>? MouseMovedInContent;
 
-        // Elements and Annotations
-        private readonly List<Entity> _elements = [];
-        private readonly List<Annotation> _annotations = [];
+        public List<DrawingElement> ModelElements = [];
+        public List<DrawingElement> ScreenElements = [];
 
-        // Pan and Zoom state
-        private Vector _panOffset = new(0, 0);
-        private double _zoomScale = 1.0;
+        private readonly Canvas _contentCanvas = new();
 
-        // Panning state
-        private bool _isPanning = false;
-        private Point _lastMousePos;
-
-        // Keyboard state
-        private bool _isZPressed = false;
-
-        public DrawingCanvas()
-        {
-            _visuals = new VisualCollection(this);
-            Background = Brushes.White;
-
-            Focusable = true;
-            Loaded += (s, e) => Focus();
-            MouseEnter += (s, e) => Focus();
-        }
-
-        #region Dependency Properties
-        public static readonly DependencyProperty BackgroundProperty =
-            DependencyProperty.Register(nameof(Background), typeof(Brush), typeof(DrawingCanvas),
-                new FrameworkPropertyMetadata(Brushes.White, FrameworkPropertyMetadataOptions.AffectsRender));
-
-        public static readonly DependencyProperty ForegroundProperty =
-            DependencyProperty.Register(nameof(Foreground), typeof(Brush), typeof(DrawingCanvas),
-                new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.AffectsRender));
-
+        #region Scale Property (Annotation için)
         public static readonly DependencyProperty ScaleProperty =
-            DependencyProperty.Register(nameof(Scale), typeof(double), typeof(DrawingCanvas),
-                new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender, OnScaleChanged));
-
-        public static readonly DependencyProperty SelectedGeometryColorProperty =
-            DependencyProperty.Register(nameof(SelectedGeometryColor), typeof(Brush), typeof(DrawingCanvas),
-                new FrameworkPropertyMetadata(Brushes.Red, FrameworkPropertyMetadataOptions.AffectsRender));
-
-        public Brush SelectedGeometryColor
-        {
-            get => (Brush)GetValue(SelectedGeometryColorProperty);
-            set => SetValue(SelectedGeometryColorProperty, value);
-        }
-
-        public Brush Background
-        {
-            get => (Brush)GetValue(BackgroundProperty);
-            set => SetValue(BackgroundProperty, value);
-        }
-
-        public Brush Foreground
-        {
-            get => (Brush)GetValue(ForegroundProperty);
-            set => SetValue(ForegroundProperty, value);
-        }
+            DependencyProperty.Register(
+                nameof(Scale),
+                typeof(double),
+                typeof(DrawingCanvas),
+                new PropertyMetadata(1.0, OnScaleChanged));
 
         public double Scale
         {
@@ -79,364 +35,183 @@ namespace Paftax.Pafta.Drawing
 
         public static void OnScaleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is DrawingCanvas canvas)
+            if (d is DrawingCanvas drawingCanvas)
             {
-                canvas.ApplyTransformToAllVisuals();
-            }
-        }
-        #endregion
+                double newScale = (double)e.NewValue;
 
-        #region Visual Management
-        protected override int VisualChildrenCount => _visuals.Count;
-        protected override Visual GetVisualChild(int index) => _visuals[index];
-        #endregion
-
-        #region Commands
-        public void AddElevation(Point point)
-        {
-            ElevationMarker elevation = new()
-            {
-                Center = point,
-                Rotation = 90,
-                SheetNumber = "A101",
-                DetailNumber = "1",
-                DrawingVisual = new DrawingVisual(),
-                Brush = Brushes.Aqua
-            };
-
-            using (var dc = elevation.DrawingVisual.RenderOpen())
-            {
-                elevation.Draw(dc);
-            }
-
-            _annotations.Add(elevation);
-            _visuals.Add(elevation.DrawingVisual);
-
-            ApplyTransformToVisual(elevation.DrawingVisual, isAnnotation: true);
-            InvalidateVisual();
-        }
-
-        public void AddSection(Point start, Point end)
-        {
-            SectionLine section = new()
-            {
-                Start = start,
-                End = end,
-                Rotation = 90,
-                SheetNumber = "A101",
-                DetailNumber = "1",
-                DrawingVisual = new DrawingVisual(),
-                Brush = Brushes.Aqua,
-                Direction = -1,
-            };
-
-            using (var dc = section.DrawingVisual.RenderOpen())
-            {
-                section.Draw(dc);
-            }
-
-            _annotations.Add(section);
-            _visuals.Add(section.DrawingVisual);
-
-            ApplyTransformToVisual(section.DrawingVisual, isAnnotation: true);
-            InvalidateVisual();
-        }
-
-        public void AddElement(Entity element)
-        {
-            if (element == null) return;
-
-            element.DrawingVisual = new DrawingVisual();
-            using (var dc = element.DrawingVisual.RenderOpen())
-                element.Draw(dc);
-
-            _elements.Add(element);
-            _visuals.Add(element.DrawingVisual);
-
-            ApplyTransformToVisual(element.DrawingVisual, isAnnotation: false);
-            InvalidateVisual();
-        }
-
-        public void RemoveElement(Entity element)
-        {
-            if (element?.DrawingVisual != null)
-            {
-                _visuals.Remove(element.DrawingVisual);
-                InvalidateVisual();
-            }
-        }
-        #endregion
-
-        #region Transform Helpers
-        private void ApplyTransformToAllVisuals()
-        {
-            foreach (var el in _elements)
-                ApplyTransformToVisual(el.DrawingVisual, false);
-
-            foreach (var ann in _annotations)
-                ApplyTransformToVisual(ann.DrawingVisual, true);
-        }
-
-        private void ApplyTransformToVisual(DrawingVisual visual, bool isAnnotation)
-        {
-            // Calculate the transformation matrix
-            double scale = isAnnotation ? (_zoomScale / Scale) / 90 : _zoomScale;
-
-            // Flip Y axis and apply scalingze
-            Matrix matrix = new ScaleTransform(scale, -scale).Value;
-
-            // Translate to center and apply pan offset
-            Matrix translateCenter = new TranslateTransform(ActualWidth / 2, ActualHeight / 2).Value;
-
-            // Apply panning
-            Matrix pan = new TranslateTransform(_panOffset.X, _panOffset.Y).Value;
-
-            matrix.Append(pan);
-            matrix.Append(translateCenter);
-
-            visual.Transform = new MatrixTransform(matrix);
-        }
-        #endregion
-
-        #region Mouse Wheel Zoom
-        /// <summary>
-        /// Handles mouse wheel events to zoom the view in or out, centering the zoom operation on the mouse pointer
-        /// position.
-        /// </summary>
-        /// <remarks>Zooming is constrained to a minimum scale of 0.01 and a maximum scale of 100. The
-        /// zoom operation is centered on the current mouse position, and the pan offset is adjusted to maintain the
-        /// focus point under the cursor.</remarks>
-        /// <param name="e">The event data containing information about the mouse wheel movement.</param>
-        protected override void OnMouseWheel(MouseWheelEventArgs e)
-        {
-            base.OnMouseWheel(e);
-
-            double zoomFactor = e.Delta > 0 ? 1.1 : 0.9;
-
-            Point mousePos = e.GetPosition(this);
-
-            double newZoom = _zoomScale * zoomFactor;
-            if (newZoom < 0.01 || newZoom > 100) return;
-
-            Vector canvasCenter = new(ActualWidth / 2, ActualHeight / 2);
-
-            Vector worldPos = (Vector)(mousePos - canvasCenter - _panOffset) / _zoomScale;
-
-            _panOffset -= worldPos * (_zoomScale * zoomFactor - _zoomScale);
-
-            _zoomScale = newZoom;
-
-            ApplyTransformToAllVisuals();
-        }
-        #endregion
-
-        #region Keyboard Shortcuts
-        /// <summary>
-        /// Handles keyboard input to support custom keyboard shortcuts, including a shortcut for zooming to fit all
-        /// content.
-        /// </summary>
-        /// <remarks>Pressing and releasing the 'Z' key in combination with the 'E' key triggers the
-        /// zoom-to-fit-all functionality. Other key combinations are handled by the base implementation.</remarks>
-        /// <param name="e">A <see cref="KeyEventArgs"/> that contains the event data for the key press.</param>
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-
-            if (e.Key == Key.Z)
-            {
-                _isZPressed = true;
-                return;
-            }
-
-            if (_isZPressed && e.Key >= Key.A && e.Key <= Key.Z)
-            {
-                if (e.Key == Key.E)
+                foreach (var element in drawingCanvas.ScreenElements)
                 {
-                    ZoomToFitAll();
+                    element.Scale = newScale;
+                    if (element.Visual is GeometryVisual gv)
+                    {
+                        gv.Scale = newScale;
+                    }
+                    element.InvalidateVisual();
                 }
-                _isZPressed = false;
             }
-        }
-
-        /// <summary>
-        /// Handles the KeyUp event by invoking the base class implementation.
-        /// </summary>
-        /// <param name="e">A KeyEventArgs that contains the event data associated with the key release.</param>
-        protected override void OnKeyUp(KeyEventArgs e)
-        {
-            base.OnKeyUp(e);
         }
         #endregion
 
-        #region Pan / Mouse Events
-        /// <summary>
-        /// Handles mouse down events to initiate panning when the Shift key and right mouse button are pressed.
-        /// </summary>
-        /// <remarks>Panning mode is activated only when either Shift key is held and the right mouse
-        /// button is pressed. The control also receives focus when this event is handled.</remarks>
-        /// <param name="e">The event data associated with the mouse button event.</param>
-        protected override void OnMouseDown(MouseButtonEventArgs e)
+        #region Pan & Zoom
+        private readonly ScaleTransform _zoomTransform = new(1, 1);
+        private readonly ScaleTransform _flipYTransform = new(1, -1);
+        private readonly TranslateTransform _panTransform = new();
+        private readonly TransformGroup _transformGroup = new();
+
+        private Point _lastMousePos;
+        private bool _isPanning;
+
+        public double Zoom => _zoomTransform.ScaleX;
+        #endregion
+
+        public DrawingCanvas()
         {
-            base.OnMouseDown(e);
-            this.Focus();
+            Background = Brushes.LightGray;
+            ClipToBounds = true;
+            
+            Children.Add(_contentCanvas);
 
-            Point mousePos = e.GetPosition(this);
+            _transformGroup.Children.Add(_flipYTransform);
+            _transformGroup.Children.Add(_panTransform);
+            _transformGroup.Children.Add(_zoomTransform);
+            _contentCanvas.RenderTransform = _transformGroup;
 
-            if ((Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                && e.RightButton == MouseButtonState.Pressed)
+            Canvas.SetLeft(_contentCanvas, ActualWidth / 2.0);
+            Canvas.SetTop(_contentCanvas, ActualHeight / 2.0);
+            _flipYTransform.CenterX = 0;
+            _flipYTransform.CenterY = 0;
+
+            Loaded += (s, e) => { CenterContent(); ZoomToFitAll(); };
+            SizeChanged += (s, e) => CenterContent();
+
+            MouseWheel += OnMouseWheel;
+            MouseDown += OnMouseDown;
+            MouseMove += OnMouseMove;
+            MouseUp += OnMouseUp;
+        }
+
+        private void CenterContent()
+        {
+            Canvas.SetLeft(_contentCanvas, ActualWidth / 2.0);
+            Canvas.SetTop(_contentCanvas, ActualHeight / 2.0);
+        }
+
+        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if ((Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) &&
+                e.RightButton == MouseButtonState.Pressed)
             {
                 _isPanning = true;
-                _lastMousePos = mousePos;
+                _lastMousePos = e.GetPosition(this);
                 CaptureMouse();
+            }
 
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
                 Cursor = Cursors.SizeAll;
-                return;
             }
-        }
-
-        /// <summary>
-        /// Handles mouse movement events to update the panning state of the control when panning is active.
-        /// </summary>
-        /// <remarks>This method is typically called by the WPF framework when the mouse moves over the
-        /// control. If panning is in progress, the control's visual content is shifted according to the mouse movement.
-        /// Derived classes can override this method to provide custom mouse movement handling, but should call the base
-        /// implementation to preserve panning behavior.</remarks>
-        /// <param name="e">The event data associated with the mouse movement.</param>
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-
-            if (_isPanning)
+            else
             {
-                Point currentPos = e.GetPosition(this);
-                Vector delta = currentPos - _lastMousePos;
-
-                _panOffset += delta;
-                ApplyTransformToAllVisuals();
-
-                _lastMousePos = currentPos;
-            }
-        }
-
-        /// <summary>
-        /// Handles the MouseUp event to end a panning operation when the right mouse button is released.
-        /// </summary>
-        /// <remarks>This method is typically called by the WPF event system and should not be called
-        /// directly. When the right mouse button is released during a panning operation, this method releases mouse
-        /// capture and resets the cursor to the default arrow.</remarks>
-        /// <param name="e">The event data associated with the mouse button release.</param>
-        protected override void OnMouseUp(MouseButtonEventArgs e)
-        {
-            base.OnMouseUp(e);
-
-            if (_isPanning && e.ChangedButton == MouseButton.Right)
-            {
-                _isPanning = false;
-                ReleaseMouseCapture();
-
                 Cursor = Cursors.Arrow;
             }
         }
-        #endregion
 
-        #region ZoomToFitAll (visuals)
-        /// <summary>
-        /// Adjusts the zoom and pan so that all visual elements are scaled and positioned to fit within the visible
-        /// area.
-        /// </summary>
-        /// <remarks>This method automatically calculates the optimal zoom level and pan offset to ensure
-        /// that all visuals are visible within the current viewport. If there are no visuals to display, the method has
-        /// no effect.</remarks>
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_isPanning)
+            {
+                var pos = e.GetPosition(this);
+                var dx = pos.X - _lastMousePos.X;
+                var dy = pos.Y - _lastMousePos.Y;
+
+                _panTransform.X += dx / _zoomTransform.ScaleX;
+                _panTransform.Y += dy / _zoomTransform.ScaleY;
+
+                _lastMousePos = pos;
+            }
+            var screenOnContent = e.GetPosition(_contentCanvas);
+
+            var worldX = (screenOnContent.X - ActualWidth / 2.0);
+            var worldY = (screenOnContent.Y - ActualHeight / 2.0);
+            var worldPoint = new Point(worldX, worldY);
+
+            MouseMovedInContent?.Invoke(
+                UnitConverter.PointToM(screenOnContent),
+                UnitConverter.PointToM(worldPoint)
+            );
+        }
+        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_isPanning)
+            {
+                _isPanning = false;
+                ReleaseMouseCapture();
+                Cursor = Cursors.Arrow;
+            }
+        }
+
+        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                return;
+
+            double zoomFactor = e.Delta > 0 ? 1.1 : 0.9;
+
+            var mouseScreenPos = e.GetPosition(this);
+            var inverseTransform = _transformGroup.Inverse;
+            if (inverseTransform == null) return;
+
+            var mouseWorldBefore = inverseTransform.Transform(mouseScreenPos);
+
+            _zoomTransform.ScaleX *= zoomFactor;
+            _zoomTransform.ScaleY *= zoomFactor;
+
+            var mouseWorldAfter = inverseTransform.Transform(mouseScreenPos);
+
+            _panTransform.X += (mouseWorldAfter.X - mouseWorldBefore.X) * _zoomTransform.ScaleX;
+            _panTransform.Y += (mouseWorldAfter.Y - mouseWorldBefore.Y) * _zoomTransform.ScaleY;
+        }
+
+        #region Element Management
+        public void AddElement(DrawingElement element)
+        {
+            if (element.IsAnnotation == true)
+            {
+                ScreenElements.Add(element);
+                if (element.Visual is GeometryVisual gv)
+                {
+                    gv.Scale = 20;
+                }
+            }
+
+            else
+                ModelElements.Add(element);
+
+            _contentCanvas.Children.Add(element);
+            Canvas.SetZIndex(element, element.IsAnnotation == true ? 1 : 0);  
+        }
+
         public void ZoomToFitAll()
         {
-            // Get the bounding box of all visuals
-            Rect bbox = GetVisualsBoundingBox();
-            if (bbox.IsEmpty) return;
-
-            // Calculate the required scale to fit the bounding box within the control's dimensions
-            double scaleX = ActualWidth / bbox.Width;
-            double scaleY = ActualHeight / bbox.Height;
-
-            // Use the smaller scale to ensure the entire bounding box fits, with a margin
-            _zoomScale = Math.Min(scaleX, scaleY) * 0.9;
-
-            // Center the bounding box in the control
-            _panOffset = new Vector(
-                -(bbox.X + bbox.Width / 2) * _zoomScale,
-                (bbox.Y + bbox.Height / 2) * _zoomScale
-            );
-
-            ApplyTransformToAllVisuals();
-        }
-
-        /// <summary>
-        /// Calculates the smallest axis-aligned rectangle that contains the content of all visuals in the collection.
-        /// </summary>
-        /// <returns>A <see cref="Rect"/> representing the bounding box that encompasses the content of all visuals. Returns <see
-        /// cref="Rect.Empty"/> if the collection contains no visuals or all visuals have empty content bounds.</returns>
-        private Rect GetVisualsBoundingBox()
-        {
-            Rect bounds = Rect.Empty;
-
-            foreach (DrawingVisual v in _visuals.Cast<DrawingVisual>())
+            foreach (var element in ModelElements)
             {
-                Rect vb = v.ContentBounds;
+                Bounding2 bounds = element.BoundingXY;
 
-                if (!vb.IsEmpty)
-                {
-                    if (bounds.IsEmpty)
-                        bounds = vb;
-                    else
-                        bounds.Union(vb);
-                }
-            }
+                double scaleX = ActualWidth / bounds.Width;
+                double scaleY = ActualHeight / bounds.Height;
 
-            return bounds;
-        }
-        #endregion
-
-        #region Render
-        /// <summary>
-        /// Renders the background of the control using the specified drawing context.
-        /// </summary>
-        /// <remarks>This method is typically called by the layout system and should not be called
-        /// directly. Overrides should call the base implementation to ensure proper rendering behavior.</remarks>
-        /// <param name="drawingContext">The drawing context to use for rendering the control's visual content. Cannot be null.</param>
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            base.OnRender(drawingContext);
-            drawingContext.DrawRectangle(Background, null, new Rect(0, 0, ActualWidth, ActualHeight));
-        }
-
-        /// <summary>
-        /// Responds to changes in the rendered size of the element.
-        /// </summary>
-        /// <remarks>Overrides this method to update visual transforms when the element's size changes.
-        /// Call the base implementation to ensure standard layout behavior is preserved.</remarks>
-        /// <param name="sizeInfo">Information about the size changes, including the previous and new size values.</param>
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
-        {
-            base.OnRenderSizeChanged(sizeInfo);
-            ApplyTransformToAllVisuals();
-        }
-        #endregion
-
-        public void Redraw()
-        {
-            foreach (DrawingVisual visual in _visuals.Cast<DrawingVisual>())
-            {
-                using var dc = visual.RenderOpen();
-
-                Entity? element = _elements.FirstOrDefault(el => el.DrawingVisual == visual);
-                if (element != null)
-                {
-                    element.Draw(dc);
-                    continue;
-                }
-
-                Annotation? annotation = _annotations.FirstOrDefault(ann => ann.DrawingVisual == visual);
-                annotation?.Draw(dc);
+                double targetScale = Math.Min(scaleX, scaleY) * 0.9;
+                _zoomTransform.ScaleX = targetScale;
+                _zoomTransform.ScaleY = targetScale;
+                _panTransform.X = -((bounds.Min.X + bounds.Max.X) / 2) * targetScale + ActualWidth / 2;
+                _panTransform.Y = -((bounds.Min.Y + bounds.Max.Y) / 2) * targetScale + ActualHeight / 2;
             }
         }
+        #endregion
     }
 }

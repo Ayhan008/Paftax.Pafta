@@ -147,13 +147,24 @@
     <!--Generic ScrollBar-->
     <SolidColorBrush x:Key="ScrollBarBackground" Color="#454f61"/>
     <SolidColorBrush x:Key="ScrollBarForeground" Color="#5c697d"/>
-    <SolidColorBrush x:Key="ScrollBarBorderBrush" Color="#454f61"/>
+    <SolidColorBrush x:Key="ScrollBarBorderBrush" Color="#3b4451"/>
 
     <SolidColorBrush x:Key="ScrollBarThumbBackground" Color="#5c697d"/>
     <SolidColorBrush x:Key="ScrollBarThumbBorderBrush" Color="#5c697d"/>
 
     <SolidColorBrush x:Key="ScrollBarThumbHoverBackground" Color="#8191a7"/>
     <SolidColorBrush x:Key="ScrollBarThumbHoverBorderBrush" Color="#8191a7"/>
+
+    <!--Drawing ScrollBar-->
+    <SolidColorBrush x:Key="DrawingScrollBarBackground" Color="#313945"/>
+    <SolidColorBrush x:Key="DrawingScrollBarForeground" Color="#758498"/>
+    <SolidColorBrush x:Key="DrawingScrollBarBorderBrush" Color="#3a4350"/>
+
+    <SolidColorBrush x:Key="DrawingScrollBarThumbBackground" Color="#758498"/>
+    <SolidColorBrush x:Key="DrawingScrollBarThumbBorderBrush" Color="#758498"/>
+
+    <SolidColorBrush x:Key="DrawingScrollBarThumbHoverBackground" Color="#99abc2"/>
+    <SolidColorBrush x:Key="DrawingScrollBarThumbHoverBorderBrush" Color="#99abc2"/>
     <!--#endregion-->
 
     <!--#region  ComboBox Colors-->
@@ -167,6 +178,30 @@
 
     <SolidColorBrush x:Key="ComboBoxClickedHighlightBackground" Color="#416f8d"/>
     <SolidColorBrush x:Key="ComboBoxClickedHighlightBorderBrush" Color="#38abdf"/>
+
+    <!-- Scale ComboBox -->
+    <SolidColorBrush x:Key="ScaleComboBoxBackground" Color="#3b4453"/>
+    <SolidColorBrush x:Key="ScaleComboBoxForeground" Color="#ffffff"/>
+    <SolidColorBrush x:Key="ScaleComboBoxBorderBrush" Color="#3b4453"/>
+
+    <SolidColorBrush x:Key="ScaleComboBoxPopupBackground" Color="#ffffff"/>
+    <SolidColorBrush x:Key="ScaleComboBoxPopupBorderBrush" Color="#bdbdbd"/>
+
+    <SolidColorBrush x:Key="ScaleComboBoxItemForeground" Color="#565656"/>
+    <SolidColorBrush x:Key="ScaleComboBoxItemHoverBackground" Color="#dfdfdf"/>
+    <!--#endregion-->
+
+    <!--#region ToggleButton Styles-->
+    <!--Generic ToggleButton-->
+    <SolidColorBrush x:Key="ToggleButtonBackground" Color="#303946"/>
+    <SolidColorBrush x:Key="ToggleButtonForeground" Color="#ffffff"/>
+    <SolidColorBrush x:Key="ToggleButtonBorderBrush" Color="#343d4b"/>
+    <!--#endregion-->
+
+    <!--#region  Canvas Colors-->
+    <SolidColorBrush x:Key="CanvasBackground" Color="#222933"/>
+    <SolidColorBrush x:Key="CanvasForeground" Color="#ffffff"/>
+    <SolidColorBrush x:Key="CanvasBorderBrush" Color="#222933"/>
     <!--#endregion-->
 
     <!--#region  CheckBox Colors-->

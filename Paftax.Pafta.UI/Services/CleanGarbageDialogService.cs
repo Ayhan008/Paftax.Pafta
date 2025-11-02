@@ -29,12 +29,6 @@ namespace Paftax.Pafta.UI.Services
             remove => _cleanGarbageViewModel.CleanAction -= value;
         }
 
-        public event Action? CloseAction
-        {
-            add => _cleanGarbageViewModel.CloseAction += value;
-            remove => _cleanGarbageViewModel.CloseAction -= value;
-        }
-
         public event Action? CancelAction
         {
             add => _cleanGarbageViewModel.CancelAction += value;

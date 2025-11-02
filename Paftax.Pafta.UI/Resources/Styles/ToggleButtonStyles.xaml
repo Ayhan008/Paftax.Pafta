@@ -9,10 +9,11 @@
     <!--#endregion-->
     
     <Style TargetType="ToggleButton">
-        <Setter Property="Background" Value="Black"/>
-        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="Background" Value="{DynamicResource ToggleButtonBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ToggleButtonForeground}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Height" Value="25"/>
         <Setter Property="Padding" Value="10,0,0,0"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -30,12 +31,12 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="Black"/>
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="Black"/>
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ToggleButtonBackground}"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrush}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="Black"/>
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="Black"/>
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ToggleButtonBackground}"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

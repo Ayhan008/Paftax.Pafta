@@ -3,7 +3,7 @@ using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.Shared.Models
 {
-    public partial class MaterialModel : ObservableObject
+    public partial class MaterialModel : ObservableObject, IUserCheckable
     {
         public required long Id { get; set; }
         public required string Name { get; set; }

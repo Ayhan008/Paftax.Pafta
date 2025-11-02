@@ -10,6 +10,7 @@ namespace Paftax.Pafta.UI.Views
         public RoomToSheetUserControl()
         {
             InitializeComponent();
+            DataContext = new ViewModels.RoomToSheetViewModel();
         }
     }
 }
