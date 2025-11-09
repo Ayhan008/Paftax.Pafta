@@ -4,11 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Paftax.Pafta.UI.Test"
-        xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls;assembly=Paftax.Pafta.UI"
+        xmlns:controls="clr-namespace:Paftax.Pafta.Drawings;assembly=Paftax.Pafta.Drawings"
         xmlns:views="clr-namespace:Paftax.Pafta.UI.Views;assembly=Paftax.Pafta.UI"
         xmlns:converters="clr-namespace:Paftax.Pafta.UI.Test.Converters"
-        xmlns:drawing="clr-namespace:Paftax.Pafta.Drawing;assembly=Paftax.Pafta.Drawing"
-        xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels;assembly=Paftax.Pafta.UI"
+        xmlns:drawing="clr-namespace:Paftax.Pafta.Drawings;assembly=Paftax.Pafta.Drawings"
+        xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels;assembly=Paftax.Pafta.UI" d:DataContext="{d:DesignInstance Type=vm:GraphicDesignerViewModel}"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="1000" Width="1200">
@@ -20,8 +20,20 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    
-    <Grid Background="{DynamicResource WindowBackground}">
-        <views:GraphicDesignerUserControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10"/>
+
+    <Grid>
+        <drawing:DrawingCanvas x:Name="Gc" AnnotationScale="{Binding CanvasScale}"/>
+        
+        <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6"
+                Background="#66000000" CornerRadius="4" Padding="4">
+            <TextBlock Foreground="White" FontFamily="Consolas">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="X={0:0.##mm}, Y={1:0.##mm}">
+                        <Binding ElementName="Gc" Path="ModelMousePosition.X" />
+                        <Binding ElementName="Gc" Path="ModelMousePosition.Y" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </Border>
     </Grid>
 </Window>

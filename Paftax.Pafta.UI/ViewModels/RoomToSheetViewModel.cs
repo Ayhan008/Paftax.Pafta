@@ -9,16 +9,15 @@ namespace Paftax.Pafta.UI.ViewModels
     public partial class RoomToSheetViewModel : ObservableObject
     {
         public ObservableCollection<RoomModel> Rooms { get; } = [];
-        public ObservableCollection<CreateViewModel> CreatedViews { get; } = [];
-        public List<RevitViewType> ViewTypes { get; } =
+        public List<ViewType> ViewTypes { get; } =
         [
-            RevitViewType.FloorPlan,
-            RevitViewType.CeilingPlan,
-            RevitViewType.Elevation,
-            RevitViewType.Section,
-            RevitViewType.ThreeD,
-            RevitViewType.Schedule,
-            RevitViewType.Legend
+            ViewType.FloorPlan,
+            ViewType.CeilingPlan,
+            ViewType.Elevation,
+            ViewType.Section,
+            ViewType.ThreeD,
+            ViewType.Schedule,
+            ViewType.Legend
         ];
 
         [ObservableProperty] private string? _selectedViewType;
@@ -30,9 +29,6 @@ namespace Paftax.Pafta.UI.ViewModels
             foreach (var roomModel in roomModels)
             {
                 Rooms.Add(roomModel);
-
-                if (roomModel.Boundary != null)
-                    GraphicDesignerViewModel.AddDrawingElement(roomModel.Boundary);
             }
         }
     }

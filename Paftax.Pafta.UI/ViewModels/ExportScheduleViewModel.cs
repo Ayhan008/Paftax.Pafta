@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Paftax.Pafta.Shared.Interfaces;
 using Paftax.Pafta.Shared.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,9 +8,9 @@ using System.Windows.Data;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class ExportScheduleViewModel : ObservableObject, IExportScheduleViewModel
+    public partial class ExportScheduleViewModel : ObservableObject
     {
-        public ObservableCollection<ScheduleModel> Schedules { get; } = [];
+        public ObservableCollection<ElementViewModel> Schedules { get; } = [];
         public ICollectionView SchedulesView { get; }
 
         [ObservableProperty]
@@ -46,7 +45,7 @@ namespace Paftax.Pafta.UI.ViewModels
 
         private bool FilterSchedules(object obj)
         {
-            if (obj is ScheduleModel schedule)
+            if (obj is ElementModel schedule)
             {
                 return string.IsNullOrWhiteSpace(SearchText)
                     || schedule.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
@@ -56,10 +55,10 @@ namespace Paftax.Pafta.UI.ViewModels
 
         partial void OnIsAllCheckedChanged(bool value)
         {
-            foreach (ScheduleModel scheduleModel in Schedules)
+            foreach (ElementViewModel scheduleViewModel in Schedules)
             {
-                if (scheduleModel.IsChecked != value)
-                    scheduleModel.IsChecked = value;
+                if (scheduleViewModel.IsChecked != value)
+                    scheduleViewModel.IsChecked = value;
             }
         }
 
@@ -114,20 +113,14 @@ namespace Paftax.Pafta.UI.ViewModels
             }
         }
 
-        public void LoadSchedules(IEnumerable<ScheduleModel> scheduleModels)
+        public void LoadSchedules(IEnumerable<ElementModel> scheduleModels)
         {
             Schedules.Clear();
-            foreach (ScheduleModel scheduleModel in scheduleModels)
+            foreach (ElementModel scheduleModel in scheduleModels)
             {
-                scheduleModel.PropertyChanged += (s, e) =>
-                {
-                    if (e.PropertyName == nameof(scheduleModel.IsChecked))
-                    {
-                        ExportCommand.NotifyCanExecuteChanged();
-                    }
-                        
-                };
-                Schedules.Add(scheduleModel);
+                ElementViewModel elementViewModel = new(scheduleModel);
+
+                Schedules.Add(elementViewModel);
             }
         }
     }

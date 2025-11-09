@@ -1,9 +1,8 @@
-﻿using Paftax.Pafta.Drawing.Utilities;
-using Paftax.Pafta.Drawing.Visuals.Abstracts;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Paftax.Pafta.Drawing.Visuals
+namespace Paftax.Pafta.Drawings.Visuals
 {
     internal class CalloutHeadVisual : GeometryVisual
     {
@@ -13,26 +12,21 @@ namespace Paftax.Pafta.Drawing.Visuals
         public string DetailNumber { get; set; } = string.Empty;
         public override void Draw(DrawingContext dc)
         {
-            double scaledRadius = Radius * Scale;
-
-            double scaledFont = Math.Max(FontSize * Scale, 0.1);
+            Geometry geometry = CreateGeometry();
 
             Pen pen = new(Stroke, StrokeThickness * Scale)
             {
                 LineJoin = PenLineJoin.Round
             };
 
-            dc.DrawEllipse(null, pen, Center, scaledRadius, scaledRadius);
+            dc.DrawGeometry(null, pen, geometry);
 
-            dc.DrawLine(pen,
-                new Point(Center.X - scaledRadius, Center.Y),
-                new Point(Center.X + scaledRadius, Center.Y));
-
+            double scaledFont = Math.Max(FontSize * Scale, 0.1);
             Typeface typeface = new("Arial");
 
             FormattedText sheetText = new(
                 SheetNumber,
-                System.Globalization.CultureInfo.InvariantCulture,
+                CultureInfo.InvariantCulture,
                 FlowDirection.LeftToRight,
                 typeface,
                 scaledFont,
@@ -41,7 +35,7 @@ namespace Paftax.Pafta.Drawing.Visuals
 
             FormattedText detailText = new(
                 DetailNumber,
-                System.Globalization.CultureInfo.InvariantCulture,
+                CultureInfo.InvariantCulture,
                 FlowDirection.LeftToRight,
                 typeface,
                 scaledFont,
@@ -63,6 +57,31 @@ namespace Paftax.Pafta.Drawing.Visuals
             dc.PushTransform(new ScaleTransform(1, -1, detailPoint.X + detailText.Width / 2, detailPoint.Y + detailText.Height / 2));
             dc.DrawText(detailText, detailPoint);
             dc.Pop();
+        }
+
+        public override Geometry GetGeometry()
+        {
+            return CreateGeometry();
+        }
+
+        private GeometryGroup CreateGeometry()
+        {
+            double scaledRadius = Radius * Scale;
+
+            EllipseGeometry circle = new(Center, scaledRadius, scaledRadius);
+
+            LineGeometry line = new(
+                new Point(Center.X - scaledRadius, Center.Y),
+                new Point(Center.X + scaledRadius, Center.Y));
+
+            GeometryGroup group = new()
+            {
+                FillRule = FillRule.Nonzero
+            };
+            group.Children.Add(circle);
+            group.Children.Add(line);
+
+            return group;
         }
     }
 }

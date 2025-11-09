@@ -11,18 +11,18 @@ namespace Paftax.Pafta.Revit2026.Factories
         /// </summary>
         /// <param name="viewSchedule"></param>
         /// <returns></returns>
-        public static ScheduleTableData FromViewSchedule(ViewSchedule viewSchedule)
+        public static ScheduleTableDataModel FromViewSchedule(ViewSchedule viewSchedule)
         {
-            ScheduleTableData scheduleTableData = new()
+            ScheduleTableDataModel scheduleTableData = new()
             {
                 Id = viewSchedule.Id.Value,
                 Name = viewSchedule.Name,
                 MergedCells = GetMergedCellData(viewSchedule),
             };
 
-            scheduleTableData.TableParts[RevitSchedulePart.Body] = GetBodySectionData(viewSchedule);
-            scheduleTableData.TableParts[RevitSchedulePart.Header] = GetHeaderSectionData(viewSchedule);
-            scheduleTableData.TableParts[RevitSchedulePart.Title] = GetTitleSectionData(viewSchedule);
+            scheduleTableData.TableParts[SchedulePart.Body] = GetBodySectionData(viewSchedule);
+            scheduleTableData.TableParts[SchedulePart.Header] = GetHeaderSectionData(viewSchedule);
+            scheduleTableData.TableParts[SchedulePart.Title] = GetTitleSectionData(viewSchedule);
 
             scheduleTableData.TableData = GetTableData(
                 scheduleTableData.BodyPart,
@@ -37,7 +37,7 @@ namespace Paftax.Pafta.Revit2026.Factories
         /// </summary>
         /// <param name="viewSchedules"></param>
         /// <returns></returns>
-        public static List<ScheduleTableData> FromViewSchedules(List<ViewSchedule> viewSchedules)
+        public static List<ScheduleTableDataModel> FromViewSchedules(List<ViewSchedule> viewSchedules)
         {
             return [.. viewSchedules.Select(FromViewSchedule)];
         }

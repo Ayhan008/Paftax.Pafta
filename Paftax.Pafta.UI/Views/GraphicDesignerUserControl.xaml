@@ -6,9 +6,8 @@
              xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
              xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls"
              xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"
-             xmlns:drawing="clr-namespace:Paftax.Pafta.Drawing;assembly=Paftax.Pafta.Drawing"
-             xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels" 
-             d:DataContext="{d:DesignInstance Type=vm:GraphicDesignerViewModel}" 
+             xmlns:drawing="clr-namespace:Paftax.Pafta.Drawings;assembly=Paftax.Pafta.Drawings"
+             xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels" d:DataContext="{d:DesignInstance Type=vm:GraphicDesignerViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1200">
 
@@ -41,19 +40,24 @@
                    Foreground="Black"
                    FontSize="12"
                    Text="{Binding MouseCoordinates}"/>
+
+        <Grid Grid.Column="0" Grid.Row="0">
+            <drawing:DrawingCanvas x:Name="Canvas"  
+                                   Focusable="True"
+                                   ClipToBounds="True"
+                                   AnnotationScale="{Binding CanvasScale, Mode=TwoWay}"
+                                   Background="{DynamicResource CanvasBackground}"/>
+        </Grid>
         
-        <drawing:DrawingCanvas x:Name="Canvas"  
-                               Grid.Column="0"
-                               Grid.Row="0"
-                               Scale="{Binding CanvasScale, Mode=TwoWay}"
-                               Background="{DynamicResource CanvasBackground}"/>
-        
+
         <ScrollBar Grid.Column="1" Width="18" 
-                    x:Name="PART_VerticalScrollBar" 
-                    Margin="0,0,0,-1"
-                    Orientation="Vertical"
-                    Minimum="0"
-                    Style="{StaticResource DrawingScrollBar}" />
+                   Margin="0,0,0,-1"
+                   Maximum="5000"
+                   Minimum="-5000"
+                   ViewportSize="{Binding Height, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                   Style="{StaticResource DrawingScrollBarVertical}"
+                   Orientation="Vertical"/>
+
 
         <Grid Grid.Row="1" Grid.Column="0">
             <Grid.ColumnDefinitions>
@@ -76,12 +80,13 @@
             </ComboBox>
 
             <ScrollBar Height="18" 
-                        Grid.Column="1"
-                        Margin="0,0,-1,0"
-                        Orientation="Horizontal"
-                        x:Name="PART_HorizontalScrollBar" 
-                        Minimum="0"
-                        Style="{StaticResource DrawingScrollBar}" />
+                       Grid.Column="1"
+                       Margin="0,0,-1,0"
+                       Maximum="5000"
+                       Minimum="-5000"
+                       ViewportSize="{Binding Width, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       Orientation="Horizontal"
+                       Style="{StaticResource DrawingScrollBarHorizontal}"/>
         </Grid>
 
         <Border Grid.Row="1" 

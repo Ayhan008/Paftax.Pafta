@@ -1,4 +1,6 @@
-﻿namespace Paftax.Pafta.Shared.Utilities
+﻿using System.IO;
+
+namespace Paftax.Pafta.Shared.Utilities
 {
     public static class FileUtilities
     {

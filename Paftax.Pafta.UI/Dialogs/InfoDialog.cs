@@ -6,7 +6,7 @@ namespace Paftax.Pafta.UI.Dialogs
 {
     public static class InfoDialog
     {
-        public static void Show(string message, DialogOptions dialogOptions, IconType iconType = IconType.Success)
+        public static void Show(string message, DialogOptions dialogOptions, FluentIcon iconType = FluentIcon.Success)
         {
             InfoDialogViewModel viewModel = new()
             {
@@ -30,7 +30,7 @@ namespace Paftax.Pafta.UI.Dialogs
             mainWindow.ShowDialog();
         }
 
-        public static void Show(string title, string message, IconType iconType = IconType.Success)
+        public static void Show(string title, string message, FluentIcon iconType = FluentIcon.Success)
         {
             DialogOptions dialogOptions = new()
             {

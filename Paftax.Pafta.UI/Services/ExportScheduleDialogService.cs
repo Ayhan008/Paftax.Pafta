@@ -8,7 +8,7 @@ namespace Paftax.Pafta.UI.Services
     public class ExportScheduleDialogService
     {
         private readonly ExportScheduleViewModel _exportScheduleViewModel = new();
-        public void LoadSchedules(IEnumerable<ScheduleModel> scheduleModels)
+        public void LoadSchedules(IEnumerable<ElementModel> scheduleModels)
         {
             _exportScheduleViewModel.LoadSchedules(scheduleModels);
         }
@@ -32,6 +32,11 @@ namespace Paftax.Pafta.UI.Services
         public bool IsSeperated { get => _exportScheduleViewModel.IsSeperated; }
         public bool IsMerged { get => _exportScheduleViewModel.IsMerged; }
         public string ExportFolderPath { get => _exportScheduleViewModel.ExportFolderPath; }
-        public List<ScheduleModel> SelectedSchedules { get => [.. _exportScheduleViewModel.Schedules.Where(schedule => schedule.IsChecked)]; }
+        public List<ElementModel> SelectedSchedules
+        {
+            get => [.. _exportScheduleViewModel.Schedules
+                .Where(schedule => schedule.IsChecked)
+                .Select(schedule => schedule.Model)];
+        }
     }
 }

@@ -10,14 +10,14 @@ using System.Windows.Threading;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class CleanGarbageViewModel : ObservableObject, ICleanGarbageViewModel
+    public partial class CleanGarbageViewModel : ObservableObject
     {
         #region Collections
-        public ObservableCollection<ViewModel> Views { get; } = [];
-        public ObservableCollection<ViewTemplateModel> ViewTemplates { get; } = [];
-        public ObservableCollection<FilterModel> Filters { get; } = [];
-        public ObservableCollection<MaterialModel> Materials { get; } = [];
-        public ObservableCollection<LineModel> Lines { get; } = [];
+        public ObservableCollection<GarbageElementViewModel> Views { get; } = [];
+        public ObservableCollection<GarbageElementViewModel> ViewTemplates { get; } = [];
+        public ObservableCollection<GarbageElementViewModel> Filters { get; } = [];
+        public ObservableCollection<GarbageElementViewModel> Materials { get; } = [];
+        public ObservableCollection<GarbageElementViewModel> Lines { get; } = [];
 
         public ICollectionView ViewsView { get; private set; }
         public ICollectionView ViewTemplatesView { get; private set; }
@@ -223,14 +223,14 @@ namespace Paftax.Pafta.UI.ViewModels
 
         private bool ViewsFilter(object item)
         {
-            if (item is not ViewModel vm) return false;
+            if (item is not GarbageElementViewModel vm) return false;
 
             bool search = string.IsNullOrWhiteSpace(ViewSearchText)
                           || vm.Name.Contains(ViewSearchText, StringComparison.OrdinalIgnoreCase);
 
             bool filter = SelectedViewFilterIndex switch
             {
-                1 => !vm.IsPlaced,
+                1 => !vm.IsUsed,
                 _ => true
             };
 
@@ -242,14 +242,14 @@ namespace Paftax.Pafta.UI.ViewModels
 
         private bool ViewTemplateFilter(object item)
         {
-            if (item is not ViewTemplateModel vm) return false;
+            if (item is not GarbageElementViewModel vm) return false;
 
             bool search = string.IsNullOrWhiteSpace(ViewTemplateSearchText)
                           || vm.Name.Contains(ViewTemplateSearchText, StringComparison.OrdinalIgnoreCase);
 
             bool filter = SelectedViewTemplateFilterIndex switch
             {
-                1 => !vm.IsActive,
+                1 => !vm.IsUsed,
                 _ => true
             };
 
@@ -261,14 +261,14 @@ namespace Paftax.Pafta.UI.ViewModels
 
         private bool FiltersFilter(object item)
         {
-            if (item is not FilterModel fm) return false;
+            if (item is not GarbageElementViewModel vm) return false;
 
             bool search = string.IsNullOrWhiteSpace(FilterSearchText)
-                          || fm.Name.Contains(FilterSearchText, StringComparison.OrdinalIgnoreCase);
+                          || vm.Name.Contains(FilterSearchText, StringComparison.OrdinalIgnoreCase);
 
             bool filter = SelectedFilterFilterIndex switch
             {
-                1 => !fm.IsActive,
+                1 => !vm.IsUsed,
                 _ => true
             };
 
@@ -280,14 +280,14 @@ namespace Paftax.Pafta.UI.ViewModels
 
         private bool MaterialsFilter(object item)
         {
-            if (item is not MaterialModel mm) return false;
+            if (item is not GarbageElementViewModel vm) return false;
 
             bool search = string.IsNullOrWhiteSpace(MaterialSearchText)
-                          || mm.Name.Contains(MaterialSearchText, StringComparison.OrdinalIgnoreCase);
+                          || vm.Name.Contains(MaterialSearchText, StringComparison.OrdinalIgnoreCase);
 
             bool filter = SelectedMaterialFilterIndex switch
             {
-                1 => mm.Count == 0, // Unused
+                1 => vm.Count == 0, // Unused
                 _ => true
             };
 
@@ -299,14 +299,14 @@ namespace Paftax.Pafta.UI.ViewModels
 
         private bool LinesFilter(object item)
         {
-            if (item is not LineModel lm) return false;
+            if (item is not GarbageElementViewModel vm) return false;
 
             bool search = string.IsNullOrWhiteSpace(LineSearchText)
-                          || lm.Name.Contains(LineSearchText, StringComparison.OrdinalIgnoreCase);
+                          || vm.Name.Contains(LineSearchText, StringComparison.OrdinalIgnoreCase);
 
             bool filter = SelectedLineFilterIndex switch
             {
-                1 => lm.Count == 0, // Unused
+                1 => vm.Count == 0, // Unused
                 _ => true
             };
 
@@ -321,7 +321,7 @@ namespace Paftax.Pafta.UI.ViewModels
         partial void OnIsAllMaterialsCheckedChanged(bool value) => SetAllChecked(Materials, MaterialsView, value);
         partial void OnIsAllLinesCheckedChanged(bool value) => SetAllChecked(Lines, LinesView, value);
 
-        private static void SetAllChecked<T>(ObservableCollection<T> collection, ICollectionView view, bool value) where T : ObservableObject, IUserCheckable
+        private static void SetAllChecked(ObservableCollection<GarbageElementViewModel> collection, ICollectionView view, bool value)
         {
             using (view.DeferRefresh())
             {
@@ -333,37 +333,37 @@ namespace Paftax.Pafta.UI.ViewModels
         #endregion
 
         #region Load Methods and Handlers
-        public void LoadViewModels(IEnumerable<ViewModel> models) 
+        public void LoadViewModels(IEnumerable<GarbageElementModel> models) 
         {
             LoadModels(models, Views); 
             ViewsLoaded = true; 
         }
-        public void LoadViewTemplateModels(IEnumerable<ViewTemplateModel> models) 
+        public void LoadViewTemplateModels(IEnumerable<GarbageElementModel> models) 
         {
             LoadModels(models, ViewTemplates); 
             ViewTemplatesLoaded = true; 
         }
-        public void LoadFilterModels(IEnumerable<FilterModel> models) 
+        public void LoadFilterModels(IEnumerable<GarbageElementModel> models) 
         {
             LoadModels(models, Filters); 
             FiltersLoaded = true; 
         }
-        public void LoadLineModels(IEnumerable<LineModel> models) 
+        public void LoadLineModels(IEnumerable<GarbageElementModel> models) 
         {
             LoadModels(models, Lines); 
             LinesLoaded = true; 
         }
-        public void LoadMaterialModels(IEnumerable<MaterialModel> models) 
+        public void LoadMaterialModels(IEnumerable<GarbageElementModel> models) 
         {
             LoadModels(models, Materials); 
             MaterialsLoaded = true; 
         }
 
-        private static void LoadModels<T>(IEnumerable<T> models, ObservableCollection<T> collection)
+        private static void LoadModels(IEnumerable<GarbageElementModel> models, ObservableCollection<GarbageElementViewModel> collection)
         {
             collection.Clear();
-            foreach (var model in models)
-                collection.Add(model);
+            foreach (GarbageElementModel model in models)
+                collection.Add(new GarbageElementViewModel(model));
         }
         #endregion
     }

@@ -5,7 +5,7 @@ namespace Paftax.Pafta.Shared.Interfaces
 {
     public interface IExportScheduleViewModel
     {
-        ObservableCollection<ScheduleModel> Schedules { get; }
+        ObservableCollection<ElementModel> Schedules { get; }
         bool IsSeperated { get; set; }
         bool IsMerged { get; set; }
         string ExportFolderPath { get; set; }

@@ -22,14 +22,14 @@ namespace Paftax.Pafta.Revit2026.Commands
             UIDocument uiDocument = uiApplication.ActiveUIDocument;
             Document document = uiDocument.Document;
 
-            List<ScheduleModel> scheduleModels = new ScheduleModelFactory(document).CreateModels();
+            List<ElementModel> scheduleModels = new ElementModelFactory(document).CreateFromSchedules();
 
             ExportScheduleDialogService exportScheduleDialogService = new();
             exportScheduleDialogService.LoadSchedules(scheduleModels);
 
             exportScheduleDialogService.ExportAction += () =>
             {
-                List<ScheduleModel> selectedSchedules = exportScheduleDialogService.SelectedSchedules;
+                List<ElementModel> selectedSchedules = exportScheduleDialogService.SelectedSchedules;
                 List<ViewSchedule> selectedViewSchedules = new ElementCollectorService(document).GetElementsByIds<ViewSchedule>(selectedSchedules.Select(s => s.Id));
 
 
@@ -49,9 +49,9 @@ namespace Paftax.Pafta.Revit2026.Commands
 
         private static void ExportSchedulesSeperate(List<ViewSchedule> viewSchedules, string folderPath)
         {
-            List<ScheduleTableData> scheduleTableDatas = ScheduleTableDataFactory.FromViewSchedules(viewSchedules);
+            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataFactory.FromViewSchedules(viewSchedules);
 
-            foreach (ScheduleTableData scheduleTableData in scheduleTableDatas)
+            foreach (ScheduleTableDataModel scheduleTableData in scheduleTableDatas)
             {
                 string safeFileName = FileUtilities.MakeValidFileName(scheduleTableData.Name);
                 string filePath = Path.Combine(folderPath, $"{safeFileName}.xlsx");
@@ -84,7 +84,7 @@ namespace Paftax.Pafta.Revit2026.Commands
         private static void ExportSchedulesMerged(List<ViewSchedule> viewSchedules, string folderPath)
         {
             string filePath = Path.Combine(folderPath, "MergedSchedules.xlsx");
-            List<ScheduleTableData> scheduleTableDatas = ScheduleTableDataFactory.FromViewSchedules(viewSchedules);
+            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataFactory.FromViewSchedules(viewSchedules);
             List<string> sheetNames = [.. scheduleTableDatas.Select(s => s.Name)];
 
             if (FileUtilities.IsFileOpen(filePath))
@@ -98,7 +98,7 @@ namespace Paftax.Pafta.Revit2026.Commands
 
             StyleService.AddStylesPart(spreadsheetDocument, ScheduleStylesheets.GenericStylesheet());
 
-            foreach (ScheduleTableData scheduleTableData in scheduleTableDatas)
+            foreach (ScheduleTableDataModel scheduleTableData in scheduleTableDatas)
             {
                 SheetService sheetService = new(spreadsheetDocument, scheduleTableData.Name);
 

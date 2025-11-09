@@ -1,34 +1,36 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Paftax.Pafta.Drawing.Elements;
-using Paftax.Pafta.Drawing.Elements.Abstracts;
-using Paftax.Pafta.Drawing.Geometries;
-using Paftax.Pafta.Drawing.Structs;
+using Paftax.Pafta.Drawings;
+using Paftax.Pafta.Drawings.Elements;
+using Paftax.Pafta.Shared.Geometries;
 using Paftax.Pafta.Shared.Models;
 using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Media;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
     public partial class GraphicDesignerViewModel : ObservableObject
     {
         public ObservableCollection<DrawingElement> Elements { get; } = [];
-        public ObservableCollection<ScaleItem> Scales { get; set; } =
+        public ObservableCollection<ScaleModel> Scales { get; set; } =
         [
-            new ScaleItem { Name = "1 : 10", Scale = 0.1 },
-            new ScaleItem { Name = "1 : 20", Scale = 0.05 },
-            new ScaleItem { Name = "1 : 50", Scale = 0.02 },
-            new ScaleItem { Name = "1 : 100", Scale = 0.01 },
-            new ScaleItem { Name = "1 : 200", Scale = 0.005 },
-            new ScaleItem { Name = "1 : 500", Scale = 0.002 },
-            new ScaleItem { Name = "1 : 1000", Scale = 0.001 },
-            new ScaleItem { Name = "1 : 2000", Scale = 0.0005 },
-            new ScaleItem { Name = "1 : 5000", Scale = 0.0002 },
+            new ScaleModel { Name = "1 : 10", Scale = 0.1 },
+            new ScaleModel { Name = "1 : 20", Scale = 0.05 },
+            new ScaleModel { Name = "1 : 50", Scale = 0.02 },
+            new ScaleModel { Name = "1 : 100", Scale = 0.01 },
+            new ScaleModel { Name = "1 : 200", Scale = 0.005 },
+            new ScaleModel { Name = "1 : 500", Scale = 0.002 },
+            new ScaleModel { Name = "1 : 1000", Scale = 0.001 },
+            new ScaleModel { Name = "1 : 2000", Scale = 0.0005 },
+            new ScaleModel { Name = "1 : 5000", Scale = 0.0002 },
         ];
 
-        [ObservableProperty] private int _selectedScaleIndex = 1;
+        [ObservableProperty] private int _selectedScaleIndex = 2;
         [ObservableProperty] private double _canvasScale = 1.0;
         [ObservableProperty] private string _mouseCoordinates = string.Empty;
+
+        public GraphicDesignerViewModel()
+        {
+            CanvasScale = 1 / Scales[SelectedScaleIndex].Scale;
+        }
 
         partial void OnSelectedScaleIndexChanged(int value)
         {
@@ -45,14 +47,14 @@ namespace Paftax.Pafta.UI.ViewModels
 
         public static DrawingElement DrawingElement()
         {
-            return new SpatialBoundary 
+            return new SpatialBoundaryElement 
             {
                 BoundarySegments =
                 [ 
-                    new Line2 (new Point2(0, 0), new Point2(100, 0)),
-                    new Line2 (new Point2(100, 0), new Point2(100, 100)),
-                    new Line2 (new Point2(100, 100), new Point2(0, 100)),
-                    new Line2 (new Point2(0, 100), new Point2(0, 0))
+                    new Line (new Point2(0, 0), new Point2(100, 0)),
+                    new Line (new Point2(100, 0), new Point2(100, 100)),
+                    new Line (new Point2(100, 100), new Point2(0, 100)),
+                    new Line (new Point2(0, 100), new Point2(0, 0))
                 ],               
             };
         }

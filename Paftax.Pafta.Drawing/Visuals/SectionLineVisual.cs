@@ -1,9 +1,7 @@
-﻿using Paftax.Pafta.Drawing.Utilities;
-using Paftax.Pafta.Drawing.Visuals.Abstracts;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 
-namespace Paftax.Pafta.Drawing.Visuals
+namespace Paftax.Pafta.Drawings.Visuals
 {
     public class SectionLineVisual : GeometryVisual
     {
@@ -15,37 +13,29 @@ namespace Paftax.Pafta.Drawing.Visuals
         public string SheetNumber { get; set; } = "A101";
         public string DetailNumber { get; set; } = "1";
         public bool Flip { get; set; } = false;
-        public double Depth { get; set; } = 200;
+        public double ViewBoxDepth { get; set; } = UnitConverter.MmToPoint(1000);
+        public double ViewBoxWidth { get; set; } = UnitConverter.MmToPoint(1000);
 
         public override void Draw(DrawingContext dc)
         {
-            // Prevent drawing if line has zero length
             if (StartPoint == EndPoint) return;
-
-            // Pen for drawing the line and annotation shapes
             Pen pen = new(Stroke, StrokeThickness * Scale);
 
-            // Compute direction vector and normalize it
             Vector dir = EndPoint - StartPoint;
             double len = dir.Length;
 
             if (len == 0) return;
-            dir /= len; // Normalized direction
+            dir /= len;
 
-            // Compute the angle for head rotation
             double angle = Math.Atan2(dir.Y, dir.X) * 180 / Math.PI;
             double headAngle = Flip ? angle + 180 : angle;
 
-            // Compute the center of the section head (apply scale)
             Point sectionHeadCenter = StartPoint - dir * (Radius * Math.Sqrt(2) * Scale);
 
-            // Tail center (scale applied for annotation, not the line)
             Point sectionTailCenter = EndPoint - dir;
 
-            // This line represents the real model measurement and does NOT scale.
             dc.DrawLine(pen, StartPoint, EndPoint);
 
-            // Tail is purely an annotation, so it scales with zoom/Scale
             dc.PushTransform(new RotateTransform(angle, EndPoint.X, EndPoint.Y));
             dc.PushTransform(new ScaleTransform(1, Flip ? -1 : 1, sectionTailCenter.X + TailWidth * Scale / 2, sectionTailCenter.Y));
             dc.DrawRectangle(
@@ -74,6 +64,26 @@ namespace Paftax.Pafta.Drawing.Visuals
                 DetailNumber = DetailNumber,
             };
             calloutHead.Draw(dc);
+        }
+
+        public GeometryVisual DrawViewBox()
+        {
+            ViewBoxRectVisual viewBox = new()
+            {
+                Width = ViewBoxWidth,
+                Center = new Point((StartPoint.X - EndPoint.X) /2, (StartPoint.Y -EndPoint.Y)/2),
+                Depth = ViewBoxDepth,
+                Scale = Scale,
+                Stroke = Stroke,
+                StrokeThickness = StrokeThickness
+            };
+            viewBox.Draw(this.RenderOpen());
+            return viewBox;
+        }
+
+        public override Geometry GetGeometry()
+        {
+            throw new NotImplementedException();
         }
     }
 }

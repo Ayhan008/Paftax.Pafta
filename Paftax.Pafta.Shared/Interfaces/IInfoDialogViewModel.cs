@@ -7,6 +7,6 @@ namespace Paftax.Pafta.Shared.Interfaces
         event Action? CloseAction;
         string Message { get; set; }
         string Glyph { get; set; }
-        IconType IconType { get; set; }
+        FluentIcon IconType { get; set; }
     }
 }

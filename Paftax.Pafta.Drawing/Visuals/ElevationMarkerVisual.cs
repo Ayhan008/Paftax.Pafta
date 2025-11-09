@@ -1,9 +1,6 @@
-﻿using Paftax.Pafta.Drawing.Structs;
-using Paftax.Pafta.Drawing.Utilities;
-using Paftax.Pafta.Drawing.Visuals.Abstracts;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 
-namespace Paftax.Pafta.Drawing.Visuals
+namespace Paftax.Pafta.Drawings.Visuals
 {
     public class ElevationMarkerVisual : GeometryVisual
     {
@@ -12,37 +9,25 @@ namespace Paftax.Pafta.Drawing.Visuals
         public string SheetNumber { get; set; } = "A101";
         public string DetailNumber { get; set; } = "1";
 
+        private CalloutHeadVisual _calloutHeadVisual = new();
+        private ElevationTriangleVisual _elevationTriangleVisual = new();
+
         public override void Draw(DrawingContext dc)
         {
-            CalloutHeadVisual calloutHead = new()
-            {
-                Center = Center,
-                SheetNumber = SheetNumber,
-                DetailNumber = DetailNumber,
-                Scale = Scale,
-                Stroke = Stroke,
-                StrokeThickness = StrokeThickness
-            };
-            calloutHead.Draw(dc);
+            CreateGeometry();
+
+            _calloutHeadVisual.Draw(dc);
 
             dc.PushTransform(new RotateTransform(Angle, Center.X, Center.Y));
 
-            ElevationTriangleVisual elevationTriangle = new()
-            {
-                Center = Center,
-                Scale = Scale,
-                Stroke = Stroke,
-                StrokeThickness = StrokeThickness
-            };
-
             if (TriangleVisible[0])
-                RotateAndDrawTriangle(dc, elevationTriangle, 0);
+                RotateAndDrawTriangle(dc, _elevationTriangleVisual, 0);
             if (TriangleVisible[1])
-                RotateAndDrawTriangle(dc, elevationTriangle, 90);
+                RotateAndDrawTriangle(dc, _elevationTriangleVisual, 90);
             if (TriangleVisible[2])
-                RotateAndDrawTriangle(dc, elevationTriangle, 180);
+                RotateAndDrawTriangle(dc, _elevationTriangleVisual, 180);
             if (TriangleVisible[3])
-                RotateAndDrawTriangle(dc, elevationTriangle, 270);
+                RotateAndDrawTriangle(dc, _elevationTriangleVisual, 270);
 
             dc.Pop();
         }
@@ -52,6 +37,45 @@ namespace Paftax.Pafta.Drawing.Visuals
             dc.PushTransform(new RotateTransform(angle, triangle.Center.X, triangle.Center.Y));
             triangle.Draw(dc);
             dc.Pop();
+        }
+
+        public override Geometry GetGeometry()
+        {
+            return CreateGeometry();
+        }
+
+        public GeometryVisual GetCalloutHeadVisual()
+        {
+            return _calloutHeadVisual;
+        }
+        public GeometryVisual GetElevationTriangleVisual()
+        {
+            return _elevationTriangleVisual;
+        }
+
+        private GeometryGroup CreateGeometry()
+        {
+            GeometryGroup group = new();
+
+            CalloutHeadVisual calloutHead = new()
+            {
+                Center = Center,
+                SheetNumber = SheetNumber,
+                DetailNumber = DetailNumber,
+                Scale = Scale,
+            };
+            _calloutHeadVisual = calloutHead;
+            group.Children.Add(calloutHead.GetGeometry());
+
+            ElevationTriangleVisual elevationTriangle = new()
+            {
+                Center = Center,
+                Scale = Scale,
+            };
+            _elevationTriangleVisual = elevationTriangle;
+            group.Children.Add(elevationTriangle.GetGeometry());
+
+            return group;
         }
     }
 }

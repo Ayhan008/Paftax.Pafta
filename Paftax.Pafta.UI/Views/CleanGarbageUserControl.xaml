@@ -95,7 +95,7 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <controls:FontIcon Glyph="{Binding IsPlacedGlyph}" Background="Transparent" FontSize="15"/>
+                                            <controls:FontIcon Glyph="{Binding  IsP}" Background="Transparent" FontSize="15"/>
                                             <TextBlock Text="{Binding Name}" Margin="10,0,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>

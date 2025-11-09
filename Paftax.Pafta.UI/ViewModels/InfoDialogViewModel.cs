@@ -11,7 +11,7 @@ namespace Paftax.Pafta.UI.ViewModels
         private string message = string.Empty;
 
         [ObservableProperty]
-        private IconType iconType = IconType.Info;
+        private FluentIcon iconType = FluentIcon.Info;
 
         [ObservableProperty]
         private string glyph = string.Empty;
@@ -24,17 +24,17 @@ namespace Paftax.Pafta.UI.ViewModels
             CloseAction?.Invoke();
         }
 
-        partial void OnIconTypeChanged(IconType value)
+        partial void OnIconTypeChanged(FluentIcon value)
         {
             Glyph = GetGlyphForIcon(value);
         }
 
-        private static string GetGlyphForIcon(IconType type) => type switch
+        private static string GetGlyphForIcon(FluentIcon type) => type switch
         {
-            IconType.Info => "\uE946",      // Info icon
-            IconType.Warning => "\uE7BA",   // Warning icon
-            IconType.Error => "\uEA39",     // Error icon
-            IconType.Success => "\uE73E",   // Checkmark icon
+            FluentIcon.Info => "\uE946",      // Info icon
+            FluentIcon.Warning => "\uE7BA",   // Warning icon
+            FluentIcon.Error => "\uEA39",     // Error icon
+            FluentIcon.Success => "\uE73E",   // Checkmark icon
             _ => "\uE946"
         };
     }

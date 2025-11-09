@@ -1,9 +1,7 @@
-﻿using Paftax.Pafta.Drawing.Utilities;
-using Paftax.Pafta.Drawing.Visuals.Abstracts;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 
-namespace Paftax.Pafta.Drawing.Visuals
+namespace Paftax.Pafta.Drawings.Visuals
 {
     internal class SectionTriangleVisual : GeometryVisual
     {
@@ -30,13 +28,17 @@ namespace Paftax.Pafta.Drawing.Visuals
                 ctx.LineTo(p4, true, false);
                 ctx.LineTo(p5, true, true);
 
-                // ArcTo da ölçekli radius ile
                 ctx.ArcTo(p1, new Size(scaledRadius, scaledRadius), 0, false, SweepDirection.Clockwise, true, true);
             }
 
             sectionTriangle.Freeze();
 
             dc.DrawGeometry(Stroke, pen, sectionTriangle);
+        }
+
+        public override Geometry GetGeometry()
+        {
+            throw new NotImplementedException();
         }
     }
 }

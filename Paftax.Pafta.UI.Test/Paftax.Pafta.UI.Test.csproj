@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Paftax.Pafta.Drawing\Paftax.Pafta.Drawing.csproj" />
+    <ProjectReference Include="..\Paftax.Pafta.Drawing\Paftax.Pafta.Drawings.csproj" />
     <ProjectReference Include="..\Paftax.Pafta.Shared\Paftax.Pafta.Shared.csproj" />
     <ProjectReference Include="..\Paftax.Pafta.UI\Paftax.Pafta.UI.csproj" />
   </ItemGroup>

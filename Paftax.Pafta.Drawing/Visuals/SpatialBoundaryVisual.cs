@@ -1,15 +1,11 @@
-﻿// Paftax.Pafta.Drawing\Visuals\SpatialBoundaryVisual.cs
-using Paftax.Pafta.Drawing.Geometries;
-using Paftax.Pafta.Drawing.Utilities;
-using Paftax.Pafta.Drawing.Visuals.Abstracts;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 
-namespace Paftax.Pafta.Drawing.Visuals
+namespace Paftax.Pafta.Drawings.Visuals
 {
     public class SpatialBoundaryVisual : GeometryVisual
     {
-        public List<Curve2> BoundarySegments { get; set; } = [];
+        public List<Curve> BoundarySegments { get; set; } = [];
         public new double StrokeThickness { get; set; } = UnitConverter.MmToFeet(200);
 
         public override void Draw(DrawingContext dc)
@@ -19,6 +15,11 @@ namespace Paftax.Pafta.Drawing.Visuals
 
             Pen pen = new(Stroke, StrokeThickness * Scale);
             dc.DrawGeometry(null, pen, geom);
+        }
+
+        public override Geometry GetGeometry()
+        {
+            throw new NotImplementedException();
         }
 
         private PathGeometry? BuildPathGeometry()
@@ -31,15 +32,15 @@ namespace Paftax.Pafta.Drawing.Visuals
                 IsClosed = true
             };
 
-            foreach (Curve2 segment in BoundarySegments)
+            foreach (Curve segment in BoundarySegments)
             {
                 Point endPoint = segment.GetEndPoint(1);
 
-                if (segment is Line2)
+                if (segment is Line)
                 {
                     pathFigure.Segments.Add(new LineSegment(new Point(endPoint.X, endPoint.Y), true));
                 }
-                else if (segment is Arc2 arc)
+                else if (segment is Arc arc)
                 {
                     Vector startVec = new(arc.Start.X - arc.Center.X, arc.Start.Y - arc.Center.Y);
                     Vector endVec = new(arc.End.X - arc.Center.X, arc.End.Y - arc.Center.Y);

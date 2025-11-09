@@ -1,150 +1,182 @@
-﻿using Paftax.Pafta.Drawing.Elements;
-using Paftax.Pafta.Drawing.Elements.Abstracts;
-using Paftax.Pafta.Drawing.Structs;
-using Paftax.Pafta.Drawing.Utilities;
-using Paftax.Pafta.Drawing.Visuals.Abstracts;
+﻿using Paftax.Pafta.Drawings.Elements;
+using Paftax.Pafta.Drawings.Visuals;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Paftax.Pafta.Drawing
+namespace Paftax.Pafta.Drawings
 {
     public class DrawingCanvas : Canvas
     {
-        public event Action<Point, Point>? MouseMovedInContent;
+        private Matrix _modelMatrix = Matrix.Identity;
+        private Matrix _viewMatrix = Matrix.Identity;
+        private readonly MatrixTransform _totalTransform = new();
 
-        public List<DrawingElement> ModelElements = [];
-        public List<DrawingElement> ScreenElements = [];
+        private readonly List<DrawingElement> _elements = [];
 
-        private readonly Canvas _contentCanvas = new();
+        #region Dependency Properties
+        public static readonly DependencyProperty AnnotationScaleProperty = DependencyProperty.Register(
+            nameof(AnnotationScale),
+            typeof(double),
+            typeof(DrawingCanvas),
+            new FrameworkPropertyMetadata(1.0, OnScaleChanged));
 
-        #region Scale Property (Annotation için)
-        public static readonly DependencyProperty ScaleProperty =
-            DependencyProperty.Register(
-                nameof(Scale),
-                typeof(double),
-                typeof(DrawingCanvas),
-                new PropertyMetadata(1.0, OnScaleChanged));
-
-        public double Scale
+        public double AnnotationScale
         {
-            get => (double)GetValue(ScaleProperty);
-            set => SetValue(ScaleProperty, value);
+            get => (double)GetValue(AnnotationScaleProperty);
+            set => SetValue(AnnotationScaleProperty, value);
         }
 
-        public static void OnScaleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnScaleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is DrawingCanvas drawingCanvas)
+            if (d is DrawingCanvas canvas)
             {
                 double newScale = (double)e.NewValue;
 
-                foreach (var element in drawingCanvas.ScreenElements)
+                foreach (DrawingElement element in canvas._elements)
                 {
                     element.Scale = newScale;
-                    if (element.Visual is GeometryVisual gv)
-                    {
+                    if (element.Visual is GeometryVisual gv && element.IsAnnotation)
                         gv.Scale = newScale;
-                    }
                     element.InvalidateVisual();
                 }
             }
         }
+
+        public static readonly DependencyProperty ModelMousePositionProperty = DependencyProperty.Register(
+            nameof(ModelMousePosition),
+            typeof(Point),
+            typeof(DrawingCanvas),
+            new FrameworkPropertyMetadata(new Point(0, 0), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public Point ModelMousePosition
+        {
+            get => (Point)GetValue(ModelMousePositionProperty);
+            set => SetValue(ModelMousePositionProperty, value);
+        }
         #endregion
 
-        #region Pan & Zoom
-        private readonly ScaleTransform _zoomTransform = new(1, 1);
-        private readonly ScaleTransform _flipYTransform = new(1, -1);
-        private readonly TranslateTransform _panTransform = new();
-        private readonly TransformGroup _transformGroup = new();
-
-        private Point _lastMousePos;
-        private bool _isPanning;
-
-        public double Zoom => _zoomTransform.ScaleX;
-        #endregion
+        #region Constructor
+        static DrawingCanvas()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(DrawingCanvas),
+                new FrameworkPropertyMetadata(typeof(DrawingCanvas)));
+        }
 
         public DrawingCanvas()
         {
+            Focusable = true;
             Background = Brushes.LightGray;
-            ClipToBounds = true;
-            
-            Children.Add(_contentCanvas);
 
-            _transformGroup.Children.Add(_flipYTransform);
-            _transformGroup.Children.Add(_panTransform);
-            _transformGroup.Children.Add(_zoomTransform);
-            _contentCanvas.RenderTransform = _transformGroup;
-
-            Canvas.SetLeft(_contentCanvas, ActualWidth / 2.0);
-            Canvas.SetTop(_contentCanvas, ActualHeight / 2.0);
-            _flipYTransform.CenterX = 0;
-            _flipYTransform.CenterY = 0;
-
-            Loaded += (s, e) => { CenterContent(); ZoomToFitAll(); };
-            SizeChanged += (s, e) => CenterContent();
-
-            MouseWheel += OnMouseWheel;
-            MouseDown += OnMouseDown;
+            Loaded += OnLoaded;
+            SizeChanged += OnSizeChanged;
             MouseMove += OnMouseMove;
+            MouseDown += OnMouseDown;
             MouseUp += OnMouseUp;
+            MouseWheel += OnMouseWheel;
+            KeyDown += OnKeyDown;
         }
 
-        private void CenterContent()
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            Canvas.SetLeft(_contentCanvas, ActualWidth / 2.0);
-            Canvas.SetTop(_contentCanvas, ActualHeight / 2.0);
+            Focus();
+            UpdateModelMatrix(new Size(ActualWidth, ActualHeight));
+            ZoomToFitElements();
         }
 
-        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void OnSizeChanged(object? sender, SizeChangedEventArgs e)
         {
-
+            Focus();
+            UpdateModelMatrix(e.NewSize);
+            ZoomToFitElements();
         }
 
-        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        private void UpdateModelMatrix(Size size)
         {
-            if ((Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) &&
-                e.RightButton == MouseButtonState.Pressed)
-            {
-                _isPanning = true;
-                _lastMousePos = e.GetPosition(this);
-                CaptureMouse();
-            }
+            _modelMatrix = Matrix.Identity;
+            _modelMatrix.Scale(1, -1);
+            _modelMatrix.Translate(size.Width / 2, size.Height / 2);
+            UpdateTotalMatrix();
+        }
+        #endregion
 
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+        #region Transform Helpers
+        private void UpdateTotalMatrix()
+        {
+            // Toplam transform = ModelMatrix * ViewMatrix
+            Matrix total = _modelMatrix;
+            total.Append(_viewMatrix);
+            _totalTransform.Matrix = total;
+
+            foreach (var el in _elements)
+                el.RenderTransform = _totalTransform;
+        }
+
+        private Point ScreenToModel(Point screen)
+        {
+            Matrix total = _modelMatrix;
+            total.Append(_viewMatrix);
+            if (total.HasInverse)
             {
-                Cursor = Cursors.SizeAll;
+                total.Invert();
+                return total.Transform(screen);
             }
-            else
+            return new Point();
+        }
+        #endregion
+
+        #region Pan & Zoom
+        private bool _isPanning;
+        private Point _lastMousePosition;
+        private const double ZoomFactor = 1.1;
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Z || e.Key == Key.E)
             {
-                Cursor = Cursors.Arrow;
+                ZoomToFitElements();
             }
+        }
+        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (_isPanning) return;
+
+            Point screenPos = e.GetPosition(this);
+            double scale = e.Delta < 0 ? 1/ ZoomFactor : ZoomFactor;
+
+            _viewMatrix.Translate(-screenPos.X, -screenPos.Y);
+            _viewMatrix.Scale(scale, scale);
+            _viewMatrix.Translate(screenPos.X, screenPos.Y);
+
+            UpdateTotalMatrix();
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
+            Point current = e.GetPosition(this);
+            ModelMousePosition = UnitConverter.PointToMm(ScreenToModel(current));
+
             if (_isPanning)
             {
-                var pos = e.GetPosition(this);
-                var dx = pos.X - _lastMousePos.X;
-                var dy = pos.Y - _lastMousePos.Y;
-
-                _panTransform.X += dx / _zoomTransform.ScaleX;
-                _panTransform.Y += dy / _zoomTransform.ScaleY;
-
-                _lastMousePos = pos;
+                Vector delta = current - _lastMousePosition;
+                _viewMatrix.Translate(delta.X, delta.Y);
+                _lastMousePosition = current;
+                UpdateTotalMatrix();
             }
-            var screenOnContent = e.GetPosition(_contentCanvas);
-
-            var worldX = (screenOnContent.X - ActualWidth / 2.0);
-            var worldY = (screenOnContent.Y - ActualHeight / 2.0);
-            var worldPoint = new Point(worldX, worldY);
-
-            MouseMovedInContent?.Invoke(
-                UnitConverter.PointToM(screenOnContent),
-                UnitConverter.PointToM(worldPoint)
-            );
         }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftShift) && e.RightButton == MouseButtonState.Pressed)
+            {
+                _isPanning = true;
+                _lastMousePosition = e.GetPosition(this);
+                CaptureMouse();
+                Cursor = Cursors.SizeAll;
+            }
+        }
+
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (_isPanning)
@@ -154,63 +186,65 @@ namespace Paftax.Pafta.Drawing
                 Cursor = Cursors.Arrow;
             }
         }
-
-        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                return;
-
-            double zoomFactor = e.Delta > 0 ? 1.1 : 0.9;
-
-            var mouseScreenPos = e.GetPosition(this);
-            var inverseTransform = _transformGroup.Inverse;
-            if (inverseTransform == null) return;
-
-            var mouseWorldBefore = inverseTransform.Transform(mouseScreenPos);
-
-            _zoomTransform.ScaleX *= zoomFactor;
-            _zoomTransform.ScaleY *= zoomFactor;
-
-            var mouseWorldAfter = inverseTransform.Transform(mouseScreenPos);
-
-            _panTransform.X += (mouseWorldAfter.X - mouseWorldBefore.X) * _zoomTransform.ScaleX;
-            _panTransform.Y += (mouseWorldAfter.Y - mouseWorldBefore.Y) * _zoomTransform.ScaleY;
-        }
+        #endregion
 
         #region Element Management
         public void AddElement(DrawingElement element)
         {
-            if (element.IsAnnotation == true)
-            {
-                ScreenElements.Add(element);
-                if (element.Visual is GeometryVisual gv)
-                {
-                    gv.Scale = 20;
-                }
-            }
+            _elements.Add(element);
+            element.RenderTransform = _totalTransform;
 
-            else
-                ModelElements.Add(element);
+            if (element.Visual is GeometryVisual gv && element.IsAnnotation)
+                gv.Scale = AnnotationScale;
 
-            _contentCanvas.Children.Add(element);
-            Canvas.SetZIndex(element, element.IsAnnotation == true ? 1 : 0);  
+            Children.Add(element);
         }
 
-        public void ZoomToFitAll()
+        public void RemoveElement(DrawingElement element)
         {
-            foreach (var element in ModelElements)
+            _elements.Remove(element);
+            Children.Remove(element);
+        }
+
+        private void ZoomToFitElements()
+        {
+            if (_elements.Count == 0 || ActualWidth <= 0 || ActualHeight <= 0)
+                return;
+
+            Rect? bounds = null;
+            foreach (var el in _elements)
             {
-                Bounding2 bounds = element.BoundingXY;
+                if (el.IsAnnotation == true)
+                    continue;
+    
+                var boundsXY = el.Bounding;
+                Rect elementBounds = new(boundsXY.Min, boundsXY.Max);
 
-                double scaleX = ActualWidth / bounds.Width;
-                double scaleY = ActualHeight / bounds.Height;
-
-                double targetScale = Math.Min(scaleX, scaleY) * 0.9;
-                _zoomTransform.ScaleX = targetScale;
-                _zoomTransform.ScaleY = targetScale;
-                _panTransform.X = -((bounds.Min.X + bounds.Max.X) / 2) * targetScale + ActualWidth / 2;
-                _panTransform.Y = -((bounds.Min.Y + bounds.Max.Y) / 2) * targetScale + ActualHeight / 2;
+                bounds = bounds.HasValue ? Rect.Union(bounds.Value, elementBounds) : elementBounds;
             }
+
+            if (bounds == null || bounds.Value.IsEmpty)
+                return;
+
+            double margin = 40;
+            double viewWidth = ActualWidth - margin;
+            double viewHeight = ActualHeight - margin;
+
+            double scaleX = viewWidth / bounds.Value.Width;
+            double scaleY = viewHeight / bounds.Value.Height;
+            double targetScale = Math.Min(scaleX, scaleY);
+
+            _viewMatrix = Matrix.Identity;
+
+            double offsetX = -(bounds.Value.X + bounds.Value.Width / 2);
+            double offsetY = -(bounds.Value.Y + bounds.Value.Height / 2);
+
+            _viewMatrix.Translate(offsetX, offsetY);
+            _viewMatrix.Scale(targetScale, targetScale);
+
+            _viewMatrix.Translate(ActualWidth / 2, ActualHeight / 2);
+
+            UpdateTotalMatrix();
         }
         #endregion
     }

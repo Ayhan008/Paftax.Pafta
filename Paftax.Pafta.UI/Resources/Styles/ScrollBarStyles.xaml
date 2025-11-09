@@ -84,7 +84,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="ScrollBar" x:Key="DrawingScrollBar">
+    <Style TargetType="ScrollBar" x:Key="DrawingScrollBarHorizontal">
+        <Setter Property="Orientation" Value="Horizontal"/>
         <Setter Property="Background" Value="{DynamicResource DrawingScrollBarBackground}" />
         <Setter Property="BorderBrush" Value="{DynamicResource DrawingScrollBarBorderBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource DrawingScrollBarForeground}"/>
@@ -94,133 +95,148 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
                     <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
-                            <!-- Vertical ScrollBar -->
-                            <Grid Visibility="{TemplateBinding Orientation, Converter={StaticResource VerticalVisibilityConverter}}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                                <!-- Up Button -->
-                                <RepeatButton x:Name="LineUpButton"
-                                              Grid.Row="0"
-                                              Command="ScrollBar.LineUpCommand"
-                                              Foreground="{TemplateBinding Foreground}"
-                                              Height="{TemplateBinding Width}"
-                                              Width="{TemplateBinding Width}"
-                                              FontFamily="{StaticResource IconFont}"
-                                              FontSize="13"
-                                              Content="&#xe96d;"
-                                              Background="{DynamicResource DrawingScrollBarBackground}" 
-                                              BorderBrush="{DynamicResource DrawingScrollBarBorderBrush}"
-                                              BorderThickness="0,0,0,1"/>
+                            <!-- Left Button -->
+                            <RepeatButton x:Name="LineLeftButton"
+                                      Grid.Column="0"
+                                      Command="ScrollBar.LineLeftCommand"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      Height="{TemplateBinding Height}"
+                                      Width="{TemplateBinding Height}"
+                                      FontFamily="{StaticResource IconFont}"
+                                      FontSize="13"
+                                      Content="&#xe96f;"
+                                      Background="{DynamicResource DrawingScrollBarBackground}" 
+                                      BorderBrush="{DynamicResource DrawingScrollBarBorderBrush}"
+                                      BorderThickness="0,0,1,0"/>
 
-                                <!-- Track (with Thumb inside) -->
-                                <Track x:Name="PART_Track"
-                                       Grid.Row="1"
-                                       Margin="0,2,0,2"
-                                       Orientation="Vertical"  
-                                       IsDirectionReversed="True"
-                                       Value="{Binding Value, RelativeSource={RelativeSource TemplatedParent}}"
-                                       Maximum="{TemplateBinding Maximum}"
-                                       Minimum="{TemplateBinding Minimum}"
-                                       ViewportSize="{TemplateBinding ViewportSize}">
-                                    <Track.Thumb>
-                                        <Thumb Background="{DynamicResource DrawingScrollBarThumbBackground}"
-                                               BorderBrush="{DynamicResource DrawingScrollBarThumbBorderBrush}">
-                                            <Thumb.Template>
-                                                <ControlTemplate TargetType="Thumb">
-                                                    <Border x:Name="ThumbBorder"
-                                                            Background="{TemplateBinding Background}"
-                                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                                            Width="10"
-                                                            CornerRadius="5" />
-                                                </ControlTemplate>
-                                            </Thumb.Template>
-                                        </Thumb>
-                                    </Track.Thumb>
-                                </Track>
+                            <!-- Track -->
+                            <Track x:Name="PART_Track"
+                               Grid.Column="1"
+                               Orientation="Horizontal"
+                               Margin="2,0,2,0"
+                               MinWidth="100"
+                               Value="{Binding Value, RelativeSource={RelativeSource TemplatedParent}}"
+                               Maximum="{TemplateBinding Maximum}"
+                               Minimum="{TemplateBinding Minimum}"
+                               ViewportSize="{TemplateBinding ViewportSize}">
+                                <Track.Thumb>
+                                    <Thumb Background="{DynamicResource DrawingScrollBarThumbBackground}"
+                                       BorderBrush="{DynamicResource DrawingScrollBarThumbBorderBrush}">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border x:Name="ThumbBorder"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    Height="10"
+                                                    CornerRadius="5"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
 
-                                <!-- Down Button -->
-                                <RepeatButton x:Name="LineDownButton"
-                                              Grid.Row="2"
-                                              Command="ScrollBar.LineDownCommand"
-                                              Foreground="{TemplateBinding Foreground}"
-                                              Height="{TemplateBinding Width}"
-                                              Width="{TemplateBinding Width}"
-                                              FontFamily="{StaticResource IconFont}"
-                                              FontSize="13"
-                                              Content="&#xe96e;"
-                                              Background="{DynamicResource DrawingScrollBarBackground}" 
-                                              BorderBrush="{DynamicResource DrawingScrollBarBorderBrush}"
-                                              BorderThickness="0,1,0,0"/>
-                            </Grid>
+                            <!-- Right Button -->
+                            <RepeatButton x:Name="LineRightButton"
+                                      Grid.Column="2"
+                                      Command="ScrollBar.LineRightCommand"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      Height="{TemplateBinding Height}"
+                                      Width="{TemplateBinding Height}"
+                                      FontFamily="{StaticResource IconFont}"
+                                      FontSize="13"
+                                      Content="&#xe970;"
+                                      Background="{DynamicResource DrawingScrollBarBackground}" 
+                                      BorderBrush="{DynamicResource DrawingScrollBarBorderBrush}"
+                                      BorderThickness="1,0,0,0"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
-                            <!-- Horizontal ScrollBar -->
-                            <Grid Visibility="{TemplateBinding Orientation, Converter={StaticResource HorizontalVisibilityConverter}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
+    <Style TargetType="ScrollBar" x:Key="DrawingScrollBarVertical">
+        <Setter Property="Orientation" Value="Vertical"/>
+        <Setter Property="Background" Value="{DynamicResource DrawingScrollBarBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DrawingScrollBarBorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource DrawingScrollBarForeground}"/>
+        <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                                <!-- Left Button -->
-                                <RepeatButton x:Name="LineLeftButton"
-                                              Grid.Column="0"
-                                              Command="ScrollBar.LineLeftCommand"
-                                              Foreground="{TemplateBinding Foreground}"
-                                              Height="{TemplateBinding Height}"
-                                              Width="{TemplateBinding Height}"
-                                              FontFamily="{StaticResource IconFont}"
-                                              FontSize="13"
-                                              Content="&#xe96f;"
-                                              Background="{DynamicResource DrawingScrollBarBackground}" 
-                                              BorderBrush="{DynamicResource DrawingScrollBarBorderBrush}"
-                                              BorderThickness="0,0,1,0"/>
+                            <!-- Up Button -->
+                            <RepeatButton x:Name="LineUpButton"
+                                      Grid.Row="0"
+                                      Command="ScrollBar.LineUpCommand"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      Height="{TemplateBinding Width}"
+                                      Width="{TemplateBinding Width}"
+                                      FontFamily="{StaticResource IconFont}"
+                                      FontSize="13"
+                                      Content="&#xe96d;"
+                                      Background="{DynamicResource DrawingScrollBarBackground}" 
+                                      BorderBrush="{DynamicResource DrawingScrollBarBorderBrush}"
+                                      BorderThickness="0,0,0,1"/>
 
-                                <!-- Track -->
-                                <Track x:Name="PART_Track_H"
-                                       Grid.Column="1"
-                                       Orientation="Horizontal"
-                                       Margin="2,0,2,0"
-                                       Value="{Binding Value, RelativeSource={RelativeSource TemplatedParent}}"
-                                       Maximum="{TemplateBinding Maximum}"
-                                       Minimum="{TemplateBinding Minimum}"
-                                       ViewportSize="{TemplateBinding ViewportSize}">
-                                    <Track.Thumb>
-                                        <Thumb Background="{DynamicResource DrawingScrollBarThumbBackground}"
-                                                BorderBrush="{DynamicResource DrawingScrollBarThumbBorderBrush}">
-                                            <Thumb.Template>
-                                                <ControlTemplate TargetType="Thumb">
-                                                    <Border x:Name="ThumbBorder"
-                                                            Background="{TemplateBinding Background}"
-                                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                                            Height="10"
-                                                            CornerRadius="5"/>
-                                                </ControlTemplate>
-                                            </Thumb.Template>
-                                        </Thumb>
-                                    </Track.Thumb>
-                                </Track>
+                            <!-- Track -->
+                            <Track x:Name="PART_Track"
+                               Grid.Row="1"
+                               Margin="0,2,0,2"
+                               Orientation="Vertical"
+                               IsDirectionReversed="True"
+                               Value="{Binding Value, RelativeSource={RelativeSource TemplatedParent}}"
+                               Maximum="{TemplateBinding Maximum}"
+                               Minimum="{TemplateBinding Minimum}"
+                               ViewportSize="{TemplateBinding ViewportSize}">
+                                <Track.Thumb>
+                                    <Thumb Background="{DynamicResource DrawingScrollBarThumbBackground}"
+                                       BorderBrush="{DynamicResource DrawingScrollBarThumbBorderBrush}">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border x:Name="ThumbBorder"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    Width="10"
+                                                    CornerRadius="5"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
 
-                                <!-- Right Button -->
-                                <RepeatButton x:Name="LineRightButton"
-                                              Grid.Column="2"
-                                              Command="ScrollBar.LineRightCommand"
-                                              Foreground="{TemplateBinding Foreground}"
-                                              Height="{TemplateBinding Height}"
-                                              Width="{TemplateBinding Height}"
-                                              FontFamily="{StaticResource IconFont}"
-                                              FontSize="13"
-                                              Content="&#xe970;"
-                                              Background="{DynamicResource DrawingScrollBarBackground}" 
-                                              BorderBrush="{DynamicResource DrawingScrollBarBorderBrush}"
-                                              BorderThickness="1,0,0,0"/>
-                            </Grid>
+                            <!-- Down Button -->
+                            <RepeatButton x:Name="LineDownButton"
+                                      Grid.Row="2"
+                                      Command="ScrollBar.LineDownCommand"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      Height="{TemplateBinding Width}"
+                                      Width="{TemplateBinding Width}"
+                                      FontFamily="{StaticResource IconFont}"
+                                      FontSize="13"
+                                      Content="&#xe96e;"
+                                      Background="{DynamicResource DrawingScrollBarBackground}" 
+                                      BorderBrush="{DynamicResource DrawingScrollBarBorderBrush}"
+                                      BorderThickness="0,1,0,0"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>

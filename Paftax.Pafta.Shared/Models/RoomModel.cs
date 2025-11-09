@@ -1,13 +1,8 @@
-﻿using Paftax.Pafta.Drawing.Elements;
-
-namespace Paftax.Pafta.Shared.Models
+﻿namespace Paftax.Pafta.Shared.Models
 {
-    public class RoomModel
+    public class RoomModel : SpatialElementModel
     {
-        public SpatialBoundary? Boundary { get; set; }
-        public required string Name { get; set; }
-        public required string Number { get; set; }
-        public long LevelId { get; set; }
-        public long Id { get; set; }
+        public double Volume { get; set; }
+        public List<CurveModel> Boundaries { get; set; } = [];
     }
 }

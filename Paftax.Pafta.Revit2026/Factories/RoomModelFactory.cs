@@ -1,30 +1,20 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
-using Paftax.Pafta.Drawing.Elements;
-using Paftax.Pafta.Drawing.Geometries;
-using Paftax.Pafta.Drawing.Structs;
+using Paftax.Pafta.Drawings;
+using Paftax.Pafta.Drawings.Elements;
+using Paftax.Pafta.Shared.Geometries;
 using Paftax.Pafta.Shared.Models;
 
 namespace Paftax.Pafta.Revit2026.Factories
 {
     internal class RoomModelFactory
     {
-        public static RoomModel CreateRoomModelFromRevit(Room room)
-        {
-            RoomModel roomModel = new()
-            {
-                Boundary = CreateSpatialBoundaryFromRevit(room),
-                Name = room.Name,
-                Number = room.Number
-            };
-            return roomModel;
-        }
 
         private static SpatialBoundary CreateSpatialBoundaryFromRevit(Room room)
         {
             SpatialBoundary spatialBoundary = new();
 
-            List<Paftax.Pafta.Drawing.Geometries.Curve2> roomBoundarySegments = [];
+            List<Drawings.Curve> roomBoundarySegments = [];
 
             SpatialElementBoundaryOptions spatialElementBoundaryOptions = new();
 
@@ -41,7 +31,7 @@ namespace Paftax.Pafta.Revit2026.Factories
                         Point2 startPoint = new(line.GetEndPoint(0).X, line.GetEndPoint(0).Y);
                         Point2 endPoint = new(line.GetEndPoint(1).X, line.GetEndPoint(1).Y);
 
-                        roomBoundarySegments.Add(new Paftax.Pafta.Drawing.Geometries.Line2(startPoint, endPoint));
+                        roomBoundarySegments.Add(new Drawings.Line(startPoint, endPoint));
                     }
 
                     else if (curve is Autodesk.Revit.DB.Arc arc)
@@ -51,11 +41,11 @@ namespace Paftax.Pafta.Revit2026.Factories
                         Point2 centerPoint = new(arc.Center.X, arc.Center.Y);
                         double radius = arc.Radius;
 
-                        roomBoundarySegments.Add(new Paftax.Pafta.Drawing.Geometries.Arc2(startPoint, endPoint, centerPoint, radius));
+                        roomBoundarySegments.Add(new Drawings.Arc(startPoint, endPoint, centerPoint, radius));
                     }
                 }
             }
-            spatialBoundary.BoundarySegments = roomBoundarySegments;
+            spatialBoundary.Segments = roomBoundarySegments;
             return spatialBoundary;
         }
     }

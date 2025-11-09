@@ -3,7 +3,6 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
-using Paftax.Pafta.Revit2026.Factories;
 using Paftax.Pafta.Shared.Enums;
 using Paftax.Pafta.Shared.Models;
 using Paftax.Pafta.UI.Dialogs;
@@ -22,12 +21,12 @@ namespace Paftax.Pafta.Revit2026.Commands
             Document document = uiDocument.Document;
             View view = document.ActiveView;
 
-            if (view.ViewType != ViewType.FloorPlan)
+            if (view.ViewType != Autodesk.Revit.DB.ViewType.FloorPlan)
             {
-                InfoDialog.Show("Error", "Please switch to a floor plan view to use this command.", IconType.Error);
+                InfoDialog.Show("Error", "Please switch to a floor plan view to use this command.", FluentIcon.Error);
                 return Result.Cancelled;
             }
- 
+
             List<Room> selectedRooms = SelectRooms(uiDocument, document);
 
             if (selectedRooms.Count == 0)
@@ -38,8 +37,7 @@ namespace Paftax.Pafta.Revit2026.Commands
             List<RoomModel> richRoomDataModels = [];
             foreach (Room room in selectedRooms)
             {
-                RoomModel richRoomDataModel = RoomModelFactory.CreateRoomModelFromRevit(room);
-                richRoomDataModels.Add(richRoomDataModel);
+
             }
 
             RoomToSheetViewModel roomToSheetViewModel = new();
@@ -81,13 +79,13 @@ namespace Paftax.Pafta.Revit2026.Commands
                         if (linkedElement is Room linkedRoom)
                         {
                             selectedRooms.Add(linkedRoom);
-                        }       
+                        }
                     }
                 }
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException)
             {
-                InfoDialog.Show("Cancelled", "Operation cancelled by user.", IconType.Info);
+                InfoDialog.Show("Cancelled", "Operation cancelled by user.", FluentIcon.Info);
                 return selectedRooms;
             }
 

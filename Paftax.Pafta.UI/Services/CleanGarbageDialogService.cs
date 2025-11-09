@@ -51,54 +51,64 @@ namespace Paftax.Pafta.UI.Services
             set => _cleanGarbageViewModel.RequestLoadLines = value;
         }
 
-        public void LoadFilterModels(IEnumerable<FilterModel> models)
+        public void LoadFilterModels(IEnumerable<GarbageElementModel> models)
         {
             _cleanGarbageViewModel.LoadFilterModels(models);
         }
 
-        public void LoadMaterialModels(IEnumerable<MaterialModel> models)
+        public void LoadMaterialModels(IEnumerable<GarbageElementModel> models)
         {
             _cleanGarbageViewModel.LoadMaterialModels(models);
         }
 
-        public void LoadViewModels(IEnumerable<ViewModel> models)
+        public void LoadViewModels(IEnumerable<GarbageElementModel> models)
         {
             _cleanGarbageViewModel.LoadViewModels(models);
         }
 
-        public void LoadViewTemplateModels(IEnumerable<ViewTemplateModel> models)
+        public void LoadViewTemplateModels(IEnumerable<GarbageElementModel> models)
         {
             _cleanGarbageViewModel.LoadViewTemplateModels(models);
         }
 
-        public void LoadLineModels(IEnumerable<LineModel> models)
+        public void LoadLineModels(IEnumerable<GarbageElementModel> models)
         {
             _cleanGarbageViewModel.LoadLineModels(models);
         }
 
-        public List<FilterModel> GetSelectedFilterModels()
+        public List<GarbageElementModel> GetSelectedMaterialModels()
         {
-            return [.. _cleanGarbageViewModel.Filters.Where(model => model.IsChecked)];
+            return [.. _cleanGarbageViewModel.Materials
+                .Where(vm => vm.IsChecked)
+                .Select(vm => vm.Model)];
         }
 
-        public List<MaterialModel> GetSelectedMaterialModels()
+        public List<GarbageElementModel> GetSelectedLineModels()
         {
-            return [.. _cleanGarbageViewModel.Materials.Where(model => model.IsChecked)];
+            return [.. _cleanGarbageViewModel.Lines
+                .Where(vm => vm.IsChecked)
+                .Select(vm => vm.Model)];
         }
 
-        public List<LineModel> GetSelectedLineModels()
+        public List<GarbageElementModel> GetSelectedFilterModels()
         {
-            return [.. _cleanGarbageViewModel.Lines.Where(model => model.IsChecked)];
+            return [.. _cleanGarbageViewModel.Filters
+                .Where(vm => vm.IsChecked)
+                .Select(vm => vm.Model)];
         }
 
-        public List<ViewModel> GetSelectedViewModels()
+        public List<GarbageElementModel> GetSelectedViewModels()
         {
-            return [.. _cleanGarbageViewModel.Views.Where(model => model.IsChecked)];
+            return [.. _cleanGarbageViewModel.Views
+                .Where(vm => vm.IsChecked)
+                .Select(vm => vm.Model)];
         }
 
-        public List<ViewTemplateModel> GetSelectedViewTemplateModels()
+        public List<GarbageElementModel> GetSelectedViewTemplateModels()
         {
-            return [.. _cleanGarbageViewModel.ViewTemplates.Where(model => model.IsChecked)];
+            return [.. _cleanGarbageViewModel.ViewTemplates
+                .Where(vm => vm.IsChecked)
+                .Select(vm => vm.Model)];
         }
     }
 }
