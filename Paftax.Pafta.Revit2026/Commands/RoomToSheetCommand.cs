@@ -37,7 +37,8 @@ namespace Paftax.Pafta.Revit2026.Commands
             List<RoomModel> richRoomDataModels = [];
             foreach (Room room in selectedRooms)
             {
-
+                RoomModel roomModel = Factories.RoomModelFactory.Create(room);
+                richRoomDataModels.Add(roomModel);
             }
 
             RoomToSheetViewModel roomToSheetViewModel = new();

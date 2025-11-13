@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Paftax.Pafta.Shared.Models
+﻿namespace Paftax.Pafta.Shared.Models
 {
-    public class CurveModel
+    public abstract class CurveModel
     {
     }
 }

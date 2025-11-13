@@ -29,6 +29,10 @@ namespace Paftax.Pafta.UI.ViewModels
             foreach (var roomModel in roomModels)
             {
                 Rooms.Add(roomModel);
+                
+                // Add room geometry to the graphic designer
+                var spatialBoundaryElement = GraphicDesignerViewModel.CreateSpatialBoundaryFromRoomModel(roomModel);
+                GraphicDesignerViewModel.Elements.Add(spatialBoundaryElement);
             }
         }
     }

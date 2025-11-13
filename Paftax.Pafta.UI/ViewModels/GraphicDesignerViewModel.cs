@@ -58,5 +58,27 @@ namespace Paftax.Pafta.UI.ViewModels
                 ],               
             };
         }
+
+        public static SpatialBoundaryElement CreateSpatialBoundaryFromRoomModel(RoomModel roomModel)
+        {
+            List<Curve> boundarySegments = [];
+
+            foreach (CurveModel curveModel in roomModel.Boundaries)
+            {
+                if (curveModel is LineModel lineModel)
+                {
+                    boundarySegments.Add(new Line(lineModel.Start, lineModel.End));
+                }
+                else if (curveModel is ArcModel arcModel)
+                {
+                    boundarySegments.Add(new Arc(arcModel.Start, arcModel.End, arcModel.Center, arcModel.Radius));
+                }
+            }
+
+            return new SpatialBoundaryElement
+            {
+                BoundarySegments = boundarySegments
+            };
+        }
     }
 }
