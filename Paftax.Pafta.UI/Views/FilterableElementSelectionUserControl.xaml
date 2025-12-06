@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="Paftax.Pafta.UI.Views.FilterableElementSelectionUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewmodels="clr-namespace:Paftax.Pafta.UI.ViewModels"
+             xmlns:behaviors="clr-namespace:Paftax.Pafta.UI.Behaviors" behaviors:ThemeChanged.EnableTheme="True"
+             xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls"
+             xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="500">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox SelectedIndex="{Binding ComboBoxSelectedIndex, Mode=TwoWay}"
+                      ItemsSource="{Binding ComboBoxItems}"
+                      Grid.Column="0"
+                      Width="100"
+                      BorderThickness="1"
+                      HorizontalAlignment="Stretch"
+                      Height="30">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding DisplayName}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <controls:SearchBox VerticalAlignment="Top"
+                                Grid.Column="1"
+                                HorizontalAlignment="Stretch" 
+                                Margin="10,0,0,0" 
+                                Height="30"
+                                PlaceholderText="{Binding SearchBoxPlaceholderText}"
+                                SearchText="{Binding SearchBoxSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </Grid>
+
+        <DataGrid Grid.Row="1" 
+                  Margin="10,0,10,10" 
+                  AutoGenerateColumns="False"
+                  behaviors:DataGridMutipleCheck.IsEnabled="True"
+                  behaviors:DataGridColumnsBehavior.ColumnDefinitions="{Binding DataGridTextColumns}"
+                  ItemsSource="{Binding Elements}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="30">
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding DataContext.IsAllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                      Foreground="{DynamicResource DataGridForeground}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

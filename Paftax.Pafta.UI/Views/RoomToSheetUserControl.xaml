@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
              xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls"
              xmlns:vm="clr-namespace:Paftax.Pafta.UI.ViewModels"
-             xmlns:properties="clr-namespace:Paftax.Pafta.UI.AttachedProperties" properties:ThemeChanged.EnableTheme="True"
              xmlns:views="clr-namespace:Paftax.Pafta.UI.Views" 
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=vm:RoomToSheetViewModel}"

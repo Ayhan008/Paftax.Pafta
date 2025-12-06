@@ -1,11 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Paftax.Pafta.Shared.Enums;
-using Paftax.Pafta.Shared.Interfaces;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class InfoDialogViewModel : ObservableObject, IInfoDialogViewModel
+    public partial class InfoDialogViewModel : ObservableObject
     {
         [ObservableProperty]
         private string message = string.Empty;

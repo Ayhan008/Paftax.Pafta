@@ -1,15 +1,12 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using DocumentFormat.OpenXml.Packaging;
 using Paftax.Pafta.Revit2026.Factories;
-using Paftax.Pafta.Revit2026.Services;
-using Paftax.Pafta.Shared.Exporters.OpenXml;
-using Paftax.Pafta.Shared.Exporters.OpenXml.Stylesheets;
-using Paftax.Pafta.Shared.Models;
-using Paftax.Pafta.Shared.Utilities;
-using Paftax.Pafta.UI.Services;
-using System.Windows;
+using Paftax.Pafta.Shared.Models.Element;
+using Paftax.Pafta.UI.Models;
+using Paftax.Pafta.UI.ViewModels;
+using Paftax.Pafta.UI.Views;
+using System.Windows.Controls;
 
 namespace Paftax.Pafta.Revit2026.Commands
 {
@@ -22,96 +19,55 @@ namespace Paftax.Pafta.Revit2026.Commands
             UIDocument uiDocument = uiApplication.ActiveUIDocument;
             Document document = uiDocument.Document;
 
-            List<ElementModel> scheduleModels = new ElementModelFactory(document).CreateFromSchedules();
+            List<ViewSchedule> viewSchedules = GetViewSchedules(document);
+            List<ScheduleModel> scheduleModels = ScheduleModelFactory.Create(viewSchedules);
 
-            ExportScheduleDialogService exportScheduleDialogService = new();
-            exportScheduleDialogService.LoadSchedules(scheduleModels);
-
-            exportScheduleDialogService.ExportAction += () =>
-            {
-                List<ElementModel> selectedSchedules = exportScheduleDialogService.SelectedSchedules;
-                List<ViewSchedule> selectedViewSchedules = new ElementCollectorService(document).GetElementsByIds<ViewSchedule>(selectedSchedules.Select(s => s.Id));
-
-
-                if (exportScheduleDialogService.IsMerged == true)
+            List<SelectableElementViewModel<ScheduleModel>> selectableElementViewModels = [.. scheduleModels.Select(s => new SelectableElementViewModel<ScheduleModel>(s))];
+            List<DataGridTextColumnDefinition<ScheduleModel>> dataGridTextColumnDefinitions =
+            [
+                new DataGridTextColumnDefinition<ScheduleModel>
                 {
-                    ExportSchedulesMerged(selectedViewSchedules, exportScheduleDialogService.ExportFolderPath);
+                    Header = "Name",
+                    BindingPath = s => s.Model.Name,
+                    Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+                    CanResize = false
                 }
+            ];
 
-                if (exportScheduleDialogService.IsSeperated == true)
+            SearchableElementCollectionViewModel<ScheduleModel> searchableElementCollectionViewModel = new(selectableElementViewModels, dataGridTextColumnDefinitions);
+            ExportScheduleViewModel<ScheduleModel> exportScheduleViewModel = new(searchableElementCollectionViewModel);
+
+            ExportScheduleWindow exportScheduleWindow = new(exportScheduleViewModel);
+
+            exportScheduleViewModel.ExportAction += () =>
+            {
+                exportScheduleWindow.Close();
+
+                if (exportScheduleViewModel.IsMerged)
                 {
-                    ExportSchedulesSeperate(selectedViewSchedules, exportScheduleDialogService.ExportFolderPath);
+                    List<ScheduleModel> selectedSchedules = [.. exportScheduleViewModel.ScheduleSelectionViewModel.Elements.Where(e => e.IsChecked).Select(e => e.Model)];
+
+                    foreach (ScheduleModel scheduleModel in selectedSchedules)
+                    {
+                        // Export logic for merged schedules goes here
+                    }
+                }
+                else if (exportScheduleViewModel.IsSeperated)
+                {
                 }
             };
-            Window window = exportScheduleDialogService.ShowDialog();
+
+            exportScheduleViewModel.CloseAction += () => exportScheduleWindow.Close();
+
+
             return Result.Succeeded;
         }
 
-        private static void ExportSchedulesSeperate(List<ViewSchedule> viewSchedules, string folderPath)
+        private static List<ViewSchedule> GetViewSchedules(Document document)
         {
-            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataFactory.FromViewSchedules(viewSchedules);
-
-            foreach (ScheduleTableDataModel scheduleTableData in scheduleTableDatas)
-            {
-                string safeFileName = FileUtilities.MakeValidFileName(scheduleTableData.Name);
-                string filePath = Path.Combine(folderPath, $"{safeFileName}.xlsx");
-
-                if (FileUtilities.IsFileOpen(filePath))
-                {
-                    TaskDialog.Show("Export", $"One or more files are open\nPlease close the files and try again.");
-                    break;
-                }
-
-                SpreadsheetDocument spreadsheetDocument = WorkbookService.CreateSpreadsheetWorkbook(filePath, scheduleTableData.Name)
-                    ?? throw new InvalidOperationException("Failed to create spreadsheet document.");
-
-                StyleService.AddStylesPart(spreadsheetDocument, ScheduleStylesheets.GenericStylesheet());
-                SheetService sheetService = new(spreadsheetDocument, scheduleTableData.Name);
-
-                sheetService.FillSheet(scheduleTableData.TitlePart, 0, 1);
-                sheetService.SetCustomRowHeight(1, 24);
-
-                sheetService.FillSheet(scheduleTableData.HeaderPart, 1, 2);
-                sheetService.FillSheet(scheduleTableData.BodyPart, 2, scheduleTableData.HeaderRowCount + 1);
-
-                sheetService.MergeCells(scheduleTableData.MergedCells);
-                sheetService.SetColumnWidthsFromData(scheduleTableData.TableData);
-
-                spreadsheetDocument.Dispose();
-            }
-        }
-
-        private static void ExportSchedulesMerged(List<ViewSchedule> viewSchedules, string folderPath)
-        {
-            string filePath = Path.Combine(folderPath, "MergedSchedules.xlsx");
-            List<ScheduleTableDataModel> scheduleTableDatas = ScheduleTableDataFactory.FromViewSchedules(viewSchedules);
-            List<string> sheetNames = [.. scheduleTableDatas.Select(s => s.Name)];
-
-            if (FileUtilities.IsFileOpen(filePath))
-            {
-                TaskDialog.Show("Export", $"The file is open\nPlease close the file and try again.");
-                return;
-            }
-
-            SpreadsheetDocument spreadsheetDocument = WorkbookService.CreateSpreadsheetWorkbook(filePath, sheetNames)
-                ?? throw new InvalidOperationException("Failed to create spreadsheet document.");
-
-            StyleService.AddStylesPart(spreadsheetDocument, ScheduleStylesheets.GenericStylesheet());
-
-            foreach (ScheduleTableDataModel scheduleTableData in scheduleTableDatas)
-            {
-                SheetService sheetService = new(spreadsheetDocument, scheduleTableData.Name);
-
-                sheetService.FillSheet(scheduleTableData.TitlePart, 0, 1);
-                sheetService.SetCustomRowHeight(1, 24);
-
-                sheetService.FillSheet(scheduleTableData.HeaderPart, 1, 2);
-                sheetService.FillSheet(scheduleTableData.BodyPart, 2, scheduleTableData.HeaderRowCount + 1);
-
-                sheetService.MergeCells(scheduleTableData.MergedCells);
-                sheetService.SetColumnWidthsFromData(scheduleTableData.TableData);
-            }
-            spreadsheetDocument.Dispose();
+            return [.. new FilteredElementCollector(document)
+                .OfClass(typeof(ViewSchedule))
+                .Cast<ViewSchedule>()];
         }
     }
 }

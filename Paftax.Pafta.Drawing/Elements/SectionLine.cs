@@ -1,5 +1,6 @@
 ﻿using Paftax.Pafta.Drawings.Visuals;
 using Paftax.Pafta.Shared.Geometries;
+using Paftax.Pafta.Shared.Models.Element;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -40,8 +41,11 @@ namespace Paftax.Pafta.Drawings.Elements
 
             using var dc = _visual.RenderOpen();
 
-            _visual.DrawViewBox();
+        }
 
+        public override void Create(ElementModel elementModel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Paftax.Pafta.Drawings.Visuals;
 using Paftax.Pafta.Shared.Geometries;
+using Paftax.Pafta.Shared.Models.Element;
 using System.Windows;
 using System.Windows.Media;
 
@@ -18,5 +19,7 @@ namespace Paftax.Pafta.Drawings.Elements
             base.OnRender(drawingContext);
             Visual?.Draw(drawingContext);
         }
+
+        public abstract void Create(ElementModel elementModel);
     }
 }

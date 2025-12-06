@@ -1,7 +1,7 @@
-﻿using Paftax.Pafta.Drawings;
-using Paftax.Pafta.Drawings.Elements;
-using Paftax.Pafta.Shared.Geometries;
+﻿using System.Collections.Specialized;
 using System.Windows.Controls;
+using Paftax.Pafta.Drawings.Elements;
+using Paftax.Pafta.UI.ViewModels;
 
 namespace Paftax.Pafta.UI.Views
 {
@@ -10,48 +10,35 @@ namespace Paftax.Pafta.UI.Views
         public GraphicDesignerUserControl()
         {
             InitializeComponent();
-            DataContext = new ViewModels.GraphicDesignerViewModel();
-            Canvas.AddElement(new ElevationMarker());
+            Loaded += (_, _) => AttachToViewModel();
+            DataContextChanged += (_, _) => AttachToViewModel();
+        }
 
-            double half = UnitConverter.MToPoint(5);
+        private void AttachToViewModel()
+        {
+            if (DataContext is not GraphicDesignerViewModel vm) return;
 
-            SpatialBoundaryElement spatialBoundary = new()
+            vm.Elements.CollectionChanged -= OnElementsChanged;
+
+            Canvas.Children.Clear();
+            foreach (var el in vm.Elements)
+                Canvas.AddElement(el);
+
+            vm.Elements.CollectionChanged += OnElementsChanged;
+        }
+
+        private void OnElementsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (DataContext is GraphicDesignerViewModel)
             {
-                BoundarySegments =
-                [
-                    new Line(
-                    new Point2(-half, -half),
-                    new Point2(half, -half)
-                ),
-                new Line(
-                    new Point2(half, -half),
-                    new Point2(half, half)
-                ),
-                new Line(
-                    new Point2(half, half),
-                    new Point2(-half, half)
-                ),
-                new Line(
-                    new Point2(-half, half),
-                    new Point2(-half, -half)
-                )
-                ],
-            };
-            Canvas.AddElement(spatialBoundary);
+                if (e.NewItems != null)
+                    foreach (DrawingElement el in e.NewItems)
+                        Canvas.AddElement(el);
 
-            SectionLine sectionLine = new()
-            {
-                Start = new Point2(0, half + 700),
-                End = new Point2(0, -half - 700),
-            };
-            Canvas.AddElement(sectionLine);
-
-            SectionLine sectionLine2 = new()
-            {
-                Start = new Point2(-half - 700, 0),
-                End = new Point2(half + 700, 0),
-            };
-            Canvas.AddElement(sectionLine2);
+                if (e.OldItems != null)
+                    foreach (DrawingElement el in e.OldItems)
+                        Canvas.RemoveElement(el);
+            }
         }
     }
 }

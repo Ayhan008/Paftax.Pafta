@@ -1,12 +1,13 @@
-﻿using System.Windows;
+﻿using Paftax.Pafta.Shared.Geometries;
+using System.Windows;
 using System.Windows.Media;
 
 namespace Paftax.Pafta.Drawings.Visuals
 {
     public class SectionLineVisual : GeometryVisual
     {
-        public Point StartPoint { get; set; } = new Point(300, 500);
-        public Point EndPoint { get; set; } = new Point(0, 200);
+        public Point StartPoint { get; set; } = new(300, 500);
+        public Point EndPoint { get; set; } = new(0, 200);
         public double Radius { get; set; } = UnitConverter.MmToPoint(6.25);
         public double TailLength { get; set; } = UnitConverter.MmToPoint(7);
         public double TailWidth { get; set; } = UnitConverter.MmToPoint(2);
@@ -47,6 +48,7 @@ namespace Paftax.Pafta.Drawings.Visuals
             dc.Pop();
 
             dc.PushTransform(new RotateTransform(headAngle, sectionHeadCenter.X, sectionHeadCenter.Y));
+
             SectionTriangleVisual sectionTriangle = new()
             {
                 Center = sectionHeadCenter,
@@ -66,22 +68,7 @@ namespace Paftax.Pafta.Drawings.Visuals
             calloutHead.Draw(dc);
         }
 
-        public GeometryVisual DrawViewBox()
-        {
-            ViewBoxRectVisual viewBox = new()
-            {
-                Width = ViewBoxWidth,
-                Center = new Point((StartPoint.X - EndPoint.X) /2, (StartPoint.Y -EndPoint.Y)/2),
-                Depth = ViewBoxDepth,
-                Scale = Scale,
-                Stroke = Stroke,
-                StrokeThickness = StrokeThickness
-            };
-            viewBox.Draw(this.RenderOpen());
-            return viewBox;
-        }
-
-        public override Geometry GetGeometry()
+        protected override Geometry CreateGeometry()
         {
             throw new NotImplementedException();
         }

@@ -115,7 +115,7 @@ namespace Paftax.Pafta.Revit2026
                 "ExportSheetPushButton",
                 "Export\nSheet",
                 typeof(App).Assembly.Location,
-                "Paftax.Pafta.Revit2026.Commands.ExportSheetsCommand")
+                "Paftax.Pafta.Revit2026.Commands.ExportSheetCommand")
             {
                 ToolTip = "Export sheets to PDF, DWG, DXF or PNG",
                 LongDescription = "Export sheets to PDF, DWG, DXF or PNG. " +

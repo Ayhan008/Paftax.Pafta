@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Paftax.Pafta.Shared.Geometries;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
@@ -10,6 +11,7 @@ namespace Paftax.Pafta.Drawings.Visuals
         public double FontSize { get; set; } = UnitConverter.MmToPoint(2.5);
         public string SheetNumber { get; set; } = string.Empty;
         public string DetailNumber { get; set; } = string.Empty;
+
         public override void Draw(DrawingContext dc)
         {
             Geometry geometry = CreateGeometry();
@@ -59,12 +61,7 @@ namespace Paftax.Pafta.Drawings.Visuals
             dc.Pop();
         }
 
-        public override Geometry GetGeometry()
-        {
-            return CreateGeometry();
-        }
-
-        private GeometryGroup CreateGeometry()
+        protected override Geometry CreateGeometry()
         {
             double scaledRadius = Radius * Scale;
 

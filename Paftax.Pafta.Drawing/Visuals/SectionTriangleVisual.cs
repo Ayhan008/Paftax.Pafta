@@ -36,7 +36,7 @@ namespace Paftax.Pafta.Drawings.Visuals
             dc.DrawGeometry(Stroke, pen, sectionTriangle);
         }
 
-        public override Geometry GetGeometry()
+        protected override Geometry CreateGeometry()
         {
             throw new NotImplementedException();
         }

@@ -1,0 +1,33 @@
+﻿using System.Windows;
+
+namespace Paftax.Pafta.UI.Behaviors
+{
+    public static class ThemeChanged
+    {
+        public static readonly DependencyProperty EnableThemeProperty =
+            DependencyProperty.RegisterAttached(
+                "EnableTheme",
+                typeof(bool),
+                typeof(ThemeChanged),
+                new PropertyMetadata(false, OnEnableThemeChanged));
+        public static bool GetEnableTheme(DependencyObject obj) => (bool)obj.GetValue(EnableThemeProperty);
+        public static void SetEnableTheme(DependencyObject obj, bool value) => obj.SetValue(EnableThemeProperty, value);
+        private static void OnEnableThemeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is FrameworkElement fe && (bool)e.NewValue)
+            {
+                ThemeManager.ApplyTheme(fe);
+
+                fe.Loaded += (s, args) =>
+                {
+                    ThemeManager.ApplyTheme(fe);
+                };
+
+                fe.Unloaded -= (s, args) =>
+                {
+                    ThemeManager.ApplyTheme(fe);
+                };
+            }
+        }
+    }
+}

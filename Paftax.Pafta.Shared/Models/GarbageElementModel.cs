@@ -1,8 +1,10 @@
-﻿namespace Paftax.Pafta.Shared.Models
+﻿using Paftax.Pafta.Shared.Models.Element;
+
+namespace Paftax.Pafta.Shared.Models
 {
     public class GarbageElementModel : ElementModel
     {
-        public int Count { get; set; }
-        public bool IsUsed { get; set; }
+        public required int Count { get; set; }
+        public required bool IsUsed { get; set; }
     }
 }

@@ -1,14 +1,12 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Paftax.Pafta.Revit2026.Events;
 using Paftax.Pafta.Revit2026.Factories;
-using Paftax.Pafta.Revit2026.Services;
 using Paftax.Pafta.Shared.Models;
-using Paftax.Pafta.UI.Dialogs;
-using Paftax.Pafta.UI.Services;
-using System.Windows;
-using System.Windows.Threading;
+using Paftax.Pafta.UI.Models;
+using Paftax.Pafta.UI.ViewModels;
+using Paftax.Pafta.UI.Views;
+using System.Windows.Controls;
 
 namespace Paftax.Pafta.Revit2026.Commands
 {
@@ -17,126 +15,126 @@ namespace Paftax.Pafta.Revit2026.Commands
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            UIApplication uiApplication = commandData.Application;
-            UIDocument uiDocument = uiApplication.ActiveUIDocument;
-            Document doc = uiDocument.Document;
+            UIApplication app = commandData.Application;
+            Document doc = app.ActiveUIDocument.Document;
 
-            RevitWindowService windowService = new(uiApplication.MainWindowHandle);
-            Dispatcher revitDispatcher = windowService.GetDispatcher();
+            var filterableViews = CreateFilterable(doc,
+                f => f.CreateFromViews(),
+                unUsedLabel: "Unplaced");
 
-            List<GarbageElementModel> viewModels = new GarbageElementModelFactory(doc).CreateFromViews();
-            List<GarbageElementModel> viewTemplateModels = new GarbageElementModelFactory(doc).CreateFromViewTemplates();   
+            var filterableLines = CreateFilterable(doc,
+                f => f.CreateFromLines(),
+                unUsedLabel: "Unplaced");
 
-            CleanGarbageHandler handler = new();
-            ExternalEvent externalEvent = ExternalEvent.Create(handler);
+            var filterableMaterials = CreateFilterable(doc,
+                f => f.CreateFromMaterials(),
+                unUsedLabel: "Unused");
 
-            Thread uiThread = new(() =>
+            var filterableTemplates = CreateFilterable(doc,
+                f => f.CreateFromViewTemplates(),
+                unUsedLabel: "Unused");
+
+            var filterableFilters = CreateFilterable(doc,
+                f => f.CreateFromFilters(),
+                unUsedLabel: "Unused");
+
+            var cleanVM = new CleanProjectViewModel<GarbageElementModel>(
+                filterableFilters,
+                filterableViews,
+                filterableLines,
+                filterableMaterials,
+                filterableTemplates);
+
+            CleanProjectWindow window = new(cleanVM);
+
+            cleanVM.CancelAction += () =>
             {
-                Dispatcher threadDispatcher = Dispatcher.CurrentDispatcher;
+                window.DialogResult = false;
+                window.Close();
+            };
 
-                CleanGarbageDialogService dialogService = new();
-                dialogService.LoadViewModels(viewModels);
-                dialogService.LoadViewTemplateModels(viewTemplateModels);
+            cleanVM.CleanAction += () =>
+            {
+                window.DialogResult = true;
+                window.Close();
+                ExecuteClean(doc,
+                    cleanVM.FilterableViewsViewModel,
+                    cleanVM.FilterableLinesViewModel,
+                    cleanVM.FilterableMaterialsViewModel,
+                    cleanVM.FilterableViewTemplatesViewModel,
+                    cleanVM.FilterableParameterFiltersViewModel);
+            };
 
-                CancellationTokenSource cancellationTokenSource = new();
-                Window window = dialogService.Show();
-                windowService.BlockRevitWhile(window);
-
-                // Load Materials
-                dialogService.LoadMaterialsRequested = () =>
-                {
-                    handler.SetAction(app =>
-                    {
-                        var materialModels = new GarbageElementModelFactory(doc, true).CreateFromMaterials();
-
-                        threadDispatcher.Invoke(() => dialogService.LoadMaterialModels(materialModels));
-                    });
-                    externalEvent.Raise();
-                };
-
-                // Load Filters
-                dialogService.LoadFiltersRequested = () =>
-                {
-                    handler.SetAction(app =>
-                    {
-                        var filterModels = new GarbageElementModelFactory(doc, true).CreateFromFilters();
-                        threadDispatcher.Invoke(() => dialogService.LoadFilterModels(filterModels));
-                    });
-                    externalEvent.Raise();
-                };
-
-                // Load Lines
-                dialogService.LoadLinesRequested = () =>
-                {
-                    handler.SetAction(app =>
-                    {
-                        var lineModels = new GarbageElementModelFactory(doc, true).CreateFromLines();
-                        threadDispatcher.Invoke(() => dialogService.LoadLineModels(lineModels));
-                    });
-                    externalEvent.Raise();
-                };
-
-                window.Closing += (s, e) =>
-                {
-                    cancellationTokenSource.Cancel();
-                };
-
-                dialogService.CancelAction += () =>
-                {
-                    revitDispatcher.BeginInvoke(DispatcherPriority.Background,
-                        () => InfoDialog.Show("Clean Result", "Operation cancelled by user.", Shared.Enums.FluentIcon.Error));
-
-                    cancellationTokenSource.Cancel();
-                    window.Close();      
-                };
-
-                dialogService.CleanAction += () =>
-                {
-                    window.Close();      
-
-                    List<GarbageElementModel> selectedFilters = dialogService.GetSelectedFilterModels();
-                    List<GarbageElementModel> selectedMaterials = dialogService.GetSelectedMaterialModels();
-                    List<GarbageElementModel> selectedLines = dialogService.GetSelectedLineModels();
-                    List<GarbageElementModel> selectedViewModels = dialogService.GetSelectedViewModels();
-                    List<GarbageElementModel> selectedViewTemplates = dialogService.GetSelectedViewTemplateModels();
-
-                    int elementCount = selectedFilters.Count + selectedMaterials.Count +
-                        selectedLines.Count + selectedViewModels.Count + selectedViewTemplates.Count;
-
-                    revitDispatcher.BeginInvoke(DispatcherPriority.Background, 
-                        () => InfoDialog.Show("Clean Result", $"{elementCount} elements deleted from project.", Shared.Enums.FluentIcon.Info));
-
-                    handler.SetAction(uiApp =>
-                    {
-                        var docInner = uiApp.ActiveUIDocument.Document;
-
-                        using Transaction t = new(docInner, "Clean Project");
-                        t.Start();
-
-                        List<ElementId> idsToDelete =
-                        [
-                            .. selectedFilters.Select(f => new ElementId(f.Id)),
-                            .. selectedMaterials.Select(m => new ElementId(m.Id)),
-                            .. selectedViewModels.Select(v => new ElementId(v.Id)),
-                            .. selectedLines.Select(l => new ElementId(l.Id)),
-                            .. selectedViewTemplates.Select(vt => new ElementId(vt.Id)),
-                        ];
-
-                        docInner.Delete(idsToDelete);
-
-                        t.Commit();
-                    });
-
-                    externalEvent.Raise();
-                };
-                Dispatcher.Run();
-            });
-
-            uiThread.SetApartmentState(ApartmentState.STA);
-            uiThread.IsBackground = true;
-            uiThread.Start();
-
+            window.ShowDialog();
             return Result.Succeeded;
+        }
+
+        private static FilterableElementCollectionViewModel<GarbageElementModel>
+            CreateFilterable(
+                Document doc,
+                Func<GarbageElementModelFactory, List<GarbageElementModel>> createFunc,
+                string unUsedLabel)
+        {
+            var factory = new GarbageElementModelFactory(doc);
+            var models = createFunc(factory);
+
+            var selectable = models
+                .Select(m => new SelectableElementViewModel<GarbageElementModel>(m))
+                .ToList();
+
+            var columns = CreateDefaultColumns();
+            var combo = CreateFilterComboboxItems(unUsedLabel);
+
+            return new FilterableElementCollectionViewModel<GarbageElementModel>(
+                selectable, combo, columns);
+        }
+
+        private static List<DataGridTextColumnDefinition<GarbageElementModel>> CreateDefaultColumns() =>
+        [
+            new DataGridTextColumnDefinition<GarbageElementModel>
+            {
+                Header = "Name",
+                BindingPath = vm => vm.Model.Name,
+                Width = new DataGridLength(1, DataGridLengthUnitType.Star)
+            },
+            new DataGridTextColumnDefinition<GarbageElementModel>
+            {
+                Header = "Count",
+                BindingPath = vm => vm.Model.Count.ToString(),
+                Width = new DataGridLength(100)
+            }
+        ];
+
+        private static List<ComboBoxItemDefinition<GarbageElementModel>> CreateFilterComboboxItems(string unusedLabel) =>
+        [
+            new ComboBoxItemDefinition<GarbageElementModel>
+            {
+                DisplayName = "All",
+                FilterFunction = _ => true
+            },
+            new ComboBoxItemDefinition<GarbageElementModel>
+            {
+                DisplayName = unusedLabel,
+                FilterFunction = vm => !vm.Model.IsUsed
+            }
+        ];
+
+        private static void ExecuteClean(
+            Document doc,
+            params FilterableElementCollectionViewModel<GarbageElementModel>[] collections)
+        {
+            using Transaction t = new(doc, "Clean Project");
+            t.Start();
+
+            var ids = collections
+                .SelectMany(c => c.Elements.Where(e => e.IsChecked))
+                .Select(e => new ElementId(e.Model.Id))
+                .ToList();
+
+            if (ids.Count > 0)
+                doc.Delete(ids);
+
+            t.Commit();
         }
     }
 }

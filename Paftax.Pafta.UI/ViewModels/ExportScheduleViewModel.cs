@@ -1,83 +1,49 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Paftax.Pafta.Shared.Models;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+using Paftax.Pafta.Shared.Models.Element;
 using System.IO;
-using System.Windows.Data;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
-    public partial class ExportScheduleViewModel : ObservableObject
+    public partial class ExportScheduleViewModel<T>(SearchableElementCollectionViewModel<T> scheduleSelectionViewModel) : ObservableObject where T : ElementModel
     {
-        public ObservableCollection<ElementViewModel> Schedules { get; } = [];
-        public ICollectionView SchedulesView { get; }
+        public SearchableElementCollectionViewModel<T> ScheduleSelectionViewModel { get; } = scheduleSelectionViewModel;
 
         [ObservableProperty]
-        private bool isAllChecked = false;
-        [ObservableProperty]
-        private string searchText = string.Empty;
-        [ObservableProperty]
         private bool isMerged = false;
+
         [ObservableProperty]
         private bool isSeperated = true;
+
         [ObservableProperty]
         private string exportFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
         public event Action? CloseAction;
         public event Action? ExportAction;
 
-        public ExportScheduleViewModel()
+        private bool CanExport()
         {
-            SchedulesView = CollectionViewSource.GetDefaultView(Schedules);
-            SchedulesView.Filter = FilterSchedules;
-        }
-
-        public bool CanExport
-        {
-            get
-            {
-                return (Schedules.Any(schedule => schedule.IsChecked) &&
-                        !string.IsNullOrWhiteSpace(ExportFolderPath) &&
-                        (IsMerged || IsSeperated));
-            }
-        }
-
-        private bool FilterSchedules(object obj)
-        {
-            if (obj is ElementModel schedule)
-            {
-                return string.IsNullOrWhiteSpace(SearchText)
-                    || schedule.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-            }
-            return false;
-        }
-
-        partial void OnIsAllCheckedChanged(bool value)
-        {
-            foreach (ElementViewModel scheduleViewModel in Schedules)
-            {
-                if (scheduleViewModel.IsChecked != value)
-                    scheduleViewModel.IsChecked = value;
-            }
-        }
-
-        partial void OnSearchTextChanged(string value)
-        {
-            SchedulesView.Refresh();
+            var hasSelection = ScheduleSelectionViewModel?.Elements?.Any(s => s.IsChecked) == true;
+            var hasValidMode = IsMerged || IsSeperated;
+            var hasFolder = !string.IsNullOrWhiteSpace(ExportFolderPath);
+            return hasSelection && hasValidMode && hasFolder;
         }
 
         partial void OnIsMergedChanged(bool value)
         {
             if (value)
+            {
                 IsSeperated = false;
+            }
             ExportCommand.NotifyCanExecuteChanged();
         }
 
         partial void OnIsSeperatedChanged(bool value)
         {
             if (value)
+            {
                 IsMerged = false;
+            }
             ExportCommand.NotifyCanExecuteChanged();
         }
 
@@ -88,39 +54,30 @@ namespace Paftax.Pafta.UI.ViewModels
                 string trimmedString = value.Trim('"');
 
                 if (trimmedString != value)
+                {
                     ExportFolderPath = trimmedString;
+                }
             }
             ExportCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand]
-        private void Cancel()
-        {
-            CloseAction?.Invoke();
-        }
+        private void Cancel() => CloseAction?.Invoke();
 
         [RelayCommand(CanExecute = nameof(CanExport))]
         private void Export()
         {
             if (!string.IsNullOrWhiteSpace(ExportFolderPath) && !Directory.Exists(ExportFolderPath))
+            {
                 Directory.CreateDirectory(ExportFolderPath);
+            }
 
-            if (Schedules.Where(s => s.IsChecked == true).ToList().Count > 0)
+            var anyChecked = ScheduleSelectionViewModel?.Elements?.Any(s => s.IsChecked) == true;
+            if (anyChecked)
             {
                 ExportAction?.Invoke();
                 CloseAction?.Invoke();
                 ExportCommand.NotifyCanExecuteChanged();
-            }
-        }
-
-        public void LoadSchedules(IEnumerable<ElementModel> scheduleModels)
-        {
-            Schedules.Clear();
-            foreach (ElementModel scheduleModel in scheduleModels)
-            {
-                ElementViewModel elementViewModel = new(scheduleModel);
-
-                Schedules.Add(elementViewModel);
             }
         }
     }

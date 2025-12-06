@@ -1,0 +1,138 @@
+﻿<Window x:Class="Paftax.Pafta.UI.Views.ExportScheduleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:Paftax.Pafta.UI.ViewModels"
+        xmlns:behaviors="clr-namespace:Paftax.Pafta.UI.Behaviors"
+        xmlns:controls="clr-namespace:Paftax.Pafta.UI.Controls"
+        xmlns:local="clr-namespace:Paftax.Pafta.UI.Views"
+        mc:Ignorable="d"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        WindowStyle="None"
+        Title="Export Schedule" Height="700" Width="500">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Generic.xaml"/>
+                <ResourceDictionary Source="/Paftax.Pafta.UI;component/Resources/Styles/FontStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+    <Border BorderBrush="{DynamicResource WindowBorderBrush}" 
+            Background="{DynamicResource WindowBackground}" 
+            BorderThickness="1"
+            CornerRadius="10">
+        <Border.Effect>
+            <DropShadowEffect Color="Black"
+                              BlurRadius="50"   
+                              ShadowDepth="0"
+                              Opacity="0.3"/>
+        </Border.Effect>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="45"/>
+            </Grid.RowDefinitions>
+
+            <controls:TitleBar Grid.Row="0"/>
+
+            <Border Grid.Row="1" 
+                    HorizontalAlignment="Stretch" 
+                    Height="1"
+                    VerticalAlignment="Top"/>
+
+            <local:SearchableElementSelectionUserControl DataContext="{Binding ScheduleSelectionViewModel}" Grid.Row="1"/>
+
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Export Options" 
+                           FontWeight="Bold" 
+                           Grid.Row="0"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0" 
+                           IsHitTestVisible="False" 
+                           FontSize="{StaticResource FontSizeSmall}"/>
+
+                <Border Grid.Row="1"  
+                        HorizontalAlignment="Stretch" 
+                        Height="1"
+                        VerticalAlignment="Top" 
+                        Margin="10,0,10,0"/>
+
+                <Grid Grid.Row="1" VerticalAlignment="Center" Margin="10,5,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Folder:" 
+                              VerticalAlignment="Center"
+                              IsHitTestVisible="False" 
+                              Grid.Column="0" 
+                              FontSize="{StaticResource FontSizeSmall}"/>
+
+                    <TextBox x:Name="FolderTextBox" 
+                             Text="{Binding ExportFolderPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center" 
+                             Margin="10,0,0,0" 
+                             Height="25"
+                             Grid.Column="1"
+                             HorizontalAlignment="Stretch"/>
+                </Grid>
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Grid.Row="2" 
+                            VerticalAlignment="Center" 
+                            Margin="10,0,10,5">
+                    <RadioButton x:Name="MergedButton" 
+                                 Content="Merged"
+                                 Margin="0,0,10,0" 
+                                 IsChecked="{Binding IsMerged, Mode=TwoWay}"/>
+
+                    <RadioButton x:Name="SeperatedButton" 
+                                 Content="Seperated" 
+                                 IsChecked="{Binding IsSeperated, Mode=TwoWay}"/>
+                </StackPanel>
+            </Grid>
+
+            <Border Grid.Row="2" 
+                    HorizontalAlignment="Stretch" 
+                    Height="1"
+                    VerticalAlignment="Bottom"/>
+
+            <StackPanel Orientation="Horizontal" 
+                        Margin="0,0,10,0"
+                        Grid.Row="3" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center">
+
+                <Button Content="Export" 
+                        HorizontalAlignment="Right" 
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource ResultButtonStyle}"
+                        Command="{Binding ExportCommand}"/>
+
+                <Button Content="Cancel" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center"
+                        Command="{Binding CancelCommand}"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

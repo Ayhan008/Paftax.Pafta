@@ -233,6 +233,7 @@
                                               CanContentScroll="True"
                                               VerticalScrollBarVisibility="Auto">
                                     <StackPanel IsItemsHost="True"
+                                                Width="{TemplateBinding Width}"
                                                 KeyboardNavigation.DirectionalNavigation="Contained"/>
                                 </ScrollViewer>
                             </Border>

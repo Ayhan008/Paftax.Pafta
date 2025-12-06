@@ -1,5 +1,6 @@
 ﻿using Paftax.Pafta.Drawings.Elements;
 using Paftax.Pafta.Drawings.Visuals;
+using Paftax.Pafta.Shared.Geometries;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -104,7 +105,6 @@ namespace Paftax.Pafta.Drawings
         #region Transform Helpers
         private void UpdateTotalMatrix()
         {
-            // Toplam transform = ModelMatrix * ViewMatrix
             Matrix total = _modelMatrix;
             total.Append(_viewMatrix);
             _totalTransform.Matrix = total;
@@ -143,7 +143,7 @@ namespace Paftax.Pafta.Drawings
             if (_isPanning) return;
 
             Point screenPos = e.GetPosition(this);
-            double scale = e.Delta < 0 ? 1/ ZoomFactor : ZoomFactor;
+            double scale = e.Delta < 0 ? 1 / ZoomFactor : ZoomFactor;
 
             _viewMatrix.Translate(-screenPos.X, -screenPos.Y);
             _viewMatrix.Scale(scale, scale);
@@ -208,41 +208,46 @@ namespace Paftax.Pafta.Drawings
 
         private void ZoomToFitElements()
         {
-            if (_elements.Count == 0 || ActualWidth <= 0 || ActualHeight <= 0)
+            if (_elements.Count == 0)
                 return;
 
             Rect? bounds = null;
-            foreach (var el in _elements)
+            foreach (DrawingElement el in _elements)
             {
-                if (el.IsAnnotation == true)
+                if (el.IsAnnotation)
                     continue;
-    
-                var boundsXY = el.Bounding;
-                Rect elementBounds = new(boundsXY.Min, boundsXY.Max);
 
-                bounds = bounds.HasValue ? Rect.Union(bounds.Value, elementBounds) : elementBounds;
+                Bounding2 b = el.Bounding;
+                Rect rect = new(b.Min, b.Max);
+                bounds = bounds.HasValue ? Rect.Union(bounds.Value, rect) : rect;
             }
 
-            if (bounds == null || bounds.Value.IsEmpty)
+            if (bounds is null || bounds.Value.IsEmpty)
                 return;
 
-            double margin = 40;
-            double viewWidth = ActualWidth - margin;
-            double viewHeight = ActualHeight - margin;
+            var modelBounds = bounds.Value;
 
-            double scaleX = viewWidth / bounds.Value.Width;
-            double scaleY = viewHeight / bounds.Value.Height;
+            double marginRatio = 2.0;
+            modelBounds.Inflate(modelBounds.Width * marginRatio, modelBounds.Height * marginRatio);
+
+            double viewWidth = ActualWidth;
+            double viewHeight = ActualHeight;
+
+            if (viewWidth <= 1 || viewHeight <= 1)
+                return;
+
+            double scaleX = viewWidth / modelBounds.Width;
+            double scaleY = viewHeight / modelBounds.Height;
             double targetScale = Math.Min(scaleX, scaleY);
 
+            Point modelCenter = new(
+                modelBounds.X + modelBounds.Width / 2.0,
+                modelBounds.Y + modelBounds.Height / 2.0);
+
             _viewMatrix = Matrix.Identity;
-
-            double offsetX = -(bounds.Value.X + bounds.Value.Width / 2);
-            double offsetY = -(bounds.Value.Y + bounds.Value.Height / 2);
-
-            _viewMatrix.Translate(offsetX, offsetY);
+            _viewMatrix.Translate(-modelCenter.X, -modelCenter.Y);
             _viewMatrix.Scale(targetScale, targetScale);
-
-            _viewMatrix.Translate(ActualWidth / 2, ActualHeight / 2);
+            _viewMatrix.Translate(viewWidth / 2.0, viewHeight / 2.0);
 
             UpdateTotalMatrix();
         }

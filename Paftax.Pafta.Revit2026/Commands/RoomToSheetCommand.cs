@@ -3,10 +3,9 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
+using Paftax.Pafta.Revit2026.Factories;
 using Paftax.Pafta.Shared.Enums;
-using Paftax.Pafta.Shared.Models;
-using Paftax.Pafta.UI.Dialogs;
-using Paftax.Pafta.UI.Services;
+using Paftax.Pafta.Shared.Models.Element;
 using Paftax.Pafta.UI.ViewModels;
 
 namespace Paftax.Pafta.Revit2026.Commands
@@ -23,7 +22,6 @@ namespace Paftax.Pafta.Revit2026.Commands
 
             if (view.ViewType != Autodesk.Revit.DB.ViewType.FloorPlan)
             {
-                InfoDialog.Show("Error", "Please switch to a floor plan view to use this command.", FluentIcon.Error);
                 return Result.Cancelled;
             }
 
@@ -35,22 +33,17 @@ namespace Paftax.Pafta.Revit2026.Commands
             }
 
             List<RoomModel> richRoomDataModels = [];
+
             foreach (Room room in selectedRooms)
             {
-
+                RoomModel roomModel = RoomModelFactory.Create(room);
+                richRoomDataModels.Add(roomModel);
             }
 
             RoomToSheetViewModel roomToSheetViewModel = new();
             roomToSheetViewModel.LoadRoomModels(richRoomDataModels);
 
-            DialogOptions dialogOptions = new()
-            {
-                Title = "Room To Sheet",
-                Width = 900,
-                Height = 700
-            };
 
-            CommandDialog.Show(roomToSheetViewModel, dialogOptions);
             return Result.Succeeded;
         }
 
@@ -85,7 +78,6 @@ namespace Paftax.Pafta.Revit2026.Commands
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException)
             {
-                InfoDialog.Show("Cancelled", "Operation cancelled by user.", FluentIcon.Info);
                 return selectedRooms;
             }
 

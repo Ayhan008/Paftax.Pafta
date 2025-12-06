@@ -16,12 +16,7 @@ namespace Paftax.Pafta.Drawings.Visuals
             dc.DrawGeometry(Stroke, pen, geometry);
         }
 
-        public override Geometry GetGeometry()
-        {
-            return CreateGeometry();
-        }
-
-        private GeometryGroup CreateGeometry()
+        protected override Geometry CreateGeometry()
         {
             GeometryGroup group = new();
 

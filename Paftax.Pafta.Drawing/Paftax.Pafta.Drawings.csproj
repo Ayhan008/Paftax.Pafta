@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Paftax.Pafta.Exporters\Paftax.Pafta.Exporters.csproj" />
     <ProjectReference Include="..\Paftax.Pafta.Shared\Paftax.Pafta.Shared.csproj" />
   </ItemGroup>
 </Project>

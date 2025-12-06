@@ -39,11 +39,6 @@ namespace Paftax.Pafta.Drawings.Visuals
             dc.Pop();
         }
 
-        public override Geometry GetGeometry()
-        {
-            return CreateGeometry();
-        }
-
         public GeometryVisual GetCalloutHeadVisual()
         {
             return _calloutHeadVisual;
@@ -53,7 +48,7 @@ namespace Paftax.Pafta.Drawings.Visuals
             return _elevationTriangleVisual;
         }
 
-        private GeometryGroup CreateGeometry()
+        protected override Geometry CreateGeometry()
         {
             GeometryGroup group = new();
 
@@ -65,7 +60,7 @@ namespace Paftax.Pafta.Drawings.Visuals
                 Scale = Scale,
             };
             _calloutHeadVisual = calloutHead;
-            group.Children.Add(calloutHead.GetGeometry());
+            group.Children.Add(calloutHead.Geometry);
 
             ElevationTriangleVisual elevationTriangle = new()
             {
@@ -73,7 +68,7 @@ namespace Paftax.Pafta.Drawings.Visuals
                 Scale = Scale,
             };
             _elevationTriangleVisual = elevationTriangle;
-            group.Children.Add(elevationTriangle.GetGeometry());
+            group.Children.Add(elevationTriangle.Geometry);
 
             return group;
         }

@@ -13,6 +13,13 @@ namespace Paftax.Pafta.Revit2026.Factories
             List<GarbageElementModel> lines = [];
 
             Category category = _document.Settings.Categories.get_Item(BuiltInCategory.OST_Lines);
+            if (category == null)
+                return lines;
+
+            IEnumerable<CurveElement> revitCurves = [.. new FilteredElementCollector(_document)
+                .OfClass(typeof(CurveElement))
+                .WhereElementIsNotElementType()
+                .Cast<CurveElement>()];
 
             foreach (Category subCategory in category.SubCategories)
             {
@@ -21,11 +28,10 @@ namespace Paftax.Pafta.Revit2026.Factories
                 if (subCategory.Name.StartsWith('<') && subCategory.Name.EndsWith('>'))
                     continue;
 
-                int count = new FilteredElementCollector(_document)
-                    .OfClass(typeof(CurveElement))
-                    .WhereElementIsNotElementType()
-                    .Where(e => e.Category != null && e.Category.Id == subCategory.Id)
-                    .Count();
+                int count = revitCurves.Count(l =>
+                {
+                    return l.LineStyle is GraphicsStyle style && style.Id == subCategory.GetGraphicsStyle(GraphicsStyleType.Projection).Id;
+                });
 
                 GarbageElementModel lineModel = new()
                 {
@@ -34,8 +40,10 @@ namespace Paftax.Pafta.Revit2026.Factories
                     Count = count,
                     IsUsed = count > 0
                 };
+
                 lines.Add(lineModel);
             }
+
             return lines;
         }
 

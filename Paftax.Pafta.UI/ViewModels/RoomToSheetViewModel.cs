@@ -1,14 +1,18 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Paftax.Pafta.Drawings.Elements;
 using Paftax.Pafta.Shared.Enums;
-using Paftax.Pafta.Shared.Interfaces;
-using Paftax.Pafta.Shared.Models;
+using Paftax.Pafta.Shared.Models.Element;
 using System.Collections.ObjectModel;
 
 namespace Paftax.Pafta.UI.ViewModels
 {
     public partial class RoomToSheetViewModel : ObservableObject
     {
+        public GraphicDesignerViewModel GraphicDesignerViewModel { get; set; } = new();
         public ObservableCollection<RoomModel> Rooms { get; } = [];
+
+        public RoomToSheetViewModel() { }
+
         public List<ViewType> ViewTypes { get; } =
         [
             ViewType.FloorPlan,
@@ -21,14 +25,20 @@ namespace Paftax.Pafta.UI.ViewModels
         ];
 
         [ObservableProperty] private string? _selectedViewType;
-        public GraphicDesignerViewModel GraphicDesignerViewModel { get; set; } = new();
 
         public void LoadRoomModels(List<RoomModel> roomModels)
         {
             Rooms.Clear();
+            GraphicDesignerViewModel.Elements.Clear();
+
             foreach (var roomModel in roomModels)
             {
                 Rooms.Add(roomModel);
+
+                var spatialElement = new SpatialElement();
+                spatialElement.Create(roomModel);
+
+                GraphicDesignerViewModel.Elements.Add(spatialElement);
             }
         }
     }

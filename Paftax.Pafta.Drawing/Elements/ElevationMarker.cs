@@ -1,4 +1,5 @@
 ﻿using Paftax.Pafta.Drawings.Visuals;
+using Paftax.Pafta.Shared.Models.Element;
 using System.Windows;
 using System.Windows.Media;
 
@@ -30,7 +31,7 @@ namespace Paftax.Pafta.Drawings.Elements
         protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
         {
             Point pt = hitTestParameters.HitPoint;
-            Geometry geometry = Visual.GetGeometry();
+            Geometry geometry = Visual.Geometry;
             PathGeometry widened = geometry.GetWidenedPathGeometry(new Pen(Visual.Stroke, 500.0));
 
             if (widened.FillContains(pt))
@@ -46,6 +47,11 @@ namespace Paftax.Pafta.Drawings.Elements
             }
 
             return base.HitTestCore(hitTestParameters);
+        }
+
+        public override void Create(ElementModel elementModel)
+        {
+            throw new NotImplementedException();
         }
     }
 }
